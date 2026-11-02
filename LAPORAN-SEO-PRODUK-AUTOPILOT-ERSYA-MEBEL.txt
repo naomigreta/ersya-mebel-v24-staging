@@ -1,0 +1,37 @@
+LAPORAN BUILD — ERSYA MEBEL V24 AUTO PILOT MASSAL + SEO PRODUK INDIVIDUAL
+
+DITERAPKAN DI PAKET
+- Katalog publik tetap mempertahankan URL homepage lama.
+- Katalog membuat tautan HTML langsung ke /produk/<slug>/ untuk produk yang mempunyai slug.
+- Netlify Function product-page menghasilkan HTML halaman produk dengan title, meta description, kata kunci produk, canonical, Open Graph/Twitter metadata, foto, deskripsi, Product JSON-LD, dan BreadcrumbList.
+- Produk unpublished/tidak ditemukan mengembalikan 404 dan noindex.
+- Netlify Function sitemap menghasilkan sitemap XML dari produk published.
+- Admin Auto Pilot dapat memilih sampai 100 foto per batch, mengedit nama, membuat SEO, dan menyimpan jadwal publikasi.
+- Build menjalankan verifikasi file, JavaScript inline, fungsi, JSON-LD, dan smoke test fungsi.
+
+STATUS LIVE SUPABASE (DIVERIFIKASI 27 OKTOBER 2026)
+- Proyek ERSYA ditemukan dengan Project ID waartnvrptyzqfufpmcs.
+- Jumlah produk: 15; published: 15; antrean: 0; slug kosong: 0; seluruh 15 gambar memakai URL Cloudinary. Metadata SEO 15 produk diperbaiki: judul, deskripsi, dan kata kunci terisi.
+- Kolom scheduled_at, tabel autopilot_settings, helper admin internal, dan worker ersya_publish_due_products tersedia.
+- Cron extension pg_cron 1.6.4 terpasang; job ersya-publish-due-products aktif tiap menit. Riwayat terbaru menunjukkan status succeeded.
+- Auto Pilot masih disabled (false); worker tidak akan menerbitkan produk terjadwal sampai diaktifkan.
+- Kebijakan RLS admin telah diarahkan ke helper internal. RPC lama public.is_admin tidak mempunyai grant execute kepada anon/authenticated/PUBLIC.
+- Satu peringatan Supabase yang tersisa: fitur perlindungan kata sandi bocor belum diaktifkan. Itu perlu ditinjau pada Authentication settings; tidak diubah selama pekerjaan ini.
+
+TES YANG LOLOS
+- `npm run verify`: lulus; mencakup smoke test fungsi SEO dan jadwal batch 100 foto.
+- Sintaks JavaScript inline di index.html dan admin.html: lulus.
+- Sintaks kedua Netlify Functions: lulus.
+- JSON-LD statis valid; ID statis duplikat tidak ditemukan; aset lokal utama tersedia.
+- Smoke test dengan fetch mock: halaman produk menghasilkan 200 dan metadata/JSON-LD/kata kunci/gambar; produk hilang menghasilkan 404 + noindex; sitemap memasukkan URL produk published dan lastmod. Smoke test jadwal menguji batch 100 foto dan pengelompokan slot.
+- Worker Supabase dipanggil secara manual dengan Auto Pilot nonaktif dan mengembalikan 0; produk tidak berubah.
+- Setelah perubahan keamanan: 15 produk tetap published, 0 antrean; job Cron aktif.
+
+BELUM DIVERIFIKASI
+- Front-end baru belum dideploy ke Netlify karena belum ada repository Git yang siap dihubungkan.
+- Uji browser headless lokal dicoba tetapi proses Chromium timeout, jadi tampilan visual dan alur browser penuh belum terverifikasi.
+- Login admin nyata, upload foto dari perangkat, penyimpanan Supabase dari browser, penerbitan satu produk terjadwal end-to-end, dan Google Search Console belum diuji pada deployment baru.
+- Tidak ada jaminan Google mengindeks halaman atau memberikan peringkat tertentu.
+
+CARA DEPLOY
+Paket membutuhkan Netlify Build/Functions. Hubungkan repository Git ke site ersyafurniture; jangan memakai drag-and-drop statis untuk paket ini. Baca BACA-SEBELUM-DEPLOY.txt. Jangan masukkan service_role key ke dalam paket.

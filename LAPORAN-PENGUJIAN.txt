@@ -1,0 +1,38 @@
+LAPORAN PENGUJIAN — ERSYA MEBEL V24.1.4 (ANTI-BASE64 + PEMULIHAN BLOB)
+Tanggal: 27 Oktober 2026
+Status: Pemeriksaan otomatis lokal lulus; staging Netlify, browser nyata, dan layanan online ujung-ke-ujung belum diverifikasi.
+
+HASIL `npm run verify`
+1. Pemeriksaan struktur, sintaks inline JavaScript dan Netlify Functions, JSON-LD, DOM ID statis, aset lokal, dan rute Netlify lulus.
+2. Smoke test halaman produk: title/deskripsi/canonical/keywords, Product JSON-LD, gambar, 404 + noindex, sitemap dinamis dan lastmod lulus dengan mock lokal.
+3. Konteks Deploy Preview/dev dan header sitemap diperiksa dengan mock; crawling/indeks Google tidak diuji.
+4. Tes Auto Pilot lulus: simulasi batch hingga 100, grouping per slot, hari terpilih, kelanjutan antrean, dan input invalid. Ini bukan unggah 100 foto nyata.
+5. Tes klien Supabase REST-lite lulus: limit/single query, upsert conflict target, dan delete berfilter.
+6. Tes escaping panel Admin lulus untuk tanda kutip, tag HTML, ampersand dan payload mirip event handler.
+7. Tes anti-Base64 lulus: sanitizer rekursif, kompresi Blob, migrasi IndexedDB, validasi URL gambar, backup/import, serta aturan staging Blob sebelum unggah dan mempertahankan produk pending pada kegagalan.
+8. Konteks deployment dibenahi: build Netlify menyematkan `CONTEXT` (production/deploy-preview/branch) ke modul konteks di luar folder entrypoint Functions sebelum bundling. Ini diperlukan karena `CONTEXT` adalah variabel build-time, bukan variabel runtime Functions yang otomatis tersedia.
+9. Build disimulasikan untuk `CONTEXT=production` dan `CONTEXT=deploy-preview`, lalu modul konteks diperiksa; sumber paket dikembalikan ke konteks `local`.
+10. Pemeriksaan sintaks dan ZIP diuji ulang setelah perubahan.
+
+PERBAIKAN TERBARU
+- Foto baru untuk form produk dan Auto Pilot kini disimpan sebagai Blob di IndexedDB sebelum upload online.
+- Metadata produk dicatat sebelum upload, sehingga Blob pending dapat ditautkan ke produk setelah browser dibuka kembali.
+- Jika sinkronisasi gagal setelah checkpoint, produk pending tidak langsung dihapus; proses pemulihan berikutnya dapat membaca Blob dari IndexedDB.
+- Jika checkpoint lokal gagal pada pengeditan produk dengan foto pending lama, pemulihan mengembalikan Blob sebelumnya.
+- Penghapusan Blob menutup koneksi IndexedDB dalam blok finally.
+- `canvas.toDataURL()` tidak ditemukan di panel Admin; penyimpanan foto baru menggunakan `canvas.toBlob()`.
+
+UJI BROWSER
+Chromium headless timeout bahkan pada `about:blank` (tidak menghasilkan DOM); ini menandakan runner browser lingkungan ini tidak dapat dipakai untuk memvalidasi halaman. Maka render visual, tombol panel, unggah browser, dan pemulihan lintas sesi tidak dinyatakan lulus.
+
+BELUM DIUJI / TIDAK BOLEH DIKLAIM BERHASIL
+- Build/Deploy Preview Netlify nyata. Integrasi GitHub yang tersedia tidak menunjukkan repositori yang dapat dipakai, dan kanal deploy Netlify yang tersedia hanya bisa membaca deploy, bukan mengunggah paket atau membuat deploy. Karena itu Deploy Preview belum dapat dibuat dari sesi ini.
+- Login Admin browser setelah kebijakan RLS terbaru.
+- Unggah foto nyata dari perangkat ke Cloudinary dan penulisan Supabase.
+- Pemulihan IndexedDB setelah browser sungguh-sungguh ditutup/dibuka ulang.
+- Batch 100 foto nyata.
+- Alur jadwal -> Cron -> published -> detail produk -> sitemap end-to-end.
+- Pengindeksan/peringkat Google.
+
+PRODUKSI
+Tidak ada deployment produksi atau perubahan katalog produksi pada audit ini. Auto Pilot tetap nonaktif; antrean tidak diubah. Leaked Password Protection Supabase masih perlu diaktifkan di Dashboard. Paket ini belum dinyatakan siap produksi.

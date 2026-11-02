@@ -1,0 +1,39 @@
+ERSYA MEBEL V24.1.4 — LAPORAN FINALISASI PRA-DEPLOY
+Tanggal: 27 Oktober 2026
+Status: Kandidat lokal diperkuat dan tes otomatis lulus; BELUM DEPLOY.
+
+RINGKASAN
+Audit lanjutan menemukan jalur foto baru yang hanya menyimpan Blob pada memori selama sinkronisasi. V24.1.4 menutup celah tersebut dengan menyimpan Blob ke IndexedDB dan metadata produk lokal sebelum upload. Ini mengurangi risiko foto pending hilang ketika koneksi/sinkronisasi gagal atau halaman dibuka kembali, tetapi pemulihan pada browser nyata masih harus diuji.
+
+PERUBAHAN V24.1.4
+- `CONTEXT` disematkan saat build ke modul konteks sebelum Netlify membundel Functions. Produk/sitemap menggunakan nilai ini untuk membedakan production dari deploy-preview/branch; `ERSYA_DEPLOY_CONTEXT` tetap bisa menjadi override runtime. Ini menghindari ketergantungan pada `CONTEXT` yang tidak tersedia otomatis di runtime Functions.
+- Tes terpisah mensimulasikan build dengan `CONTEXT=production`, `CONTEXT=deploy-preview`, dan branch khusus; modul konteks yang dihasilkan diperiksa kembali.
+
+PERUBAHAN UTAMA
+- Form tambah/edit produk dan Auto Pilot melakukan staging Blob ke IndexedDB sebelum memulai upload Cloudinary.
+- Katalog lokal dijadikan checkpoint sebelum upload. Jika checkpoint gagal, proses upload ditahan.
+- Jika upload atau penyimpanan Supabase gagal sesudah checkpoint, produk/foto pending dipertahankan untuk percobaan ulang pada pemulihan sesi berikutnya.
+- Ketika checkpoint gagal saat produk lama memiliki Blob pending, pemulihan mengembalikan Blob dari snapshot sebelumnya.
+- Penutupan koneksi IndexedDB pada penghapusan foto dilakukan melalui finally.
+- Tes Base64 ditambah untuk memastikan staging terjadi sebelum upload dan data pending tidak dibuang saat sinkronisasi gagal.
+
+STATUS STAGING
+- Deploy Preview tidak dibuat dari sesi ini: konektor GitHub tidak menampilkan repositori yang dapat dipakai, dan konektor Netlify yang tersedia tidak menyediakan operasi upload/create deploy. Tidak dibuat proyek Netlify kosong yang tidak bisa diuji.
+- Project Netlify produksi yang terhubung saat ini dilaporkan menggunakan deploy manual lama tanpa Netlify Functions. Paket ini tidak diunggah ke produksi.
+
+TES LOKAL
+`npm run verify` lulus semua tujuh rangkaian tes setelah perubahan.
+Simulasi build production dan deploy-preview lulus. ZIP hasil akhir diekstrak ulang dan `npm run verify` dijalankan lagi sebelum paket dibagikan.
+
+BATASAN PENTING
+- Uji Chromium headless timeout tanpa menghasilkan DOM; tidak diklaim lulus.
+- Tidak ada uji integrasi live Cloudinary/Supabase yang selesai.
+- Tidak ada Deploy Preview atau deployment produksi.
+- Tidak ada perubahan katalog produksi; Auto Pilot produksi tetap nonaktif.
+- Leaked Password Protection masih harus diaktifkan di Dashboard Supabase.
+
+LANGKAH BERIKUTNYA
+1. Uji kandidat pada Deploy Preview/lingkungan staging terpisah.
+2. Buktikan upload dan pemulihan foto setelah tab/browser ditutup, termasuk kondisi jaringan gagal.
+3. Jalankan alur lengkap jadwal -> Cron -> publikasi -> halaman produk -> sitemap.
+4. Hanya setelah bukti integrasi tersebut lulus, pertimbangkan deployment produksi.

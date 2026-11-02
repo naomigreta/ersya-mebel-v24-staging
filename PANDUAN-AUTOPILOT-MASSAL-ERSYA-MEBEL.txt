@@ -1,0 +1,45 @@
+PANDUAN AUTO PILOT MASSAL + SEO PRODUK INDIVIDUAL — ERSYA MEBEL V24
+
+FITUR
+- Pilih hingga 100 foto per batch; nama awal dibentuk dari nama file dan dapat diedit.
+- Pilih kategori/material, hari publikasi (Senin–Minggu atau setiap hari), tanggal mulai, jam, zona waktu, dan jumlah produk tiap slot.
+- Foto dikompres di browser, dikirim ke Cloudinary, dan metadata produk disimpan ke Supabase. HP/browser tetap harus aktif dan internet harus tersedia sampai setiap foto berhasil diunggah.
+- Setelah masuk antrean online, Supabase Cron menjalankan publikasi server walaupun browser admin sudah ditutup.
+- Panel Auto Pilot menampilkan antrean dan memberi opsi membatalkan jadwal.
+- SEO produk membuat slug, judul SEO, deskripsi SEO, kata kunci, dan teks alternatif gambar.
+- Produk terbit tersedia pada URL server-rendered `/produk/<slug>/`, sedangkan `/sitemap.xml` berisi homepage dan produk yang sudah dipublikasikan.
+- Homepage lama tetap di https://ersyafurniture.netlify.app/.
+
+DEPLOY WAJIB MELALUI NETLIFY BUILD
+Paket ini memakai Netlify Functions. Drag-and-drop statis tidak menjalankan fungsi server. Hubungkan repository Git ke proyek Netlify atau gunakan Netlify CLI. Jangan mengubah `publish = "public"` dan pastikan `netlify.toml` ada di akar repository.
+
+STATUS PERSIAPAN SAAT INI
+- Skema database, worker Cron, dan aturan keamanan inti sudah diterapkan pada proyek Supabase ERSYA.
+- Job `ersya-publish-due-products` aktif dengan jadwal setiap menit dan riwayat eksekusi berhasil.
+- Pengaturan Auto Pilot masih disabled (false), dan jumlah produk dalam antrean masih nol. Ini disengaja sampai front-end baru selesai dideploy dan diuji.
+- Paket belum dipublikasikan ke Netlify. Pemeriksaan lokal tidak menggantikan pengujian pada website live.
+
+SETELAH DEPLOY
+1. Uji homepage lama, /admin.html, /produk/kursi-cafe-besi/, dan /sitemap.xml.
+2. Login melalui akun admin lama; pastikan katalog terhubung online dan menu Auto Pilot terbuka.
+3. Muat pengaturan Auto Pilot terlebih dahulu. Jangan mengaktifkan sampai seluruh pemeriksaan awal lulus.
+4. Setelah siap, aktifkan Auto Pilot, atur hari dan jam, lalu simpan.
+5. Uji satu foto terlebih dahulu. Pastikan Cloudinary menghasilkan URL gambar, Supabase menyimpan metadata dan scheduled_at, status tetap mengantre sebelum waktunya, kemudian Cron menerbitkan produk saat jatuh tempo.
+
+CARA JADWAL BERJALAN
+- Jadwal dihitung saat batch dimasukkan ke antrean; waktu disimpan sebagai UTC dengan memperhitungkan zona waktu.
+- Produk per slot dapat 1, 2, 3, atau 5 sesuai pilihan.
+- Batch baru dijadwalkan setelah antrean yang sudah ada untuk mempertahankan urutan.
+- Cron berjalan tiap menit, jadi penerbitan dapat terlambat sekitar satu interval kerja.
+- Jika antrean telat jauh, worker menyusun ulang antrean agar tidak menerbitkan banyak produk sekaligus.
+
+SEO PRODUK INDIVIDUAL
+- Halaman produk memberi title, meta description, canonical, Open Graph/Twitter, gambar/deskripsi, Product JSON-LD, dan BreadcrumbList pada HTML awal.
+- Sitemap dinamis membaca hanya produk `published=true`; produk terjadwal tidak masuk sebelum diterbitkan.
+- Slug yang sudah ada dipertahankan jika unik.
+- Karena katalog tidak menampilkan harga, schema tidak mengarang harga atau Offer. Google tetap menentukan apakah dan kapan halaman diindeks.
+
+KEAMANAN
+- Jangan menambahkan Supabase service_role/secret key ke HTML, ZIP, atau GitHub.
+- Publishable key pada config browser memang bersifat publik dan tetap tunduk pada RLS.
+- Pengujian lokal/mock bukan pengganti uji login admin, unggah Cloudinary, akses Supabase dari browser, Cron, Netlify Functions, atau Google Search Console.

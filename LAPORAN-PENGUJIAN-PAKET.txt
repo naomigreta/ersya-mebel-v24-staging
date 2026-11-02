@@ -1,0 +1,39 @@
+LAPORAN PENGUJIAN PAKET — ERSYA MEBEL V24.1.4
+Tanggal: 27 Oktober 2026
+Status: Pemeriksaan otomatis lokal dan paket hasil ekstraksi lulus; staging Netlify, browser nyata, dan integrasi online end-to-end belum diverifikasi.
+
+KONTEKS NETLIFY
+Build menjalankan `scripts/inject-deploy-context.cjs` untuk menyematkan `CONTEXT` ke fungsi sebelum bundling. Tes terpisah memverifikasi production, deploy-preview, dan custom branch.
+
+HASIL `npm run verify`
+1. Pemeriksaan struktur, sintaks inline JavaScript dan Netlify Functions, JSON-LD, DOM ID statis, aset lokal, serta rute Netlify lulus.
+2. Smoke test halaman produk: title/deskripsi/canonical/keywords, Product JSON-LD, gambar, 404 + noindex, sitemap dinamis dan lastmod lulus. Pengujian fungsi menggunakan mock lokal.
+3. Konteks Deploy Preview/dev dan header sitemap diperiksa menggunakan mock; crawling/indeks Google tidak diuji.
+4. Tes Auto Pilot lulus: batch 100 sebagai simulasi jadwal, jumlah produk per slot, hari terpilih, antrean dilanjutkan, dan input invalid. Ini bukan upload 100 foto nyata.
+5. Tes klien Supabase ringan lulus: `.limit(1).maybeSingle()`, upsert dengan key conflict target, dan delete berfilter.
+6. Tes escaping panel Admin lulus untuk tanda kutip, tag HTML, ampersand dan payload mirip event handler.
+7. Tes anti-Base64 lulus: sanitizer membuang `imageData`, Blob/object URL, dan data:image hingga struktur bertingkat dari objek yang akan disimpan; kompresi baru menggunakan `canvas.toBlob()`; ada migrasi foto lama ke IndexedDB; Auto Pilot memakai Blob; ekspor ditahan saat foto pending; impor menolak payload data:image.
+8. Simulasi build produksi dan Deploy Preview lulus; ZIP kandidat lulus pemeriksaan integritas arsip setelah dibuat dan diekstrak.
+
+DETAIL PENCEGAHAN REGRESI BASE64
+- Pencarian kode tidak menemukan pemanggilan `.toDataURL()` di panel Admin.
+- Form upload foto mengompresi ke Blob dan tidak menaruh string Base64 ke input tersembunyi.
+- Auto Pilot memakai Blob per foto dan memproses secara berurutan.
+- Cloudinary menerima Blob melalui FormData. Supabase menerima URL foto dan metadata, bukan payload foto.
+- Penulisan localStorage lewat serializer aman. Halaman publik tidak menggunakan `data:image` legacy sebagai sumber gambar katalog.
+- Foto Base64 lama dimigrasikan ke IndexedDB Blob terlebih dahulu; jika migrasi gagal, penulisan yang dapat menghapus data lama dan upload otomatis foto legacy dan sinkronisasi massal ditahan.
+
+HASIL PEMERIKSAAN BROWSER
+Chromium headless timeout bahkan untuk about:blank dan tidak menghasilkan DOM yang dapat diperiksa. Tidak ada klaim bahwa render visual, tombol panel, upload, atau interaksi browser telah lulus uji nyata.
+
+BELUM DIUJI / TIDAK BOLEH DIKLAIM BERHASIL
+- Build/Deploy Preview Netlify nyata. Konektor GitHub tidak menampilkan repository yang tersedia dan konektor Netlify yang tersedia tidak memiliki operasi upload/create deploy.
+- Login Admin dari browser setelah kebijakan RLS terbaru.
+- Unggah foto dari HP ke Cloudinary dan penulisan Supabase.
+- Perilaku upload gagal dan pemulihan IndexedDB pada perangkat sebenarnya.
+- Batch 100 foto nyata.
+- Rangkaian jadwal -> Cron -> published -> halaman produk -> sitemap end-to-end.
+- Pengindeksan/peringkat Google.
+
+PRODUKSI
+Tidak ada deployment produksi atau perubahan katalog produksi pada audit ini. Auto Pilot tetap nonaktif dan antrean tetap seperti pemeriksaan sebelumnya. Leaked Password Protection Supabase masih perlu diaktifkan melalui Dashboard.

@@ -1,0 +1,261 @@
+-- ERSYA MEBEL AUTO PILOT MASSAL V24
+-- Jalankan hanya pada project Supabase yang digunakan oleh ERSYA MEBEL.
+-- SQL ini mencoba memasang ekstensi pg_cron. Jika izin ditolak, aktifkan Cron/pg_cron dari Dashboard Supabase lalu jalankan ulang.
+-- Jalankan seluruh SQL ini melalui Supabase SQL Editor sebagai pemilik database (umumnya postgres).
+-- Tidak menghapus produk lama atau mengganti URL homepage. Menambahkan kolom SEO/slug/jadwal dan pengaturan Auto Pilot.
+-- pg_cron dipasang terlebih dahulu agar job publikasi dapat dijadwalkan.
+
+create extension if not exists pg_cron with schema pg_catalog;
+
+begin;
+
+-- A. Tambah kolom SEO dan jadwal secara backward-compatible.
+-- Tidak menghapus tabel atau produk lama. URL homepage lama tetap dipertahankan.
+alter table public.products
+  add column if not exists slug text,
+  add column if not exists seo_title text,
+  add column if not exists seo_description text,
+  add column if not exists seo_keywords text[] not null default array[]::text[],
+  add column if not exists scheduled_at timestamptz;
+
+-- Buat slug stabil untuk seluruh produk lama dan selesaikan benturan sebelum
+-- membuat unique index. Temp table menyimpan hasil akhir; nilai sementara yang unik
+-- mencegah konflik jika database sudah memiliki unique constraint lama pada slug.
+create temporary table ersya_product_slug_migration_v24 on commit drop as
+with candidates as (
+  select p.id,
+         left(coalesce(
+           nullif(trim(both '-' from regexp_replace(lower(coalesce(nullif(p.slug, ''), p.name, 'produk-furniture')), '[^a-z0-9]+', '-', 'g')), ''),
+           'produk-' || left(md5(p.id::text), 8)
+         ), 60) as base_slug
+    from public.products p
+), ranked as (
+  select c.id, c.base_slug,
+         row_number() over (partition by c.base_slug order by c.id::text) as rn
+    from candidates c
+)
+select id,
+       case when rn = 1 then left(base_slug, 70)
+            else left(base_slug, 60) || '-' || rn::text end as slug
+  from ranked;
+
+update public.products p
+   set slug = 'ersya-migrate-' || md5(p.id::text);
+
+update public.products p
+   set slug = f.slug
+  from ersya_product_slug_migration_v24 f
+ where p.id = f.id;
+
+-- Repair empty/truncated legacy SEO fields without overwriting longer manual metadata.
+-- Populate product keyword arrays for old rows as well as future Auto Pilot uploads.
+-- Stagger updated_at by 1 ms in stable ID order so the homepage's newest-first sort stays deterministic.
+with seo_repairs as (
+  select p.id,
+         row_number() over (
+           order by case when p.id ~ '^p_[0-9]+$' then substring(p.id from 3)::numeric else 0 end desc,
+                    p.id desc
+         ) as repair_order
+    from public.products p
+   where length(btrim(coalesce(p.seo_title, ''))) < 25
+      or length(btrim(coalesce(p.seo_description, ''))) < 70
+      or coalesce(cardinality(p.seo_keywords), 0) = 0
+)
+update public.products p
+   set seo_title = case
+         when length(btrim(coalesce(p.seo_title, ''))) < 25
+         then left(initcap(regexp_replace(coalesce(nullif(btrim(p.name), ''), 'Furniture'), '[-_]+', ' ', 'g')) || ' | ERSYA MEBEL', 60)
+         else p.seo_title
+       end,
+       seo_description = case
+         when length(btrim(coalesce(p.seo_description, ''))) < 70
+         then left(
+           initcap(regexp_replace(coalesce(nullif(btrim(p.name), ''), 'Furniture'), '[-_]+', ' ', 'g')) ||
+           ' dari ERSYA MEBEL, ' || lower(coalesce(nullif(btrim(p.category), ''), 'furniture')) ||
+           ' berbahan ' || lower(coalesce(nullif(btrim(p.material), ''), 'besi dan kayu')) ||
+           '. Hubungi kami untuk informasi model, ukuran, dan ketersediaan.',
+           160
+         )
+         else p.seo_description
+       end,
+       seo_keywords = case
+         when coalesce(cardinality(p.seo_keywords), 0) = 0
+         then array(
+           select lower(btrim(src.keyword))
+             from unnest(array[
+               regexp_replace(coalesce(nullif(btrim(p.name), ''), 'Furniture'), '[-_]+', ' ', 'g'),
+               p.category, p.material,
+               concat_ws(' ', p.category, p.material),
+               concat_ws(' ', regexp_replace(coalesce(nullif(btrim(p.name), ''), 'Furniture'), '[-_]+', ' ', 'g'), 'Jepara'),
+               'furniture Jepara', 'mebel Jepara', 'ERSYA MEBEL'
+             ]) with ordinality as src(keyword, position)
+            where nullif(btrim(src.keyword), '') is not null
+            group by lower(btrim(src.keyword))
+            order by min(src.position)
+            limit 8
+         )
+         else p.seo_keywords
+       end,
+       updated_at = now() - (seo_repairs.repair_order * interval '1 millisecond')
+  from seo_repairs
+ where p.id = seo_repairs.id;
+
+create unique index if not exists products_slug_unique_idx
+  on public.products (lower(slug))
+  where slug is not null and slug <> '';
+
+create index if not exists products_scheduled_publish_idx
+  on public.products (scheduled_at)
+  where published = false and scheduled_at is not null;
+
+-- B. Profil pengaturan Auto Pilot. Pola hari/jam dipakai saat memasukkan batch ke antrean.
+create table if not exists public.autopilot_settings (
+  id integer primary key default 1 check (id = 1),
+  enabled boolean not null default false,
+  weekdays smallint[] not null default array[1,2,3,4,5]::smallint[],
+  publish_time time without time zone not null default time '09:00:00',
+  products_per_slot smallint not null default 1 check (products_per_slot between 1 and 5),
+  timezone text not null default 'Asia/Jakarta',
+  auto_seo boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+insert into public.autopilot_settings (id, enabled, weekdays, publish_time, products_per_slot, timezone, auto_seo)
+values (1, false, array[1,2,3,4,5]::smallint[], time '09:00:00', 1, 'Asia/Jakarta', true)
+on conflict (id) do nothing;
+
+-- C. Pusat pemeriksaan admin disimpan di schema internal, bukan endpoint REST publik.
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+grant usage on schema private to authenticated;
+create or replace function private.ersya_is_current_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.profiles p
+    where p.id = (select auth.uid()) and lower(coalesce(p.role::text, '')) = 'admin'
+  );
+$$;
+revoke all on function private.ersya_is_current_admin() from public, anon;
+grant execute on function private.ersya_is_current_admin() to authenticated;
+
+-- Alihkan kebijakan admin lama ke helper internal, lalu tutup RPC is_admin lama.
+-- Tidak ada data produk/pengguna yang diubah oleh perubahan kebijakan ini.
+alter policy "Admin manages categories" on public.categories
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+alter policy "Admin manages products" on public.products
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+alter policy "Admin views profiles" on public.profiles
+  using ((select private.ersya_is_current_admin()));
+alter policy "Users view own profile" on public.profiles
+  using (id = (select auth.uid()));
+drop policy if exists "Admins can update profiles" on public.profiles;
+create policy "Admins can update profiles" on public.profiles
+  for update to authenticated
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+alter policy "seo_keywords_admin_delete" on public.seo_keywords
+  using ((select private.ersya_is_current_admin()));
+alter policy "seo_keywords_admin_insert" on public.seo_keywords
+  with check ((select private.ersya_is_current_admin()));
+alter policy "seo_keywords_admin_update" on public.seo_keywords
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+alter policy "Admin manages SEO" on public.seo_settings
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+alter policy "Admin manages site settings" on public.site_settings
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+alter policy "settings_admin_delete" on public.site_settings
+  using ((select private.ersya_is_current_admin()));
+alter policy "settings_admin_insert" on public.site_settings
+  with check ((select private.ersya_is_current_admin()));
+alter policy "settings_admin_update" on public.site_settings
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+revoke all on function public.is_admin() from public, anon, authenticated;
+
+alter table public.autopilot_settings enable row level security;
+revoke all on table public.autopilot_settings from anon, authenticated;
+grant select, insert, update on table public.autopilot_settings to authenticated;
+
+drop policy if exists "Auto Pilot settings admin only" on public.autopilot_settings;
+create policy "Auto Pilot settings admin only"
+  on public.autopilot_settings
+  for all
+  to authenticated
+  using ((select private.ersya_is_current_admin()))
+  with check ((select private.ersya_is_current_admin()));
+
+-- D. Worker server menerbitkan semua produk yang sudah jatuh tempo.
+-- Jika Cron terlambat berjalan, produk yang waktunya sudah tiba tetap diterbitkan,
+-- bukan diam-diam dipindahkan ke jadwal berikutnya.
+-- Search path dikunci dan semua relasi ditulis dengan schema eksplisit.
+create or replace function public.ersya_publish_due_products()
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_enabled boolean;
+  v_published_count integer := 0;
+begin
+  select s.enabled
+    into v_enabled
+    from public.autopilot_settings s
+   where s.id = 1;
+
+  if not found or not coalesce(v_enabled, false) then
+    return 0;
+  end if;
+
+  update public.products p
+     set published = true,
+         scheduled_at = null,
+         updated_at = now()
+   where p.published = false
+     and p.scheduled_at is not null
+     and p.scheduled_at <= now();
+
+  get diagnostics v_published_count = row_count;
+  return v_published_count;
+end;
+$$;
+
+-- Hanya cron/database owner boleh menjalankan fungsi publikasi ini.
+revoke all on function public.ersya_publish_due_products() from public, anon, authenticated;
+
+-- Minta PostgREST memperbarui metadata kolom setelah migrasi.
+notify pgrst, 'reload schema';
+
+commit;
+
+-- E. Jadwalkan worker di Supabase Cron (jalankan bagian ini SETELAH pg_cron diaktifkan).
+-- Buat skrip idempotent: jika SQL dijalankan ulang, job tidak menjadi duplikat.
+do $$
+declare
+  v_job record;
+begin
+  for v_job in select jobid from cron.job where jobname = 'ersya-publish-due-products' loop
+    perform cron.unschedule(v_job.jobid);
+  end loop;
+  perform cron.schedule(
+    'ersya-publish-due-products',
+    '* * * * *',
+    'select public.ersya_publish_due_products();'
+  );
+end;
+$$;
+
+-- Verifikasi setup:
+-- select jobid, jobname, schedule, active from cron.job where jobname = 'ersya-publish-due-products';
+-- select start_time, end_time, status, return_message from cron.job_run_details order by start_time desc limit 10;
+-- select id, enabled, weekdays, publish_time, products_per_slot, timezone from public.autopilot_settings;

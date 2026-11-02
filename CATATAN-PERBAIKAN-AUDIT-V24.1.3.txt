@@ -1,0 +1,47 @@
+ERSYA MEBEL V24.1.3 — CATATAN PERBAIKAN AUDIT
+Tanggal: 27 Oktober 2026
+Status: Kandidat lokal diperkuat dan tes otomatis lulus; belum dideploy.
+
+WARISAN DARI V24.1.2
+- Foto diproses sebagai Blob, tidak menggunakan `canvas.toDataURL()`.
+- Serializer localStorage membersihkan payload Base64, Blob, object URL, dan field gambar sementara secara rekursif.
+- Foto Base64 legacy dimigrasikan ke IndexedDB sebelum localStorage dibersihkan; jika migrasi gagal, tindakan destruktif dan upload legacy ditahan.
+- Halaman publik menormalisasi URL gambar ke HTTP(S); halaman produk SEO fallback ke logo ketika menerima data:image/blob.
+- Backup/import memblokir payload foto Base64; Auto Pilot mengirim Blob per foto; tes regresi menjadi bagian `npm run verify`.
+- Perbaikan sebelumnya pada Supabase REST-lite, upsert schema, escaping HTML Admin, noindex Deploy Preview, sitemap dinamis, serta fungsi Netlify dipertahankan.
+
+TEMUAN BARU PADA AUDIT LANJUTAN
+Pemeriksaan kode mengidentifikasi celah yang tidak tertangkap oleh tes sebelumnya: foto baru pada form produk dan Auto Pilot memang berupa Blob, tetapi Blob hanya ada di memori selama proses sinkronisasi. Jika upload gagal, halaman tertutup, atau Supabase tidak menerima perubahan, foto pending tidak selalu memiliki salinan IndexedDB yang dapat dipulihkan.
+
+PERBAIKAN V24.1.3
+1. Form tambah/edit produk menyimpan Blob foto ke IndexedDB terlebih dahulu sebelum memulai sinkronisasi online.
+2. Metadata produk lokal dicatat sebelum upload dimulai. Jika checkpoint lokal gagal, upload tidak dilanjutkan.
+3. Jika sinkronisasi gagal setelah checkpoint lokal berhasil, record produk tetap disimpan dalam status pending; foto tidak langsung dibuang dan dapat direhidrasi dari IndexedDB saat halaman dibuka kembali.
+4. Untuk Auto Pilot, setiap Blob foto disimpan di IndexedDB sebelum upload. Saat sinkronisasi gagal sesudah checkpoint, produk pending tetap dipertahankan, agar proses pemulihan berikutnya dapat mencoba ulang alih-alih menghapus record dan foto.
+5. Bila checkpoint gagal ketika mengedit produk yang sebelumnya punya foto pending, jalur pemulihan mengembalikan Blob lama yang ada di snapshot, bukan menghapus satu-satunya foto lama.
+6. Koneksi IndexedDB pada fungsi penghapusan Blob kini ditutup melalui `finally`, termasuk saat penghapusan gagal, agar batch besar tidak menumpuk koneksi.
+7. Tes regresi diperluas untuk memeriksa urutan `putPhotoBlob` sebelum upload, mempertahankan produk pending setelah kegagalan, dan penutupan koneksi IndexedDB.
+8. Versi paket dinaikkan menjadi 24.1.3. Perubahan terpisah disusun tanpa mengubah website produksi atau mengaktifkan Auto Pilot.
+
+HASIL PENGUJIAN
+`npm run verify` lulus keenam rangkaian:
+- validasi struktur, sintaks, JSON-LD, aset dan rute Netlify;
+- smoke test fungsi halaman produk/sitemap/metadata;
+- simulasi jadwal Auto Pilot dan batch hingga 100 file;
+- tes Supabase REST-lite;
+- tes escaping HTML pada Admin;
+- tes regresi Base64 termasuk staging Blob IndexedDB sebelum upload dan jalur kegagalan/pemulihan.
+
+Chromium tersedia tetapi uji `--headless --dump-dom` kembali timeout pada batas 15 detik dan menghasilkan file DOM kosong. Karena itu, render browser dan tombol nyata tidak diklaim lulus.
+
+BELUM TERBUKTI
+- Deploy Preview nyata di Netlify.
+- Login Admin browser dan kebijakan RLS live.
+- Upload foto nyata dari perangkat pengguna ke Cloudinary dan upsert Supabase.
+- Penutupan/pembukaan browser nyata dan pemulihan foto IndexedDB pada perangkat pengguna.
+- Batch 100 foto nyata.
+- Alur jadwal -> Cron -> published -> detail produk -> sitemap end-to-end.
+- Crawling dan ranking Google.
+
+KEAMANAN/PRODUKSI
+Leaked Password Protection masih perlu diaktifkan di Dashboard Supabase. Tidak ada deployment produksi pada proses ini. Auto Pilot produksi tetap nonaktif; proyek produksi/data produk tidak diubah.

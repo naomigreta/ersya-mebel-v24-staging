@@ -1,0 +1,29 @@
+# ERSYA MEBEL V24 — Netlify deployment configuration.
+# Deploy this project through the Git-connected Netlify build or Netlify CLI.
+# The public site stays in /public; server-side Functions remain outside the publish folder.
+[build]
+  command = "npm run build"
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Keep the original homepage URL. Product detail pages are server-rendered from Supabase.
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/produk/:slug"
+  to = "/produk/:slug/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/produk/:slug/"
+  to = "/.netlify/functions/product-page?slug=:slug"
+  status = 200
+  force = true

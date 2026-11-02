@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>ERSYA MEBEL ADMIN</title><meta name="theme-color" content="#214a36"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-status-bar-style" content="default"/><meta name="apple-mobile-web-app-title" content="ERSYA MEBEL ADMIN"/><link rel="manifest" href="manifest.webmanifest"/><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png"/><style>
+:root{--ink:#20271f;--muted:#687168;--cream:#f7f2e8;--green:#214a36;--line:#e7e0d3;--danger:#a52f2f;--max:1060px}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f4f5f2;color:var(--ink)}button,input,textarea,select{font:inherit}.shell{width:min(var(--max),calc(100% - 20px));margin:auto}.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}.topbar{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:10px;font-weight:900}.mark{width:38px;height:38px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center}.top-actions{display:flex;gap:8px}.top-actions a,.top-actions button{border:1px solid var(--line);background:#fff;border-radius:11px;padding:9px 12px;font-weight:800;font-size:12px;text-decoration:none;color:inherit}.top-actions .primary{background:var(--green);color:#fff;border-color:var(--green)}.layout{display:grid;grid-template-columns:220px 1fr;gap:18px;padding:18px 0 40px}.side{background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px;height:max-content;position:sticky;top:82px}.side button{width:100%;text-align:left;border:0;background:#fff;padding:12px;border-radius:11px;font-weight:800}.side button.active{background:var(--cream)}.panel{display:none}.panel.active{display:block}.head{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-bottom:15px}.head h1{font-size:28px;margin:0 0 4px}.head p{margin:0;color:var(--muted);font-size:13px}.btn{border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:11px;font-weight:800;cursor:pointer}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.danger{color:var(--danger)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#fff;border:1px solid var(--line);padding:15px;border-radius:16px}.stat strong{font-size:26px;display:block}.stat span{font-size:12px;color:var(--muted)}.product-card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}.product-card img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#eee}.product-body{padding:12px}.product-body h3{margin:5px 0;font-size:16px}.product-body p{margin:0 0 9px;color:var(--muted);font-size:12px}.row{display:flex;gap:7px;flex-wrap:wrap}.row .btn{flex:1}.badge{display:inline-flex;font-size:10px;padding:4px 8px;border-radius:999px;background:var(--cream);font-weight:900}.form{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}.field{margin-bottom:13px}.field label{display:block;font-size:12px;font-weight:900;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #d9ddd7;border-radius:11px;padding:11px;background:#fff}.field textarea{min-height:100px;resize:vertical}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.thumb{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid var(--line);background:#eee}.notice{padding:12px;border-radius:13px;background:#fff8e8;border:1px solid #ead7a5;color:#684f1a;font-size:12px;margin-bottom:12px}.login{min-height:100vh;display:grid;place-items:center;padding:20px}.login-box{width:min(420px,100%);background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px}.login-box h1{margin:0 0 6px}.login-box p{color:var(--muted);font-size:13px}.hidden{display:none!important}.checkline{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;margin:8px 0}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);background:#152018;color:#fff;padding:10px 14px;border-radius:10px;font-size:12px;opacity:0;pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}@media(max-width:760px){.layout{grid-template-columns:1fr}.side{position:static;display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.side button{font-size:11px;text-align:center}.cards{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.head{align-items:start;display:block}.head .btn{margin-top:9px;width:100%}}@media(max-width:470px){.cards{grid-template-columns:1fr}.top-actions a:first-child{display:none}}
+
+.v7-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.v7-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.v7-card strong{display:block;font-size:26px;line-height:1.05;margin-top:6px}.v7-card span{display:block;color:var(--muted);font-size:12px}.v7-actions{display:flex;flex-wrap:wrap;gap:8px}.v7-mini{font-size:11px;color:var(--muted)}.sortbar{display:flex;gap:8px;align-items:center;margin-top:10px}.sortbar select{width:auto;min-width:170px}.product-meta{display:flex;gap:7px;flex-wrap:wrap;margin:5px 0 10px}.meta-chip{font-size:10px;border:1px solid var(--line);padding:4px 7px;border-radius:999px;background:#faf9f6}.status-live{color:var(--green);font-weight:800}.status-off{color:var(--danger);font-weight:800}@media(max-width:760px){.v7-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v7-card strong{font-size:22px}}@media(max-width:430px){.v7-grid{grid-template-columns:1fr 1fr}.sortbar{align-items:stretch;flex-direction:column}.sortbar select{width:100%}}
+
+.seo-panel{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.seo-box{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}.seo-box h2{margin:0 0 8px;font-size:20px}.seo-help{color:var(--muted);font-size:12px}.keyword-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.keyword-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--cream);border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800}.keyword-chip button{border:0;background:transparent;cursor:pointer;font-weight:900;color:var(--danger);padding:0}.serp-preview{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfbf8}.serp-title{color:#1a0dab;font-size:18px;line-height:1.25;margin-bottom:4px}.serp-url{color:#188038;font-size:12px;margin-bottom:5px;word-break:break-all}.serp-desc{color:#4d5156;font-size:13px;line-height:1.45}.seo-warning{border-left:4px solid #9b651f;background:#fffaf0;padding:12px;border-radius:10px;color:#6d541f;font-size:12px}.seo-good{border-left:4px solid var(--green);background:#f2f8f3;padding:12px;border-radius:10px;color:#31533e;font-size:12px}@media(max-width:780px){.seo-panel{grid-template-columns:1fr}}
+.login{background:radial-gradient(circle at 50% 0%,#e9f1eb 0%,#f4f5f2 48%,#eef0ec 100%)}.login-box{box-shadow:0 20px 55px rgba(33,74,54,.12);backdrop-filter:blur(3px)}.mark{background:linear-gradient(145deg,#285b43,#173a29);box-shadow:0 7px 18px rgba(33,74,54,.22)}.side,.form,.seo-box,.v7-card,.stat,.product-card{box-shadow:0 8px 24px rgba(31,46,37,.045)}.btn.primary{box-shadow:0 7px 16px rgba(33,74,54,.16)}@media(max-width:760px){.top{box-shadow:0 4px 16px rgba(31,46,37,.06)}.side{box-shadow:none}}
+</style><script src="ersya-supabase-config.js"></script>
+<script src="supabase-lite.js"></script>
+<meta name="application-version" content="V24.1.3-ANTI-BASE64"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"></head><body>
+<div class="login" id="login">
+<form class="login-box" onsubmit="login(event)">
+<div class="brand"><div class="mark">E</div><div>ERSYA MEBEL</div></div>
+<h1>Panel Admin</h1>
+<p>Kelola katalog, foto, SEO, dan pengaturan ERSYA MEBEL dari HP.
+ Kamu bisa memasang panel ini sebagai aplikasi.</p>
+<div class="field"><label>Email akun</label><input autocapitalize="none" autocomplete="username" id="u" placeholder="email@kamu.com"/></div>
+<div class="field">
+<label>Password</label>
+<div style="position:relative">
+<input autocomplete="current-password" id="pw" style="padding-right:82px" type="password"/>
+<button id="togglePw" onclick="togglePassword()" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--green);font-weight:800;font-size:12px;cursor:pointer;padding:9px" type="button">Tampilkan</button>
+</div>
+</div>
+<button class="btn primary" style="width:100%">Masuk</button><button class="btn" id="installBtn" type="button" style="width:100%;margin-top:8px;display:none">📲 Pasang Aplikasi di HP</button>
+<div class="notice" style="margin-top:13px;margin-bottom:0">Login aman menggunakan akun Supabase. Hak akses Admin/Kasir mengikuti role akun.</div>
+</form>
+</div>
+<div class="hidden" id="app">
+<div class="top"><div class="shell topbar">
+<div class="brand"><div class="mark">E</div><div>ERSYA MEBEL<small style="display:block;color:#687168;font-size:9px;letter-spacing:.1em">PANEL ADMIN</small></div></div>
+<div class="top-actions"><span class="badge" id="roleBadge" style="align-self:center"></span><a class="primary" href="index.html">Lihat Website</a><button onclick="logout()">Keluar</button></div>
+</div></div>
+<div class="shell"><div id="syncNotice" class="notice hidden" style="margin:10px 0 0"><b id="syncNoticeTitle">Status online</b><div id="syncNoticeText" style="margin-top:4px"></div></div></div><div class="shell layout">
+<aside class="side">
+<button class="active" data-panel="dashboard" onclick="switchPanel('dashboard')">Ringkasan</button>
+<button data-panel="products" onclick="switchPanel('products')">Produk</button>
+<button data-panel="autopilot" onclick="switchPanel('autopilot')">Auto Pilot</button>
+<button data-panel="add" onclick="goAdd()">Tambah</button>
+<button data-panel="settings" onclick="switchPanel('settings')">Pengaturan</button>
+<button data-panel="seo" onclick="switchPanel('seo')">SEO</button>
+<button data-panel="users" onclick="switchPanel('users')">Pengguna</button>
+<button data-panel="tools" onclick="switchPanel('tools')">Backup</button>
+<button data-panel="go-live" onclick="switchPanel('go-live')">Siap Online</button>
+</aside>
+<main>
+<section class="panel active" id="panel-dashboard">
+<div class="head"><div><h1>Ringkasan</h1><p>Gambaran cepat katalog ERSYA MEBEL yang tersimpan online.</p></div><div class="v7-actions"><button class="btn primary" onclick="goAdd()">+ Tambah Produk</button><button class="btn" type="button" onclick="ersyaCheckConnection()">Cek Koneksi</button></div></div>
+<div class="v7-grid">
+<div class="v7-card"><span>Total produk</span><strong id="dashTotal">0</strong><span>Semua data katalog</span></div>
+<div class="v7-card"><span>Produk tampil</span><strong id="dashPublished">0</strong><span>Terlihat pengunjung</span></div>
+<div class="v7-card"><span>Disembunyikan</span><strong id="dashHidden">0</strong><span>Belum dipublikasikan</span></div>
+<div class="v7-card"><span>Update terbaru</span><strong id="dashRecent" style="font-size:17px">—</strong><span id="dashRecentName">Belum ada</span></div>
+</div>
+<div class="form" style="margin-top:14px">
+<h3 style="margin-top:0">Checklist sebelum website online</h3>
+<div class="product-meta">
+<span class="meta-chip">✓ Katalog tanpa harga publik</span>
+<span class="meta-chip">✓ WhatsApp 0858-0313-3261</span>
+<span class="meta-chip">✓ Role Admin &amp; Kasir</span>
+<span class="meta-chip">✓ Field SEO produk</span>
+<span class="meta-chip">✓ Backup JSON</span>
+</div>
+<div class="notice" id="dashboardStatus" style="margin-bottom:0"><b>Status saat ini: MEMERIKSA…</b> Sistem akan memastikan database dan penyimpanan foto dapat diakses sebelum data dianggap online.</div>
+</div>
+</section>
+<section class="panel" id="panel-products">
+<div class="head"><div><h1>Katalog Produk</h1><p>Kelola produk yang tampil di website.</p></div><button class="btn primary" id="addTop" onclick="goAdd()">+ Tambah Produk</button></div>
+<div class="cards" style="margin-bottom:14px"><div class="stat"><strong id="total">0</strong><span>Total produk</span></div><div class="stat"><strong id="published">0</strong><span>Tampil di website</span></div><div class="stat"><strong id="hiddenCount">0</strong><span>Disembunyikan</span></div></div>
+<div class="form" style="margin-bottom:14px;padding:12px"><div class="field" style="margin:0"><label>Cari produk</label><input id="search" oninput="render()" placeholder="Ketik nama atau kategori..."/></div></div>
+<div class="sortbar"><span class="v7-mini">Urutkan:</span><select id="sortSelect" onchange="render()"><option value="updated">Terakhir diubah</option><option value="name">Nama A–Z</option><option value="status">Status tampil</option></select></div>
+<div class="cards" id="adminProducts"></div>
+</section>
+<section class="panel" id="panel-autopilot">
+<div class="head"><div><h1>Auto Pilot</h1><p>Antrean foto massal, jadwal mingguan, dan SEO otomatis.</p></div><button class="btn" type="button" onclick="loadAutoPilotSettings(true)">Muat Pengaturan</button></div>
+<div class="notice"><b>Berjalan di server:</b> setelah foto berhasil diunggah ke Cloudinary dan produk masuk antrean Supabase, publikasi mengikuti jadwal walaupun HP kamu mati. Cron Supabase harus sudah aktif. Pilihan hari dan jam diterapkan saat membuat antrean; jadwal yang sudah disimpan tidak berubah kalau pengaturan nanti diedit.</div>
+<div class="form" style="margin-bottom:14px">
+<h3 style="margin-top:0">1. Pengaturan publikasi</h3>
+<label class="checkline"><input id="apEnabled" type="checkbox"/> Aktifkan Auto Pilot (publikasi jadwal di server)</label>
+<div class="grid2">
+<div class="field"><label for="apStartDate">Mulai tanggal</label><input id="apStartDate" type="date"/></div>
+<div class="field"><label for="apTime">Jam publikasi</label><input id="apTime" type="time" value="09:00"/></div>
+</div>
+<div class="field"><label>Hari publikasi</label>
+<label class="checkline"><input id="apEveryDay" type="checkbox" onchange="setAutoPilotEveryDay(this.checked)"/> Setiap hari</label>
+<div class="grid2" id="apDays">
+<label class="checkline"><input type="checkbox" data-ap-day="1" checked/> Senin</label>
+<label class="checkline"><input type="checkbox" data-ap-day="2" checked/> Selasa</label>
+<label class="checkline"><input type="checkbox" data-ap-day="3" checked/> Rabu</label>
+<label class="checkline"><input type="checkbox" data-ap-day="4" checked/> Kamis</label>
+<label class="checkline"><input type="checkbox" data-ap-day="5" checked/> Jumat</label>
+<label class="checkline"><input type="checkbox" data-ap-day="6"/> Sabtu</label>
+<label class="checkline"><input type="checkbox" data-ap-day="7"/> Minggu</label>
+</div></div>
+<div class="grid2">
+<div class="field"><label for="apPerSlot">Produk pada satu jam publikasi</label><select id="apPerSlot"><option value="1">1 produk</option><option value="2">2 produk</option><option value="3">3 produk</option><option value="5">5 produk</option></select></div>
+<div class="field"><label>Zona waktu perangkat</label><input id="apTimezone" readonly value="Asia/Jakarta"/></div>
+</div>
+<div class="row"><button class="btn primary" type="button" onclick="saveAutoPilotSettings()">Simpan Pengaturan</button><span id="apSettingsStatus" class="v7-mini" style="align-self:center">Pengaturan belum diperiksa.</span></div>
+</div>
+<div class="form" style="margin-bottom:14px">
+<h3 style="margin-top:0">2. Masukkan banyak foto ke antrean</h3>
+<div class="field"><label for="apPhotos">Pilih foto produk (bisa banyak sekaligus)</label><input id="apPhotos" type="file" accept="image/*" multiple/><div class="v7-mini" style="margin-top:6px">Pilih hingga 100 foto sekaligus. Foto dikompres dan diunggah satu per satu agar penggunaan memori tetap rendah. Nama berkas menjadi nama awal produk; kamu bisa mengeditnya di bawah.</div></div>
+<div class="grid2">
+<div class="field"><label for="apCategory">Kategori untuk batch ini</label><select id="apCategory"><option>Kursi Cafe</option><option>Meja Cafe</option><option>Kursi Teras</option><option>Kursi Bar</option><option>Set Cafe</option><option>Custom</option></select></div>
+<div class="field"><label for="apMaterial">Material untuk batch ini</label><select id="apMaterial"><option>Besi &amp; Kayu</option><option>Besi</option><option>Kayu</option><option>Custom</option></select></div>
+</div>
+<div class="field"><label for="apDescriptionExtra">Catatan deskripsi tambahan (opsional)</label><textarea id="apDescriptionExtra" rows="2" placeholder="Contoh: tersedia ukuran custom dan pilihan warna."></textarea></div>
+<div id="apFileCount" class="v7-mini" style="margin:8px 0">Belum ada foto dipilih.</div>
+<div id="apFileList" class="cards" style="grid-template-columns:1fr;gap:9px"></div>
+<div class="notice" style="margin-top:12px;margin-bottom:12px"><b>SEO otomatis:</b> setiap produk akan dibuatkan slug unik, judul SEO, deskripsi SEO, kata kunci, dan teks alternatif foto berdasarkan nama produk, kategori, material, serta lokasi bisnis. Hasilnya disimpan bersama data produk. SEO tidak menjamin Google langsung mengindeks produk.</div>
+<div class="row"><button id="apQueueBtn" class="btn primary" type="button" onclick="enqueueAutoPilotPhotos()">Unggah Foto &amp; Masukkan ke Antrean</button><button class="btn" type="button" onclick="clearAutoPilotFiles()">Kosongkan Pilihan</button></div>
+<div id="apUploadStatus" class="v7-mini" role="status" aria-live="polite" style="margin-top:10px"></div>
+</div>
+<div class="form">
+<div class="head"><div><h3 style="margin:0">3. Antrean publikasi</h3><p>Produk tersembunyi yang akan ditampilkan otomatis sesuai jadwal.</p></div><button class="btn" type="button" onclick="renderAutoPilotQueue()">Perbarui</button></div>
+<div id="apQueueList"><div class="notice">Masuk sebagai Admin online untuk melihat antrean.</div></div>
+</div>
+</section>
+<section class="panel" id="panel-add">
+<div class="head"><div><h1 id="formTitle">Tambah Produk</h1><p>Upload foto langsung dari galeri HP.</p></div></div>
+<div class="notice">Harga sengaja tidak ada di form. Harga akan dikomunikasikan lewat WhatsApp.</div>
+<div class="form">
+<div class="field"><label>Nama produk</label><input id="pname" placeholder="Contoh: Kursi Cafe Besi Kayu"/></div>
+<div class="grid2"><div class="field"><label>Kategori</label><select id="pcategory"><option>Kursi Cafe</option><option>Meja Cafe</option><option>Kursi Teras</option><option>Kursi Bar</option><option>Set Cafe</option><option>Custom</option></select></div><div class="field"><label>Material</label><select id="pmaterial"><option>Besi &amp; Kayu</option><option>Besi</option><option>Kayu</option><option>Custom</option></select></div></div>
+<div class="field"><label>Deskripsi singkat</label><textarea id="pdesc" placeholder="Jelaskan model atau penggunaan produk"></textarea></div>
+<div class="grid2"><div class="field"><label>Slug URL (SEO)</label><input id="pslug" oninput="slugTouched=true" placeholder="kursi-cafe-besi-kayu"/></div><div class="field"><label>Judul SEO</label><input id="pseoTitle" maxlength="60" placeholder="Kursi Cafe Besi Kayu | ERSYA MEBEL"/></div></div>
+<div class="field"><label>Deskripsi SEO</label><textarea id="pseoDesc" maxlength="160" placeholder="Deskripsi singkat untuk mesin pencari." style="min-height:78px"></textarea></div>
+<div class="field"><label>Foto produk</label><input accept="image/*" id="photoInput" onchange="handleImage(this.files[0])" type="file"/><div style="font-size:11px;color:var(--muted);margin-top:6px">Foto diperkecil otomatis lalu disimpan online ke Cloudinary. Foto baru tidak disimpan sebagai Base64 di penyimpanan browser; koneksi online harus siap.</div></div>
+<img alt="Preview foto produk" class="thumb hidden" id="preview"/><input id="imageData" type="hidden"/>
+<div class="field"><label for="pscheduleAt">Jadwalkan publikasi otomatis (opsional)</label><input id="pscheduleAt" type="datetime-local"/><div style="font-size:12px;color:var(--muted);margin-top:6px">Pilih tanggal dan jam mendatang agar produk tetap tersembunyi sampai waktunya. Kosongkan untuk memakai pilihan publikasi di bawah. Waktu mengikuti zona waktu perangkat. Memerlukan Auto Pilot aktif di Supabase.</div></div>
+<label class="checkline"><input checked="" id="ppublished" type="checkbox"/> Tampilkan produk sekarang (jika jadwal kosong)</label>
+<div class="row" style="margin-top:14px"><button class="btn" onclick="switchPanel('products')" type="button">Batal</button><button class="btn primary" onclick="saveProduct()" type="button">Simpan Produk</button></div>
+</div>
+</section>
+<section class="panel" id="panel-users"><div class="head"><div><h1>Pengguna & Role</h1><p>Admin dapat mengatur akses Admin dan Kasir.</p></div></div><div class="notice">Akun dibuat melalui Supabase Authentication. Setelah pengguna mendaftar, atur rolenya di sini. Kasir hanya membaca katalog.</div><div id="usersList"><div class="notice">Masuk dengan akun online untuk memuat pengguna.</div></div></section>
+<section class="panel" id="panel-go-live">
+<div class="head"><div><h1>Siap Online</h1><p>Status sistem online ERSYA MEBEL.</p></div></div>
+<div class="form">
+<h3 style="margin-top:0">Tahapan yang akan kita selesaikan</h3>
+<div class="product-meta"><span class="meta-chip">1. Database online</span><span class="meta-chip">2. Penyimpanan foto</span><span class="meta-chip">3. Login server-side</span><span class="meta-chip">4. Sinkronisasi katalog</span><span class="meta-chip">5. Deploy Netlify</span><span class="meta-chip">6. SEO &amp; Search Console</span></div>
+<div class="notice"><b>Status:</b> Database, login, katalog, SEO, dan sinkronisasi foto menggunakan layanan online. Gunakan akun Supabase yang sudah memiliki role Admin untuk mengelola data.</div>
+<div class="row"><button class="btn primary" onclick="ersyaSyncNow()">☁️ Sinkronkan Data Sekarang</button><button class="btn" onclick="switchPanel('tools')">Buka Backup</button><button class="btn" onclick="switchPanel('settings')">Pengaturan Bisnis</button></div>
+</div>
+</section>
+<section class="panel" id="panel-settings">
+<div class="head"><div><h1>Pengaturan</h1><p>Ringkasan panel online.</p><div class="panel-card" style="margin-top:14px"><h2 style="margin:0 0 8px">Profil bisnis &amp; SEO</h2><p class="muted" style="margin-top:0">Pengaturan ini menjadi dasar website dan disinkronkan ke database online.</p>
+<div class="form-grid">
+<label>Nama bisnis<input id="setBrand" value="ERSYA MEBEL"/></label>
+<label>Nomor WhatsApp<input id="setWa" inputmode="tel" value="0858-0313-3261"/></label>
+<label class="full">Judul utama website<input id="setTitle" value="ERSYA MEBEL | Furniture Besi &amp; Kayu untuk Cafe, Resto &amp; Rumah"/></label>
+<label class="full">Deskripsi SEO<textarea id="setDesc" rows="3">Furniture besi dan kayu untuk cafe, resto, teras, rumah, dan kebutuhan custom dari ERSYA MEBEL.</textarea></label>
+<label class="full"><input id="setMaintenance" style="width:auto;margin-right:8px" type="checkbox"/> Tampilkan mode pemeliharaan di website</label>
+</div>
+<div class="row" style="margin-top:12px"><button class="btn primary" onclick="saveSettings()">Simpan Pengaturan</button><button class="btn" onclick="loadSettings()">Muat Ulang</button></div>
+<div class="muted" id="settingsSaved" style="margin-top:8px"></div>
+</div></div></div>
+<div class="form">
+<h3 style="margin-top:0">Role pengguna</h3>
+<div class="grid2">
+<div class="stat"><span>ADMIN</span><strong style="font-size:18px">Akses penuh</strong><span>Tambah, edit, hapus, publish, backup.</span></div>
+<div class="stat"><span>KASIR</span><strong style="font-size:18px">Akses katalog</strong><span>Melihat katalog dan status produk.</span></div>
+</div>
+<div class="notice" style="margin-top:13px;margin-bottom:0">Akun dan hak akses dikelola melalui Supabase Authentication dan tabel role ERSYA MEBEL.</div>
+</div>
+</section>
+
+<section class="panel" id="panel-seo">
+<div class="notice" style="margin-bottom:14px"><b>Database online:</b> Supabase dipakai untuk database dan Cloudinary untuk foto produk. Koneksi sudah disiapkan untuk mode online.</div>
+<div class="head"><div><h1>SEO Website</h1><p>Kelola dasar SEO tanpa mengedit kode website.</p></div></div>
+<div class="seo-panel">
+  <div>
+    <div class="seo-box">
+      <h2>Informasi utama</h2>
+      <p class="seo-help">Gunakan kata yang benar-benar relevan dengan produk dan layanan ERSYA MEBEL.</p>
+      <div class="field"><label>Meta Title</label><input id="seoTitle" maxlength="60" placeholder="ERSYA MEBEL | Furniture Besi & Kayu Jepara"></div>
+      <div class="field"><label>Meta Description</label><textarea id="seoDesc" maxlength="160" placeholder="Furniture besi dan kayu untuk cafe, resto, rumah, dan kebutuhan custom."></textarea></div>
+      <div class="grid2">
+        <div class="field"><label>URL Canonical</label><input id="seoCanonical" placeholder="https://domainkamu.com/"></div>
+        <div class="field"><label>Kota utama</label><input id="seoCity" placeholder="Jepara"></div>
+      </div>
+      <div class="field"><label>Area layanan</label><input id="seoAreas" placeholder="Jepara, Kudus, Pati, Demak, Semarang"></div>
+      <div class="field"><label>Link Google Maps</label><input id="seoMapsUrl" value="https://maps.app.goo.gl/KuBJ56REHXnx7G6b6" placeholder="https://maps.app.goo.gl/..."></div>
+    </div>
+    <div class="seo-box" style="margin-top:14px">
+      <h2>Kata kunci yang kamu kelola</h2>
+      <p class="seo-help">Tambahkan satu per satu. Sistem menyimpannya sebagai data target SEO. Kata kunci tidak dipaksa muncul berulang-ulang di halaman.</p>
+      <div class="field"><label>Kata kunci baru</label><div style="display:flex;gap:8px"><input id="newKeyword" placeholder="contoh: meja cafe besi Jepara"><button class="btn primary" type="button" onclick="addKeyword()">+ Tambah</button></div></div>
+      <div class="keyword-list" id="keywordList"></div>
+    </div>
+    <div class="seo-box" style="margin-top:14px">
+      <h2>Structured data</h2>
+      <div class="seo-good">Website akan memakai data bisnis, lokasi, Website, dan produk untuk membentuk schema/structured data yang lebih konsisten.</div>
+      <div class="field" style="margin-top:12px"><label>Jenis bisnis</label><input id="seoBusinessType" value="FurnitureStore" placeholder="FurnitureStore"></div>
+      <label class="checkline"><input id="seoIndex" type="checkbox" checked> Izinkan halaman diindeks mesin pencari</label>
+      <div class="row" style="margin-top:14px"><button class="btn primary" type="button" onclick="saveSeoSettings()">Simpan Pengaturan SEO</button><button class="btn" type="button" onclick="loadSeoSettings()">Muat Ulang</button></div>
+      <div class="muted" id="seoSaved" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div>
+    <div class="seo-box">
+      <h2>Pratinjau Google</h2>
+      <div class="serp-preview">
+        <div class="serp-title" id="serpTitle">ERSYA MEBEL | Furniture Besi & Kayu Jepara</div>
+        <div class="serp-url" id="serpUrl">https://domainkamu.com/</div>
+        <div class="serp-desc" id="serpDesc">Furniture besi dan kayu untuk cafe, resto, rumah, dan kebutuhan custom.</div>
+      </div>
+      <div class="seo-warning" style="margin-top:12px"><b>Catatan penting:</b> Google tidak menggunakan meta keywords sebagai faktor ranking utama. Kata kunci di panel ini menjadi daftar target SEO yang kamu kelola. Sistem tidak menjejalkan kata kunci berulang-ulang ke halaman; penggunaan kata kunci tetap mengikuti konteks konten yang relevan.</div>
+    </div>
+    <div class="seo-box" style="margin-top:14px">
+      <h2>Status fondasi</h2>
+      <div class="product-meta">
+        <span class="meta-chip">✓ Meta title</span><span class="meta-chip">✓ Meta description</span><span class="meta-chip">✓ Slug produk</span><span class="meta-chip">✓ SEO produk</span><span class="meta-chip">✓ Maps</span><span class="meta-chip">✓ Schema</span>
+      </div>
+      <p class="seo-help" style="margin-top:12px">Pengaturan SEO disimpan ke database online agar perubahan dari HP menjadi satu sumber data untuk website.</p>
+    </div>
+  </div>
+</div>
+</section>
+<section class="panel" id="panel-tools">
+<div class="head"><div><h1>Backup</h1><p>Simpan salinan katalog dari browser ini.</p></div></div>
+<div class="form">
+<h3 style="margin-top:0">Backup katalog</h3><p style="color:var(--muted);font-size:13px">Export data produk dari browser ini.</p><button class="btn primary" onclick="exportData()">Export JSON</button>
+<div class="field" style="margin-top:14px"><label>Import backup JSON</label><input accept="application/json,.json" id="importInput" onchange="importData(this.files[0])" type="file"/></div>
+<hr style="border:0;border-top:1px solid var(--line);margin:20px 0"/><h3>Pulihkan data demo</h3><button class="btn danger" onclick="restore()">Pulihkan</button>
+<hr style="border:0;border-top:1px solid var(--line);margin:20px 0"/><div class="notice"><b>Catatan data:</b> login, katalog online, unggah foto Cloudinary, halaman SEO produk, sitemap dinamis, dan antrean Auto Pilot disiapkan melalui layanan online. Export/import backup dan tombol “Pulihkan data demo” bekerja pada data lokal browser ini; keduanya tidak mengganti data Supabase secara otomatis. Jangan gunakan pemulihan demo sebagai pengganti backup database.</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const KEY="ersya_products_v4";
+const DEFAULT=[{"id":"p1","name":"Meja Cafe Besi Kayu","category":"Meja Cafe","material":"Besi & Kayu","img":"assets/kursi-cafe.jpg","desc":"Meja dengan rangka besi dan top kayu untuk area cafe dan resto.","published":true},{"id":"p2","name":"Set Meja & Kursi Cafe","category":"Set Cafe","material":"Besi & Kayu","img":"assets/kursi-resto.jpg","desc":"Kombinasi meja dan kursi untuk ruang makan dan area usaha.","published":true},{"id":"p3","name":"Kursi Bar Besi","category":"Kursi Bar","material":"Besi & Kayu","img":"assets/produk-5.jpg","desc":"Kursi bar dengan rangka besi dan dudukan kayu.","published":true},{"id":"p4","name":"Kursi Teras Rangka Besi","category":"Kursi Teras","material":"Besi","img":"assets/produk-4.jpg","desc":"Kursi untuk area teras dan outdoor dengan tampilan ringan.","published":true},{"id":"p5","name":"Kursi Besi Kayu Minimalis","category":"Kursi Cafe","material":"Besi & Kayu","img":"assets/kursi-besi.jpg","desc":"Kursi rangka besi dengan elemen kayu untuk cafe dan resto.","published":true},{"id":"p6","name":"Kursi Tinggi Besi Kayu","category":"Kursi Bar","material":"Besi & Kayu","img":"assets/produk-7.jpg","desc":"Model kursi tinggi dengan kombinasi rangka besi dan kayu.","published":true},{"id":"p7","name":"Meja Cafe Kayu","category":"Meja Cafe","material":"Kayu","img":"assets/produk-6.jpg","desc":"Pilihan meja kayu untuk kebutuhan cafe dan ruang usaha.","published":true},{"id":"p8","name":"Furniture Custom","category":"Custom","material":"Custom","img":"assets/produk-5.jpg","desc":"Model dapat dibicarakan menyesuaikan kebutuhan dan konsep.","published":true}];
+const ASSET={"assets/kursi-cafe.jpg": "assets/kursi-cafe.jpg", "assets/kursi-resto.jpg": "assets/kursi-resto.jpg", "assets/kursi-besi.jpg": "assets/kursi-besi.jpg", "assets/produk-4.jpg": "assets/produk-4.jpg", "assets/produk-5.jpg": "assets/produk-5.jpg", "assets/produk-6.jpg": "assets/produk-6.jpg", "assets/produk-7.jpg": "assets/produk-7.jpg"};
+let legacyImagePayloadsFound=false,photoStoragePrepared=false,pendingPhotoBlob=null,pendingPhotoPreviewUrl="";
+let products=load(),editingId=null,role=sessionStorage.getItem("ersya_role_demo")||"",slugTouched=false;
+function isDataImagePayload(value){return typeof value==="string"&&/^data:image\/[^,]+,/i.test(value.trim())}
+function inlineImageValue(product){const find=value=>{if(isDataImagePayload(value))return value;if(value&&typeof value==="object"){for(const child of Object.values(value)){const found=find(child);if(found)return found}}return ""};return find(product)}
+function hasInlineImagePayload(product){return !!inlineImageValue(product)}
+function clearInlineImagePayloads(value){if(!value||typeof value!=="object")return value;for(const [key,child] of Object.entries(value)){if(isDataImagePayload(child))value[key]="";else if(child&&typeof child==="object")clearInlineImagePayloads(child)}return value}
+function stripTransientImagePayload(product){const sanitize=value=>{if(isDataImagePayload(value))return undefined;if(typeof Blob!=="undefined"&&value instanceof Blob)return undefined;if(typeof value==="string"&&/^blob:/i.test(value))return undefined;if(Array.isArray(value))return value.map(sanitize).filter(item=>item!==undefined);if(value&&typeof value==="object"){const out={};for(const [key,child] of Object.entries(value)){if(["imageData","imageBlob","previewUrl","localPhotoPending"].includes(key))continue;const safe=sanitize(child);if(safe!==undefined)out[key]=safe}return out}return value};return sanitize(product)||{}}
+function persistableProducts(list){return (Array.isArray(list)?list:[]).map(stripTransientImagePayload)}
+function cloneProducts(list){return (Array.isArray(list)?list:[]).map(product=>({...product}))}
+function openPhotoBlobDb(){return new Promise((resolve,reject)=>{if(!window.indexedDB){reject(new Error("Browser tidak mendukung IndexedDB untuk migrasi foto lama."));return}const request=window.indexedDB.open("ersya-photo-blobs-v1",1);request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains("photos"))db.createObjectStore("photos",{keyPath:"id"})};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error||new Error("Database foto lokal tidak dapat dibuka."))})}
+async function putPhotoBlob(id,blob){const db=await openPhotoBlobDb();return await new Promise((resolve,reject)=>{const tx=db.transaction("photos","readwrite");tx.objectStore("photos").put({id:String(id),blob,updatedAt:new Date().toISOString()});tx.oncomplete=()=>{db.close();resolve(true)};tx.onerror=()=>{const error=tx.error||new Error("Foto tidak dapat disimpan dalam penyimpanan Blob.");db.close();reject(error)};tx.onabort=()=>{const error=tx.error||new Error("Penyimpanan Blob dibatalkan.");db.close();reject(error)}})}
+async function getPhotoBlobs(){const db=await openPhotoBlobDb();return await new Promise((resolve,reject)=>{const tx=db.transaction("photos","readonly"),request=tx.objectStore("photos").getAll();request.onsuccess=()=>{const rows=request.result||[];db.close();resolve(rows)};request.onerror=()=>{const error=request.error||new Error("Foto pending tidak dapat dibaca.");db.close();reject(error)}})}
+async function deletePhotoBlob(id){let db=null;try{db=await openPhotoBlobDb();await new Promise((resolve,reject)=>{const tx=db.transaction("photos","readwrite");tx.objectStore("photos").delete(String(id));tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error("Foto lokal tidak dapat dibersihkan."));tx.onabort=()=>reject(tx.error||new Error("Penghapusan foto lokal dibatalkan."))})}catch(e){console.warn("Tidak dapat membersihkan Blob foto lokal",e)}finally{try{db?.close()}catch(_){}}}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!Array.isArray(x))return JSON.parse(JSON.stringify(DEFAULT));legacyImagePayloadsFound=x.some(hasInlineImagePayload);return x}catch(e){return JSON.parse(JSON.stringify(DEFAULT))}}
+function save(){if(!photoStoragePrepared&&(products||[]).some(hasInlineImagePayload)){toast("Penyimpanan ditahan sementara: foto lama sedang dipindahkan ke penyimpanan Blob agar Base64 tidak tertinggal di browser.");return false}try{localStorage.setItem(KEY,JSON.stringify(persistableProducts(products)));return true}catch(e){toast("Penyimpanan browser penuh. Gunakan backup atau kurangi jumlah produk.");return false}}
+function src(p){const image=String(p?.img||"").trim(),preview=String(p?.previewUrl||"").trim();return (/^blob:/i.test(preview)?preview:"")||ASSET[image]||(/^https?:\/\//i.test(image)?image:"")}
+function esc(s){return String(s||"").replace(/[&<>\'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]))}
+async function preparePhotoStorage(){
+  try{
+    const legacy=(products||[]).filter(hasInlineImagePayload);
+    if(!window.indexedDB&&!legacy.length){photoStoragePrepared=true;return {ok:true,migrated:0}}
+    for(const product of legacy){
+      const data=inlineImageValue(product);if(!data)throw new Error("Foto Base64 lama tidak dikenali: "+(product.name||product.id));
+      const response=await fetch(data);const blob=await response.blob();if(!blob||!blob.size)throw new Error("Konversi foto lama gagal: "+(product.name||product.id));
+      await putPhotoBlob(product.id,blob);product.imageBlob=blob;product.previewUrl=URL.createObjectURL(blob);clearInlineImagePayloads(product);product.localPhotoPending=true;product.syncState="pending";
+    }
+    const saved=await getPhotoBlobs();const byId=new Map((products||[]).map(product=>[String(product.id),product]));
+    for(const stored of saved){const product=byId.get(String(stored.id));if(!product){await deletePhotoBlob(stored.id);continue}if(!product.imageBlob&&product.syncState==="synced"&&product.img&&/^https?:\/\//i.test(String(product.img))){await deletePhotoBlob(stored.id);continue}if(!product.imageBlob&&stored.blob){product.imageBlob=stored.blob;product.previewUrl=URL.createObjectURL(stored.blob);product.localPhotoPending=true;product.syncState="pending"}}
+    localStorage.setItem(KEY,JSON.stringify(persistableProducts(products)));photoStoragePrepared=true;legacyImagePayloadsFound=false;return {ok:true,migrated:legacy.length};
+  }catch(e){photoStoragePrepared=false;console.error("Migrasi foto lama ke penyimpanan Blob gagal",e);return {ok:false,error:e?.message||String(e)}}
+}
+window.ersyaPreparePhotoStorage=preparePhotoStorage;
+function toast(s){const t=document.querySelector("#toast");t.textContent=s;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1900)}
+function isAdmin(){return String(role||"").toLowerCase()==="admin"}
+window.isAdmin=isAdmin;
+function applyRole(){document.querySelector("#roleBadge").textContent=role.toUpperCase();const admin=isAdmin();document.querySelectorAll('[data-panel="add"],[data-panel="autopilot"],[data-panel="settings"],[data-panel="tools"],[data-panel="seo"]').forEach(b=>b.style.display=admin?"":"none");document.querySelector("#addTop").style.display=admin?"":"none"}
+function switchPanel(id){const panel=document.querySelector("#panel-"+id);if(!panel){if(typeof toast==="function")toast("Menu belum tersedia");return false}if((id!=="products"&&id!=="dashboard")&&!isAdmin()){if(typeof toast==="function")toast("Akun kasir hanya dapat melihat katalog");return false}document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));panel.classList.add("active");document.querySelectorAll(".side button").forEach(x=>x.classList.toggle("active",x.dataset.panel===id));return true}
+window.switchPanel=switchPanel
+function goAdd(){if(!isAdmin()){toast("Akses hanya untuk admin");return}editingId=null;slugTouched=false;resetForm();switchPanel("add");document.querySelector("#pname").focus()}
+window.goAdd=goAdd;
+function makeSlug(s){return String(s||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,70)}
+function autoSeo(){const n=document.querySelector("#pname").value.trim();if(!slugTouched)document.querySelector("#pslug").value=makeSlug(n);if(!document.querySelector("#pseoTitle").value.trim()&&n)document.querySelector("#pseoTitle").value=(n+" | ERSYA MEBEL").slice(0,60);const d=document.querySelector("#pdesc").value.trim();if(!document.querySelector("#pseoDesc").value.trim()&&d)document.querySelector("#pseoDesc").value=d.slice(0,160)}
+function localDateTimeValue(value){if(!value)return "";const d=new Date(value);if(Number.isNaN(d.getTime()))return "";return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
+function productStatusLabel(p){if(!p.published&&p.scheduledAt){const ts=Date.parse(p.scheduledAt);if(Number.isFinite(ts)){if(ts>Date.now())return "Terjadwal: "+new Date(ts).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"});return "Jadwal lewat—cek Auto Pilot"}}return p.published?"Tampil":"Disembunyikan"}
+function render(){const q=(document.querySelector("#search")?.value||"").trim().toLowerCase();const sort=document.querySelector("#sortSelect")?.value||"updated";let filtered=products.filter(p=>(p.name+" "+p.category+" "+p.material+" "+(p.slug||"")).toLowerCase().includes(q));if(sort==="name")filtered.sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"id"));else if(sort==="status")filtered.sort((a,b)=>Number(b.published!==false)-Number(a.published!==false));else filtered.sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));document.querySelector("#total").textContent=products.length;document.querySelector("#published").textContent=products.filter(p=>p.published).length;document.querySelector("#hiddenCount").textContent=products.filter(p=>!p.published).length;document.querySelector("#dashTotal").textContent=products.length;document.querySelector("#dashPublished").textContent=products.filter(p=>p.published).length;document.querySelector("#dashHidden").textContent=products.filter(p=>!p.published).length;const recent=[...products].sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")))[0];document.querySelector("#dashRecent").textContent=recent?.updatedAt?new Date(recent.updatedAt).toLocaleDateString("id-ID",{day:"2-digit",month:"short"}):"—";document.querySelector("#dashRecentName").textContent=recent?.name||"Belum ada";const box=document.querySelector("#adminProducts");box.innerHTML=filtered.length?filtered.map(p=>{const idArg=esc(JSON.stringify(String(p.id)));const obj=esc(JSON.stringify(stripTransientImagePayload(p)));return `<article class="product-card"><img src="${src(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><div class="product-body"><span class="badge">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p>${esc(p.desc||"")}</p><div class="product-meta"><span class="meta-chip">${esc(p.material||"")}</span><span class="meta-chip ${p.published?"status-live":"status-off"}">${esc(productStatusLabel(p))}</span>${p.slug?`<span class="meta-chip">/${esc(p.slug)}</span>`:""}</div><small style="display:block;color:var(--muted);margin-bottom:9px">${p.updatedAt?"Diperbarui "+new Date(p.updatedAt).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):""}</small><div class="row">${isAdmin()?`<button class="btn" onclick="editProduct(${idArg})">Edit</button><button class="btn" onclick="duplicateProduct(${idArg})">Duplikat</button>`:`<button class="btn" onclick='orderFromAdmin(${obj})'>WhatsApp</button>`}${isAdmin()?`<button class="btn ${p.published?"danger":"primary"}" onclick="togglePublish(${idArg})">${p.published?"Sembunyikan":"Tampilkan"}</button>`:""}</div>${isAdmin()?`<div class="row" style="margin-top:7px"><button class="btn" onclick='copyProductLink(${obj})'>Salin pesan WA</button><button class="btn danger" onclick="removeProduct(${idArg})">Hapus</button></div>`:""}</div></article>`}).join(""):`<div class="empty">Produk tidak ditemukan.</div>`}function clearPendingPhoto(){pendingPhotoBlob=null;if(pendingPhotoPreviewUrl){URL.revokeObjectURL(pendingPhotoPreviewUrl);pendingPhotoPreviewUrl=""}}
+function resetForm(){clearPendingPhoto();editingId=null;slugTouched=false;document.querySelector("#formTitle").textContent="Tambah Produk";document.querySelector("#pname").value="";document.querySelector("#pdesc").value="";document.querySelector("#pslug").value="";document.querySelector("#pseoTitle").value="";document.querySelector("#pseoDesc").value="";document.querySelector("#pcategory").value="Kursi Cafe";document.querySelector("#pmaterial").value="Besi & Kayu";document.querySelector("#ppublished").checked=true;document.querySelector("#pscheduleAt").value="";document.querySelector("#imageData").value="";document.querySelector("#preview").src="";document.querySelector("#preview").classList.add("hidden");const fi=document.querySelector("#photoInput");if(fi)fi.value=""}
+function editProduct(id){if(!isAdmin()){toast("Akun kasir tidak dapat mengedit");return}const p=products.find(x=>x.id===id);if(!p)return;clearPendingPhoto();if(p.imageBlob instanceof Blob){p.previewUrl=URL.createObjectURL(p.imageBlob)}editingId=id;slugTouched=!!p.slug;document.querySelector("#formTitle").textContent="Edit Produk";document.querySelector("#pname").value=p.name||"";document.querySelector("#pdesc").value=p.desc||"";document.querySelector("#pslug").value=p.slug||makeSlug(p.name);document.querySelector("#pseoTitle").value=p.seoTitle||((p.name||"")+" | ERSYA MEBEL").slice(0,60);document.querySelector("#pseoDesc").value=p.seoDesc||(p.desc||"").slice(0,160);document.querySelector("#pcategory").value=p.category||"Kursi Cafe";document.querySelector("#pmaterial").value=p.material||"Besi & Kayu";document.querySelector("#ppublished").checked=p.published!==false;document.querySelector("#pscheduleAt").value=localDateTimeValue(p.scheduledAt);document.querySelector("#imageData").value="";if(p.imageData||p.previewUrl||p.img){document.querySelector("#preview").src=src(p);document.querySelector("#preview").classList.remove("hidden")}else{document.querySelector("#preview").src="";document.querySelector("#preview").classList.add("hidden")}switchPanel("add")}
+async function duplicateProduct(id){if(!isAdmin())return;const p=products.find(x=>x.id===id);if(!p)return;if(p.imageBlob instanceof Blob){toast("Duplikasi ditunda: selesaikan sinkronisasi foto ke Cloudinary terlebih dahulu.");return}if(isDataImagePayload(p.imageData)&&!onlinePhotoStorageReady()){toast("Duplikasi dibatalkan: foto lama masih tertanam di data browser. Sambungkan layanan online dahulu.");return}const copy={...p};if(copy.imageBlob instanceof Blob)copy.previewUrl=URL.createObjectURL(copy.imageBlob);copy.id="p_"+Date.now();copy.name=(p.name||"Produk")+" (Salinan)";copy.slug=makeSlug(copy.name)+"-"+String(Date.now()).slice(-5);copy.seoTitle=((copy.name||"Produk")+" | ERSYA MEBEL").slice(0,60);copy.seoDesc=(copy.desc||"").slice(0,160);copy.updatedAt=new Date().toISOString();copy.scheduledAt=null;copy.syncState="pending";products.unshift(copy);if(!save()){products=products.filter(x=>x.id!==copy.id);toast("Produk tidak dapat disimpan di HP");return}render();try{if(window.ERSYA_DB?.enabled&&window.ersyaSyncProductById)await window.ersyaSyncProductById(copy.id);toast("Produk diduplikat dan tersimpan online ✓")}catch(e){products=products.filter(x=>x.id!==copy.id);save();render();toast("Duplikat gagal tersimpan online: "+(e?.message||"periksa koneksi"))}}
+function copyProductLink(p){if(!p)return;const msg=`Halo ERSYA MEBEL, saya tertarik dengan produk *${p.name}*. Mohon informasi harga, ukuran, bahan, dan ketersediaannya.`;if(navigator.clipboard?.writeText){navigator.clipboard.writeText(msg).then(()=>toast("Pesan WhatsApp disalin"),()=>toast(msg))}else{prompt("Salin pesan WhatsApp ini:",msg)}}
+function adminWaNumber(n){let d=String(n||"0858-0313-3261").replace(/\D/g,"");if(d.startsWith("0"))d="62"+d.slice(1);if(!d.startsWith("62"))d="62"+d;return d}function orderFromAdmin(p){if(!p)return;const msg=`Halo ERSYA MEBEL, saya tertarik dengan produk *${p.name}*. Mohon informasi harga, ukuran, bahan, dan ketersediaannya.`;const n=adminWaNumber(getSettings().wa);location.href=`https://wa.me/${n}?text=${encodeURIComponent(msg)}`}
+async function removeProduct(id){if(!isAdmin())return;if(!confirm("Hapus produk ini?"))return;const snapshot=cloneProducts(products);products=products.filter(x=>String(x.id)!==String(id));if(!save()){products=snapshot;render();return}render();try{if(window.ERSYA_DB?.enabled&&window.ersyaDeleteRemoteProduct)await window.ersyaDeleteRemoteProduct(id);toast("Produk dihapus online ✓")}catch(e){products=snapshot;save();render();toast("Penghapusan online gagal: "+(e?.message||"periksa koneksi"))}}
+async function togglePublish(id){if(!isAdmin())return;const p=products.find(x=>x.id===id);if(!p)return;const oldPublished=p.published!==false, oldUpdated=p.updatedAt, oldSync=p.syncState,oldScheduledAt=p.scheduledAt;p.published=!oldPublished;p.scheduledAt=null;p.updatedAt=new Date().toISOString();p.syncState="pending";if(!save()){p.published=oldPublished;p.scheduledAt=oldScheduledAt;p.updatedAt=oldUpdated;p.syncState=oldSync;render();return}render();try{if(window.ERSYA_DB?.enabled&&window.ersyaSyncProductById)await window.ersyaSyncProductById(p.id);toast(p.published?"Produk ditampilkan online ✓ (jadwal dibatalkan)":"Produk disembunyikan online ✓ (jadwal dibatalkan)")}catch(e){p.published=oldPublished;p.scheduledAt=oldScheduledAt;p.updatedAt=oldUpdated;p.syncState=oldSync;save();render();toast("Gagal mengubah status online: "+(e?.message||"periksa koneksi"))}}
+async function compressImageToBlob(file){return await new Promise((resolve,reject)=>{let objectUrl="";const img=new Image();const cleanup=()=>{if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=""}};img.onerror=()=>{cleanup();reject(new Error("Format foto tidak dapat diproses"))};img.onload=()=>{try{const max=1400,scale=Math.min(1,max/Math.max(img.width,img.height)),canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));const ctx=canvas.getContext("2d");if(!ctx)throw new Error("Browser tidak mendukung pemrosesan foto");ctx.drawImage(img,0,0,canvas.width,canvas.height);canvas.toBlob(blob=>{cleanup();if(!blob||!blob.size){reject(new Error("Kompresi foto gagal"));return}resolve(blob)},"image/jpeg",.78)}catch(e){cleanup();reject(e)}};try{objectUrl=URL.createObjectURL(file);img.src=objectUrl}catch(e){cleanup();reject(e)}})}
+function compress(file,cb){compressImageToBlob(file).then(cb).catch(e=>toast(e?.message||"Foto tidak dapat diproses"))}
+function onlinePhotoStorageReady(){return !!(window.ERSYA_DB?.enabled&&typeof window.ersyaSyncProductById==="function"&&window.ERSYA_CLOUDINARY?.cloudName&&window.ERSYA_CLOUDINARY?.uploadPreset)}
+function handleImage(file){if(!file)return;if(!onlinePhotoStorageReady()){toast("Unggah foto dibatalkan: koneksi Supabase/Cloudinary belum siap. Periksa status online lalu coba lagi.");const fi=document.querySelector("#photoInput");if(fi)fi.value="";return}compress(file,blob=>{clearPendingPhoto();pendingPhotoBlob=blob;pendingPhotoPreviewUrl=URL.createObjectURL(blob);const im=document.querySelector("#preview");im.src=pendingPhotoPreviewUrl;im.classList.remove("hidden");toast("Foto siap diunggah ke Cloudinary sebagai Blob; belum disimpan ke katalog lokal")})}
+async function saveProduct(){
+  if(!isAdmin()){toast("Akses hanya untuk admin");return}
+  autoSeo();
+  const name=document.querySelector("#pname").value.trim();
+  if(!name){toast("Nama produk wajib diisi");return}
+  const old=editingId?products.find(x=>x.id===editingId):null;
+  const selectedBlob=pendingPhotoBlob;
+  const keepLegacyData=!selectedBlob&&old?.imageData&&isDataImagePayload(old.imageData)?old.imageData:"";
+  if(!selectedBlob&&!old?.img&&!keepLegacyData&&!old?.imageBlob){toast("Foto produk wajib diisi untuk produk baru");return}
+  if((selectedBlob||keepLegacyData||old?.imageBlob)&&!onlinePhotoStorageReady()){toast("Foto belum disimpan karena koneksi Supabase/Cloudinary belum siap. Tidak ada foto baru yang akan disimpan di browser.");return}
+  const slug=(document.querySelector("#pslug").value.trim()||makeSlug(name)||( "produk-"+Date.now()));
+  const conflict=products.some(x=>String(x.id)!==String(editingId)&&String(x.slug||"").toLowerCase()===slug.toLowerCase());
+  if(conflict){toast("Slug sudah dipakai produk lain");document.querySelector("#pslug").focus();return}
+  const was=!!editingId;
+  const scheduleInput=document.querySelector("#pscheduleAt").value.trim();
+  let scheduledAt=null,shouldPublish=document.querySelector("#ppublished").checked;
+  if(scheduleInput){
+    const scheduleDate=new Date(scheduleInput);
+    if(Number.isNaN(scheduleDate.getTime())){toast("Tanggal dan jam publikasi tidak valid.");return}
+    if(scheduleDate.getTime()<=Date.now()){toast("Jadwal harus berada di masa mendatang. Untuk menampilkan sekarang, kosongkan jadwal.");return}
+    if(!(window.ERSYA_DB?.enabled&&typeof window.ersyaSyncProductById==='function')){toast("Jadwal otomatis memerlukan koneksi Supabase online. Jadwal tidak disimpan lokal.");return}
+    scheduledAt=scheduleDate.toISOString();shouldPublish=false;
+  }
+  const p={id:editingId||("p_"+Date.now()),name,category:document.querySelector("#pcategory").value,material:document.querySelector("#pmaterial").value,desc:document.querySelector("#pdesc").value.trim(),slug,seoTitle:document.querySelector("#pseoTitle").value.trim(),seoDesc:document.querySelector("#pseoDesc").value.trim(),published:shouldPublish,scheduledAt,img:old?.img||"",imageBlob:selectedBlob||old?.imageBlob||null,previewUrl:selectedBlob?pendingPhotoPreviewUrl:(old?.previewUrl||""),imageData:keepLegacyData,updatedAt:new Date().toISOString(),syncState:"pending"};
+  const snapshot=cloneProducts(products);
+  if(editingId){if(old)Object.assign(old,p)}else products.unshift(p);
+  if(window.ERSYA_DB?.enabled&&typeof window.ersyaSyncProductById==='function'){
+    render();toast("Menyimpan produk & foto online…");
+    let photoStaged=false,productCheckpointSaved=false;
+    try{
+      if(p.imageBlob instanceof Blob){
+        await putPhotoBlob(p.id,p.imageBlob);photoStaged=true;
+        if(!save())throw new Error("Data produk belum bisa dicatat di penyimpanan browser. Foto tidak diunggah; periksa ruang penyimpanan lalu coba lagi.");
+        productCheckpointSaved=true;
+      }
+      await window.ersyaSyncProductById(p.id);
+      resetForm();render();switchPanel("products");toast(was?"Produk diperbarui online ✓":"Produk ditambahkan online ✓");
+      return;
+    }catch(e){
+      if(photoStaged&&productCheckpointSaved){
+        p.syncState="pending";save();render();
+        toast("BELUM ONLINE: foto dan data produk dipertahankan di penyimpanan lokal untuk dicoba lagi. "+(e?.message||"sinkronisasi gagal"));
+      }else{
+        products=snapshot;save();
+        if(photoStaged){const priorPhoto=snapshot.find(item=>String(item.id)===String(p.id));if(priorPhoto?.imageBlob instanceof Blob)await putPhotoBlob(p.id,priorPhoto.imageBlob);else await deletePhotoBlob(p.id)}
+        render();toast("BELUM ONLINE: "+(e?.message||"sinkronisasi gagal"));
+      }
+      return;
+    }
+  }
+  if(!save()){products=snapshot;render();return}
+  resetForm();render();switchPanel("products");toast(was?"Produk diperbarui":"Produk ditambahkan");
+}
+function exportData(){if(!isAdmin())return;if((products||[]).some(p=>p?.imageBlob||hasInlineImagePayload(p))){toast("Backup ditunda: ada foto yang belum tersimpan sebagai URL online. Sinkronkan foto ke Cloudinary/Supabase terlebih dahulu.");return}const payload={version:11,exportedAt:new Date().toISOString(),products:persistableProducts(products)};const b=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="ersya-mebel-backup-v11.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importData(file){if(!isAdmin()||!file)return;if(!photoStoragePrepared&&(products||[]).some(hasInlineImagePayload)){toast("Impor ditunda: foto Base64 lama harus berhasil dimigrasikan lebih dahulu agar tidak hilang.");return}const r=new FileReader();r.onload=()=>{try{const raw=JSON.parse(r.result);const incoming=Array.isArray(raw)?raw:raw.products;if(!Array.isArray(incoming))throw new Error("invalid");const cleaned=incoming.filter(p=>p&&typeof p==="object"&&String(p.name||"").trim()).map((p,i)=>({...p,id:String(p.id||("p_"+Date.now()+"_"+i)),name:String(p.name).trim(),category:String(p.category||"Kursi Cafe"),material:String(p.material||"Besi & Kayu"),desc:String(p.desc||"") ,published:p.published!==false}));if(!cleaned.length)throw new Error("empty");if(cleaned.some(p=>hasInlineImagePayload(p))){toast("Impor dibatalkan: backup berisi foto Base64. Gunakan backup yang menyimpan URL foto online.");return;}if(!confirm("Import backup akan mengganti katalog lokal saat ini. Lanjutkan?"))return;const snapshot=cloneProducts(products);products=cleaned;if(!save()){products=snapshot;return}render();toast("Backup berhasil diimpor")}catch(e){toast("File backup tidak valid")}};r.readAsText(file)}
+function restore(){if(!isAdmin())return;if(!photoStoragePrepared&&(products||[]).some(hasInlineImagePayload)){toast("Pemulihan demo ditahan sampai foto lama selesai dimigrasikan ke penyimpanan Blob.");return}if(confirm("Pulihkan data demo? Data katalog lokal saat ini akan diganti.")){const snapshot=cloneProducts(products);products=JSON.parse(JSON.stringify(DEFAULT));if(!save()){products=snapshot;return}render();toast("Data demo dipulihkan")}}
+function togglePassword(){const input=document.querySelector("#pw"),btn=document.querySelector("#togglePw");input.type=input.type==="password"?"text":"password";btn.textContent=input.type==="password"?"Tampilkan":"Sembunyikan"}
+function login(e){e.preventDefault();toast("Koneksi login online sedang disiapkan")}
+async function logout(){
+  try{if(window.ERSYA_DB?.client?.auth?.signOut) await window.ERSYA_DB.client.auth.signOut();}catch(e){console.warn(e)}
+  sessionStorage.removeItem("ersya_admin_demo");sessionStorage.removeItem("ersya_role_demo");
+  location.reload();
+}
+window.logout=logout;
+document.querySelector("#pname")?.addEventListener("input",()=>{if(!slugTouched)document.querySelector("#pslug").value=makeSlug(document.querySelector("#pname").value);if(!document.querySelector("#pseoTitle").value.trim())document.querySelector("#pseoTitle").value=(document.querySelector("#pname").value.trim()+" | ERSYA MEBEL").slice(0,60)});
+document.querySelector("#pdesc")?.addEventListener("input",()=>{if(!document.querySelector("#pseoDesc").value.trim())document.querySelector("#pseoDesc").value=document.querySelector("#pdesc").value.trim().slice(0,160)});
+
+
+const SETTINGS_KEY="ersya_site_settings_v1";
+const DEFAULT_SETTINGS={brand:"ERSYA MEBEL",wa:"0858-0313-3261",title:"ERSYA MEBEL | Furniture Besi & Kayu untuk Cafe, Resto & Rumah",desc:"Furniture besi dan kayu untuk cafe, resto, teras, rumah, dan kebutuhan custom dari ERSYA MEBEL.",maintenance:false};
+function getSettings(){try{return {...DEFAULT_SETTINGS,...JSON.parse(localStorage.getItem(SETTINGS_KEY)||"{}")}}catch(e){return {...DEFAULT_SETTINGS}}}
+function loadSettings(){const x=getSettings();document.querySelector("#setBrand").value=x.brand;document.querySelector("#setWa").value=x.wa;document.querySelector("#setTitle").value=x.title;document.querySelector("#setDesc").value=x.desc;document.querySelector("#setMaintenance").checked=!!x.maintenance;document.querySelector("#settingsSaved").textContent="Pengaturan terakhir dimuat dari database online/perangkat ini."}
+async function saveSettings(){
+  if(!isAdmin())return;
+  const x={brand:document.querySelector("#setBrand").value.trim()||DEFAULT_SETTINGS.brand,wa:document.querySelector("#setWa").value.trim()||DEFAULT_SETTINGS.wa,title:document.querySelector("#setTitle").value.trim()||DEFAULT_SETTINGS.title,desc:document.querySelector("#setDesc").value.trim()||DEFAULT_SETTINGS.desc,maintenance:document.querySelector("#setMaintenance").checked};
+  localStorage.setItem(SETTINGS_KEY,JSON.stringify(x));
+  document.querySelector("#settingsSaved").textContent="Tersimpan pada "+new Date().toLocaleString("id-ID");
+  if(window.ERSYA_DB?.enabled&&window.ersyaSyncSiteSettings){
+    try{await window.ersyaSyncSiteSettings();toast("Pengaturan disimpan online ✓");}
+    catch(e){toast("Tersimpan di HP, belum online: "+(e?.message||e));}
+  }else toast("Pengaturan disimpan");
+}
+window.addEventListener("DOMContentLoaded",()=>{try{loadSettings()}catch(e){console.error(e)}});
+
+const SEO_KEY="ersya_seo_settings_v2";
+const DEFAULT_SEO={title:"ERSYA MEBEL | Furniture Besi & Kayu Jepara",desc:"Furniture besi dan kayu untuk cafe, resto, rumah, dan kebutuhan custom dari ERSYA MEBEL.",canonical:"",city:"Jepara",areas:"Jepara, Kudus, Pati, Demak, Semarang",mapsUrl:"https://maps.app.goo.gl/KuBJ56REHXnx7G6b6",businessType:"FurnitureStore",index:true,keywords:["furniture besi Jepara","furniture kayu Jepara","kursi cafe Jepara","meja cafe Jepara"]};
+function getSeoSettings(){try{return {...DEFAULT_SEO,...JSON.parse(localStorage.getItem(SEO_KEY)||"{}")} }catch(e){return {...DEFAULT_SEO}}}
+function renderKeywords(){const x=getSeoSettings();const box=document.querySelector("#keywordList");if(!box)return;box.innerHTML=(x.keywords||[]).map((k,i)=>`<span class="keyword-chip">${esc(k)} <button type="button" onclick="removeKeyword(${i})" aria-label="Hapus kata kunci">×</button></span>`).join("")||'<span class="seo-help">Belum ada kata kunci.</span>'}
+function addKeyword(){if(!isAdmin())return;const el=document.querySelector("#newKeyword"),k=el.value.trim();if(!k){toast("Isi kata kunci dulu");return}const x=getSeoSettings();x.keywords=x.keywords||[];if(x.keywords.some(v=>v.toLowerCase()===k.toLowerCase())){toast("Kata kunci sudah ada");return}x.keywords.push(k);localStorage.setItem(SEO_KEY,JSON.stringify(x));el.value="";renderKeywords();toast("Kata kunci ditambahkan")}
+function removeKeyword(i){if(!isAdmin())return;const x=getSeoSettings();x.keywords.splice(i,1);localStorage.setItem(SEO_KEY,JSON.stringify(x));renderKeywords();toast("Kata kunci dihapus")}
+function previewSeo(){const t=document.querySelector("#seoTitle")?.value.trim()||DEFAULT_SEO.title,d=document.querySelector("#seoDesc")?.value.trim()||DEFAULT_SEO.desc,c=document.querySelector("#seoCanonical")?.value.trim()||"https://domainkamu.com/";document.querySelector("#serpTitle").textContent=t;document.querySelector("#serpDesc").textContent=d;document.querySelector("#serpUrl").textContent=c}
+function loadSeoSettings(){const x=getSeoSettings();document.querySelector("#seoTitle").value=x.title;document.querySelector("#seoDesc").value=x.desc;document.querySelector("#seoCanonical").value=x.canonical;document.querySelector("#seoCity").value=x.city;document.querySelector("#seoAreas").value=x.areas;document.querySelector("#seoMapsUrl").value=x.mapsUrl;document.querySelector("#seoBusinessType").value=x.businessType;document.querySelector("#seoIndex").checked=x.index!==false;renderKeywords();previewSeo();document.querySelector("#seoSaved").textContent="Pengaturan SEO dimuat dari database online/perangkat ini."}
+async function saveSeoSettings(){
+  if(!isAdmin())return;
+  const x={title:document.querySelector("#seoTitle").value.trim()||DEFAULT_SEO.title,desc:document.querySelector("#seoDesc").value.trim()||DEFAULT_SEO.desc,canonical:document.querySelector("#seoCanonical").value.trim(),city:document.querySelector("#seoCity").value.trim()||DEFAULT_SEO.city,areas:document.querySelector("#seoAreas").value.trim(),mapsUrl:document.querySelector("#seoMapsUrl").value.trim()||DEFAULT_SEO.mapsUrl,businessType:document.querySelector("#seoBusinessType").value.trim()||DEFAULT_SEO.businessType,index:document.querySelector("#seoIndex").checked,keywords:getSeoSettings().keywords||[]};
+  localStorage.setItem(SEO_KEY,JSON.stringify(x));previewSeo();document.querySelector("#seoSaved").textContent="SEO tersimpan pada "+new Date().toLocaleString("id-ID");
+  if(window.ERSYA_DB?.enabled&&window.ersyaSyncSiteSettings){
+    try{
+      await window.ersyaSyncSiteSettings();
+      if(window.ersyaSyncKeywords)await window.ersyaSyncKeywords();
+      toast("Pengaturan SEO disimpan online ✓");
+    }catch(e){toast("SEO tersimpan di HP, belum online: "+(e?.message||e));}
+  }else toast("Pengaturan SEO disimpan");
+}
+document.querySelector("#seoTitle")?.addEventListener("input",previewSeo);document.querySelector("#seoDesc")?.addEventListener("input",previewSeo);document.querySelector("#seoCanonical")?.addEventListener("input",previewSeo);
+window.addEventListener("DOMContentLoaded",()=>{try{loadSeoSettings()}catch(e){console.error(e)}});
+
+</script>
+<script>
+/* ERSYA MEBEL — Auto Pilot batch queue V24.2 */
+let autoPilotFiles=[];
+let autoPilotBusy=false;
+const AP_DEFAULTS={id:1,enabled:false,weekdays:[1,2,3,4,5],publish_time:'09:00:00',products_per_slot:1,timezone:'Asia/Jakarta',auto_seo:true};
+function apNowDateValue(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function apTimezone(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Jakarta'}catch(_){return 'Asia/Jakarta'}}
+function setAutoPilotEveryDay(checked){document.querySelectorAll('[data-ap-day]').forEach(el=>{el.checked=!!checked});const b=document.querySelector('#apEveryDay');if(b)b.checked=!!checked}
+function updateAutoPilotEveryDay(){const days=[...document.querySelectorAll('[data-ap-day]')];const b=document.querySelector('#apEveryDay');if(b)b.checked=days.length===7&&days.every(x=>x.checked)}
+function apConfigFromForm(){const weekdays=[...document.querySelectorAll('[data-ap-day]:checked')].map(x=>Number(x.dataset.apDay));return {id:1,enabled:!!document.querySelector('#apEnabled')?.checked,weekdays,publish_time:(document.querySelector('#apTime')?.value||'09:00')+':00',products_per_slot:Number(document.querySelector('#apPerSlot')?.value||1),timezone:apTimezone(),auto_seo:true,updated_at:new Date().toISOString()}}
+function setApStatus(s,isError=false){const el=document.querySelector('#apSettingsStatus');if(el){el.textContent=s;el.style.color=isError?'#a52f2f':'#687168'}}
+async function apRequireAdmin(){if(!isAdmin())throw new Error('Fitur ini hanya untuk Admin.');if(!window.ERSYA_DB?.enabled||!window.ERSYA_DB?.client)throw new Error('Supabase belum terhubung.');if(!onlinePhotoStorageReady())throw new Error('Supabase/Cloudinary belum siap. Periksa koneksi terlebih dahulu.');}
+async function saveAutoPilotSettings(silent=false){
+  if(!isAdmin()){toast('Fitur ini hanya untuk Admin.');return false}
+  try{
+    const c=apConfigFromForm();
+    if(!c.weekdays.length)throw new Error('Pilih minimal satu hari publikasi.');
+    if(!/^\d{2}:\d{2}:00$/.test(c.publish_time))throw new Error('Jam publikasi tidak valid.');
+    if(!Number.isInteger(c.products_per_slot)||c.products_per_slot<1||c.products_per_slot>5)throw new Error('Jumlah produk per slot harus 1–5.');
+    await apRequireAdmin();
+    const r=await window.ERSYA_DB.client.from('autopilot_settings').upsert(c,{onConflict:'id'});
+    if(r.error)throw new Error(r.error.message||String(r.error));
+    document.querySelector('#apTimezone').value=c.timezone;
+    setApStatus(c.enabled?'Aktif — jadwal akan diproses server.':'Dijeda — produk terjadwal belum akan diterbitkan.');
+    if(!silent)toast('Pengaturan Auto Pilot disimpan online ✓');
+    return true;
+  }catch(e){setApStatus(e?.message||String(e),true);if(!silent)toast('Gagal menyimpan Auto Pilot: '+(e?.message||e));return false}
+}
+async function loadAutoPilotSettings(silent=false){
+  if(!isAdmin()){if(!silent)toast('Fitur ini hanya untuk Admin.');return false}
+  try{
+    if(!window.ERSYA_DB?.enabled||!window.ERSYA_DB?.client)throw new Error('Masuk online sebagai Admin untuk memuat pengaturan.');
+    const r=await window.ERSYA_DB.client.from('autopilot_settings').select('*').eq('id',1).maybeSingle();
+    if(r.error)throw new Error(r.error.message||String(r.error));
+    const c={...AP_DEFAULTS,...(r.data||{}),weekdays:Array.isArray(r.data?.weekdays)?r.data.weekdays.map(Number):AP_DEFAULTS.weekdays};
+    document.querySelector('#apEnabled').checked=!!c.enabled;
+    document.querySelector('#apTime').value=String(c.publish_time||'09:00:00').slice(0,5);
+    document.querySelector('#apPerSlot').value=String(c.products_per_slot||1);
+    document.querySelector('#apTimezone').value=apTimezone();
+    document.querySelectorAll('[data-ap-day]').forEach(el=>el.checked=c.weekdays.includes(Number(el.dataset.apDay)));
+    updateAutoPilotEveryDay();
+    const start=document.querySelector('#apStartDate');if(start&&!start.value)start.value=apNowDateValue();
+    setApStatus(r.data?(c.enabled?'Aktif — pengaturan dimuat dari Supabase.':'Dijeda — pengaturan dimuat dari Supabase.'):'Belum ada pengaturan tersimpan; simpan dahulu untuk membuat pengaturan awal.');
+    return true;
+  }catch(e){setApStatus(e?.message||String(e),true);if(!silent)toast('Tidak dapat memuat pengaturan: '+(e?.message||e));return false}
+}
+function apTitleFromFilename(file){return String(file?.name||'Produk').replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').replace(/\s+/g,' ').trim().split(' ').filter(Boolean).map(w=>w.length<=3&&/^[A-Z0-9]+$/.test(w)?w:(w.charAt(0).toUpperCase()+w.slice(1).toLowerCase())).join(' ')||'Produk Furniture'}
+function apBytes(n){if(n<1024)return n+' B';if(n<1024*1024)return (n/1024).toFixed(0)+' KB';return (n/(1024*1024)).toFixed(1)+' MB'}
+function apSlug(name){return makeSlug(name)||'produk-furniture'}
+function apSeoFor(name,category,material,description,slugOverride){
+  const cleanName=String(name||'Produk Furniture').trim()||'Produk Furniture';
+  const city=String((typeof getSeoSettings==='function'?getSeoSettings().city:'Jepara')||'Jepara').trim();
+  let slug=slugOverride||apSlug(cleanName),n=1;
+  while((products||[]).some(p=>String(p.slug||'').toLowerCase()===slug.toLowerCase())){n++;slug=(apSlug(cleanName)+'-'+n).slice(0,70);if(n>99)break}
+  const seoTitle=(cleanName.length>43?cleanName.slice(0,43).trim():cleanName)+' | ERSYA MEBEL';
+  const desc=String(description||'').trim()||`${cleanName} dari ERSYA MEBEL, furniture kategori ${category} berbahan ${material}. Hubungi kami untuk informasi ukuran, warna, dan pesanan custom.`;
+  const seoDesc=desc.length>157?desc.slice(0,157).trimEnd()+'…':desc;
+  const terms=[cleanName,category,material,`${category} ${city}`,`furniture ${city}`,`mebel ${city}`,'ERSYA MEBEL'];
+  const seen=new Set(),keywords=[];
+  for(const raw of terms){const k=String(raw||'').replace(/\s+/g,' ').trim();const key=k.toLowerCase();if(k&& !seen.has(key)){seen.add(key);keywords.push(k)}if(keywords.length>=8)break}
+  return {slug,seoTitle:seoTitle.slice(0,60),seoDesc:seoDesc.slice(0,160),seoKeywords:keywords,description:desc};
+}
+function apDescription(name,category,material,extra){const base=`${name} dari ERSYA MEBEL, pilihan ${category.toLowerCase()} berbahan ${material.toLowerCase()} untuk cafe, resto, rumah, atau ruang usaha.`;const follow=String(extra||'').trim();return (base+(follow?' '+follow:'' )+' Konsultasikan ukuran, warna, dan ketersediaan melalui WhatsApp.').replace(/\s+/g,' ').trim()}
+function apPreviewSeo(name,index,category,material){
+  const used=new Set((products||[]).map(p=>String(p.slug||'').toLowerCase()).filter(Boolean));
+  for(let i=0;i<index;i++){
+    const base=apSlug(autoPilotFiles[i]?.name||'produk-furniture');let prior=base,n=1;
+    while(used.has(prior.toLowerCase())){n++;prior=(base+'-'+n).slice(0,70)}
+    used.add(prior.toLowerCase());
+  }
+  const base=apSlug(name);let slug=base,n=1;
+  while(used.has(slug.toLowerCase())){n++;slug=(base+'-'+n).slice(0,70)}
+  return apSeoFor(name,category,material,'',slug);
+}
+function apRenderFiles(){
+  const list=document.querySelector('#apFileList'),counter=document.querySelector('#apFileCount');if(!list||!counter)return;
+  counter.textContent=autoPilotFiles.length?`${autoPilotFiles.length} foto dipilih · total ${apBytes(autoPilotFiles.reduce((s,x)=>s+x.file.size,0))}`:'Belum ada foto dipilih.';
+  list.innerHTML=autoPilotFiles.map((x,i)=>{const seo=apPreviewSeo(x.name,i,document.querySelector('#apCategory')?.value||'Kursi Cafe',document.querySelector('#apMaterial')?.value||'Besi & Kayu');return `<div class="form" data-ap-row="${i}" style="padding:12px;box-shadow:none"><div style="display:flex;gap:9px;justify-content:space-between;align-items:start"><div style="min-width:0"><b style="font-size:13px;overflow-wrap:anywhere">${esc(x.file.name)}</b><div class="v7-mini">${apBytes(x.file.size)}</div></div><button class="btn danger" type="button" data-ap-remove="${i}" style="padding:6px 9px;flex:0 0 auto">Hapus</button></div><div class="field" style="margin:10px 0 6px"><label for="apName${i}">Nama produk (boleh diedit)</label><input id="apName${i}" data-ap-name="${i}" value="${esc(x.name)}" maxlength="100"/></div><div data-ap-seo class="v7-mini" style="overflow-wrap:anywhere">Slug: ${esc(seo.slug)} · Judul SEO: ${esc(seo.seoTitle)}</div></div>`}).join('');
+}
+function clearAutoPilotFiles(){if(autoPilotBusy)return;autoPilotFiles=[];const input=document.querySelector('#apPhotos');if(input)input.value='';apRenderFiles();const st=document.querySelector('#apUploadStatus');if(st)st.textContent='Pilihan foto dikosongkan.'}
+function handleAutoPilotFileSelection(input){if(!isAdmin()){toast('Masuk sebagai Admin untuk menggunakan Auto Pilot.');input.value='';return}const files=[...Array.from(input.files||[])];if(files.length>100){toast('Maksimal 100 foto dalam satu batch.');input.value='';return}const invalid=files.find(f=>!String(f.type||'').startsWith('image/'));if(invalid){toast('Pilih file gambar saja.');input.value='';return}autoPilotFiles=files.map((file,i)=>({key:`${file.name}|${file.size}|${file.lastModified}|${i}`,file,name:apTitleFromFilename(file)}));apRenderFiles()}
+async function apCompressedBlob(file){return await compressImageToBlob(file)}
+function apGenerateSchedule(count,weekdays,timeValue,perSlot,startDateValue,afterTimestamp=null){
+  const days=new Set(weekdays.map(Number));if(!days.size)throw new Error('Pilih minimal satu hari publikasi.');
+  const m=/^(\d{2}):(\d{2})$/.exec(timeValue||'');if(!m||Number(m[1])>23||Number(m[2])>59)throw new Error('Jam publikasi tidak valid.');
+  const start=startDateValue?new Date(startDateValue+'T00:00:00'):new Date(apNowDateValue()+'T00:00:00');if(Number.isNaN(start.getTime()))throw new Error('Tanggal mulai tidak valid.');start.setHours(0,0,0,0);
+  const now=Date.now(),afterMs=afterTimestamp?Date.parse(afterTimestamp):0,threshold=Math.max(now+30000,Number.isFinite(afterMs)?afterMs:0),out=[];const step=Math.max(1,Math.min(5,Number(perSlot)||1));
+  for(let offset=0;offset<1100&&out.length<count;offset++){
+    const day=new Date(start);day.setDate(start.getDate()+offset);const weekday=day.getDay()||7;if(!days.has(weekday))continue;
+    const slot=new Date(day);slot.setHours(Number(m[1]),Number(m[2]),0,0);if(slot.getTime()<=threshold)continue;
+    const stamp=slot.toISOString();for(let n=0;n<step&&out.length<count;n++)out.push(stamp);
+  }
+  if(out.length!==count)throw new Error('Jadwal tidak dapat dibuat. Periksa hari, tanggal mulai, dan jumlah foto.');return out;
+}
+async function enqueueAutoPilotPhotos(){
+  if(autoPilotBusy)return;if(!isAdmin()){toast('Fitur ini hanya untuk Admin.');return}
+  if(!autoPilotFiles.length){toast('Pilih foto produk terlebih dahulu.');return}
+  const btn=document.querySelector('#apQueueBtn'),status=document.querySelector('#apUploadStatus');
+  autoPilotBusy=true;if(btn){btn.disabled=true;btn.textContent='Sedang memproses…'}
+  let success=0;const failures=[];
+  try{
+    await apRequireAdmin();
+    const cfg=apConfigFromForm();if(!cfg.enabled)throw new Error('Aktifkan Auto Pilot terlebih dahulu. Jadwal server masih dijeda.');
+    if(!cfg.weekdays.length)throw new Error('Pilih minimal satu hari publikasi.');
+    if(!(await saveAutoPilotSettings(true)))throw new Error('Pengaturan Auto Pilot tidak berhasil disimpan. Periksa SQL, tabel, dan hak akses Supabase.');
+    const existingQueue=(products||[]).filter(p=>p&&p.published===false&&p.scheduledAt).sort((a,b)=>String(a.scheduledAt).localeCompare(String(b.scheduledAt)));
+    const nowMs=Date.now(),hasStaleQueue=existingQueue.some(p=>Number.isFinite(Date.parse(p.scheduledAt))&&Date.parse(p.scheduledAt)<=nowMs-120000),hasFutureQueue=existingQueue.some(p=>Number.isFinite(Date.parse(p.scheduledAt))&&Date.parse(p.scheduledAt)>nowMs);
+    let schedule;
+    if(hasStaleQueue&&!hasFutureQueue){const combined=apGenerateSchedule(existingQueue.length+autoPilotFiles.length,cfg.weekdays,document.querySelector('#apTime').value,Number(document.querySelector('#apPerSlot').value),document.querySelector('#apStartDate').value);schedule=combined.slice(existingQueue.length)}
+    else {const lastScheduled=existingQueue.reduce((max,p)=>{const v=Date.parse(p.scheduledAt);return Number.isFinite(v)?Math.max(max,v):max},0);schedule=apGenerateSchedule(autoPilotFiles.length,cfg.weekdays,document.querySelector('#apTime').value,Number(document.querySelector('#apPerSlot').value),document.querySelector('#apStartDate').value,lastScheduled?new Date(lastScheduled).toISOString():null)}
+    const startLength=autoPilotFiles.length;
+    for(let i=0;i<startLength;i++){
+      const item=autoPilotFiles[0];if(!item)break;
+      if(status)status.textContent=`Memproses ${i+1} dari ${startLength}: ${item.file.name}`;
+      try{
+        const name=String(item.name||'').trim();if(!name)throw new Error('Nama produk tidak boleh kosong.');
+        const category=document.querySelector('#apCategory').value,material=document.querySelector('#apMaterial').value;
+        const desc=apDescription(name,category,material,document.querySelector('#apDescriptionExtra').value);
+        const id='ap_'+Date.now().toString(36)+'_'+String(i+1).padStart(3,'0')+'_'+Math.random().toString(36).slice(2,7);
+        const seo=apSeoFor(name,category,material,desc);
+        const duplicate=products.some(p=>String(p.slug||'').toLowerCase()===seo.slug.toLowerCase());if(duplicate){seo.slug=(seo.slug+'-'+String(id).slice(-5)).slice(0,70)}
+        const imageBlob=await apCompressedBlob(item.file);
+        const previewUrl=URL.createObjectURL(imageBlob);
+        const p={id,name,category,material,desc:seo.description,slug:seo.slug,seoTitle:seo.seoTitle,seoDesc:seo.seoDesc,seoKeywords:seo.seoKeywords,published:false,scheduledAt:schedule[i],img:'',imageBlob,previewUrl,imageData:'',updatedAt:new Date().toISOString(),syncState:'pending',autoSeo:true};
+        products.unshift(p);let photoStaged=false,productCheckpointSaved=false;
+        try{
+          await putPhotoBlob(p.id,imageBlob);photoStaged=true;
+          if(!save())throw new Error('Data produk belum dapat dicatat di penyimpanan browser. Foto belum diunggah; periksa ruang penyimpanan lalu coba lagi.');
+          productCheckpointSaved=true;
+          await window.ersyaSyncProductById(p.id);
+        }catch(e){
+          if(photoStaged&&productCheckpointSaved){p.syncState='pending';save();autoPilotFiles.shift();apRenderFiles();render();}
+          else{products=products.filter(v=>String(v.id)!==String(p.id));if(p.previewUrl)URL.revokeObjectURL(p.previewUrl);if(photoStaged)await deletePhotoBlob(p.id);save();}
+          throw e;
+        }
+        autoPilotFiles.shift();success++;apRenderFiles();renderAutoPilotQueue();render();
+      }catch(e){failures.push({file:item.file.name,message:e?.message||String(e)});break}
+    }
+    if(status){status.textContent=`Selesai: ${success} foto masuk antrean.${failures.length?' Foto berikutnya gagal: '+failures[0].file+' — '+failures[0].message:''} ${autoPilotFiles.length?'Sisa '+autoPilotFiles.length+' foto tetap dipilih untuk dicoba lagi.':''}`}
+    if(success)toast(`${success} foto berhasil masuk antrean online ✓`);
+    if(failures.length)toast('Batch berhenti pada foto gagal. Foto yang sudah berhasil tetap tersimpan.');
+    renderAutoPilotQueue();render();
+  }catch(e){if(status)status.textContent=e?.message||String(e);toast('Auto Pilot: '+(e?.message||e))}
+  finally{autoPilotBusy=false;if(btn){btn.disabled=false;btn.textContent='Unggah Foto & Masukkan ke Antrean'}}
+}
+function renderAutoPilotQueue(){
+  const box=document.querySelector('#apQueueList');if(!box)return;
+  if(!isAdmin()){box.innerHTML='<div class="notice">Login sebagai Admin untuk melihat antrean.</div>';return}
+  const queued=(products||[]).filter(p=>p&&p.published===false&&p.scheduledAt).sort((a,b)=>String(a.scheduledAt).localeCompare(String(b.scheduledAt)));
+  if(!queued.length){box.innerHTML='<div class="notice">Belum ada produk terjadwal. Pilih foto pada bagian atas untuk membuat antrean.</div>';return}
+  box.innerHTML=queued.map(p=>`<div class="form" style="padding:12px;margin-bottom:8px;box-shadow:none"><div style="display:flex;gap:10px;align-items:start"><img src="${esc(src(p)||'')}" alt="${esc(p.name)}" loading="lazy" style="width:76px;height:64px;object-fit:cover;border-radius:10px;background:#eee;flex:0 0 auto"><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="v7-mini">${esc(p.category||'')} · ${esc(p.material||'')}</div><div class="v7-mini">${esc(new Date(p.scheduledAt).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}))}</div><div class="v7-mini">SEO: ${p.seoTitle?esc(p.seoTitle):'belum ada judul SEO'}</div></div><button class="btn danger" type="button" onclick="cancelAutoPilotSchedule('${String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')}')">Batalkan</button></div></div>`).join('');
+}
+async function cancelAutoPilotSchedule(id){if(!isAdmin())return;const p=products.find(x=>String(x.id)===String(id));if(!p||!p.scheduledAt)return;if(!confirm(`Batalkan jadwal publikasi untuk “${p.name}”? Produk tetap tersimpan tetapi tetap tersembunyi.`))return;const old=p.scheduledAt;p.scheduledAt=null;p.published=false;p.updatedAt=new Date().toISOString();try{await window.ersyaSyncProductById(id);renderAutoPilotQueue();render();toast('Jadwal dibatalkan; produk tetap tersembunyi.')}catch(e){p.scheduledAt=old;renderAutoPilotQueue();toast('Gagal membatalkan jadwal: '+(e?.message||e))}}
+document.querySelector('#apPhotos')?.addEventListener('change',function(){handleAutoPilotFileSelection(this)});
+document.querySelector('#apFileList')?.addEventListener('input',e=>{if(!e.target.matches('[data-ap-name]'))return;const i=Number(e.target.dataset.apName);if(!autoPilotFiles[i])return;autoPilotFiles[i].name=e.target.value;const row=e.target.closest('[data-ap-row]'),seo=apPreviewSeo(e.target.value,i,document.querySelector('#apCategory').value,document.querySelector('#apMaterial').value),out=row?.querySelector('[data-ap-seo]');if(out)out.textContent=`Slug: ${seo.slug} · Judul SEO: ${seo.seoTitle}`});
+document.querySelector('#apFileList')?.addEventListener('click',e=>{const b=e.target.closest('[data-ap-remove]');if(!b||autoPilotBusy)return;autoPilotFiles.splice(Number(b.dataset.apRemove),1);apRenderFiles()});
+document.querySelector('#apCategory')?.addEventListener('change',apRenderFiles);document.querySelector('#apMaterial')?.addEventListener('change',apRenderFiles);
+document.querySelectorAll('[data-ap-day]').forEach(el=>el.addEventListener('change',updateAutoPilotEveryDay));
+document.querySelector('[data-panel="autopilot"]')?.addEventListener('click',()=>{document.querySelector('#apTimezone').value=apTimezone();if(!document.querySelector('#apStartDate').value)document.querySelector('#apStartDate').value=apNowDateValue();loadAutoPilotSettings(true);renderAutoPilotQueue()});
+const __ersyaRenderBeforeAutoPilot=render;render=function(){const result=__ersyaRenderBeforeAutoPilot.apply(this,arguments);try{renderAutoPilotQueue()}catch(_){}return result};
+window.addEventListener('DOMContentLoaded',()=>{const tz=document.querySelector('#apTimezone');if(tz)tz.value=apTimezone();const start=document.querySelector('#apStartDate');if(start)start.value=apNowDateValue();apRenderFiles()});
+</script>
+
+<script>
+/* ERSYA MEBEL — Supabase online bridge V24 */
+(function(){
+  const cfg=window.ERSYA_SUPABASE||{};
+  const hasCfg=!!(cfg.url&&cfg.anonKey&&window.supabase);
+  window.ERSYA_DB={enabled:hasCfg,client:hasCfg?window.supabase.createClient(cfg.url,cfg.anonKey):null};
+  if(!hasCfg){
+    window.addEventListener('load',()=>{
+      const n=document.querySelector('.top-actions');if(n&&!document.querySelector('#ersyaSyncBadge')){const b=document.createElement('span');b.id='ersyaSyncBadge';b.className='badge';b.textContent='MODE LOKAL';n.insertBefore(b,n.firstChild)}
+      setStatus('MODE LOKAL','Konfigurasi Supabase belum lengkap.',false);
+    });
+    return;
+  }
+  const db=window.ERSYA_DB.client;
+  let lastError='';
+  function syncBadge(text,ok){
+    let b=document.querySelector('#ersyaSyncBadge');
+    if(!b){b=document.createElement('span');b.id='ersyaSyncBadge';b.className='badge';b.style.alignSelf='center';const host=document.querySelector('.top-actions');if(host)host.insertBefore(b,host.firstChild)}
+    b.textContent=text;b.style.color=ok?'#214a36':'#a52f2f';b.style.borderColor=ok?'#cfe0d4':'#e6baba';b.style.background=ok?'#eff7f1':'#fff1f1';
+    b.title=lastError||'Status sinkronisasi';
+    b.onclick=()=>{if(lastError)toast(lastError)};
+  }
+  function setStatus(title,text,ok=true){
+    const n=document.querySelector('#syncNotice'),t=document.querySelector('#syncNoticeTitle'),d=document.querySelector('#syncNoticeText'),ds=document.querySelector('#dashboardStatus');
+    if(t)t.textContent=title;if(d)d.textContent=text||'';
+    if(n){n.classList.remove('hidden');n.style.background=ok?'#eff7f1':'#fff1f1';n.style.borderColor=ok?'#cfe0d4':'#e6baba';n.style.color=ok?'#214a36':'#7a2d2d'}
+    if(ds)ds.innerHTML='<b>Status saat ini: '+String(title).replace(/</g,'&lt;')+'</b> '+String(text||'').replace(/</g,'&lt;');
+  }
+  function fail(stage,e){const msg=stage+': '+(e?.message||String(e)||'Kesalahan tidak diketahui');lastError=msg;console.error(msg,e);syncBadge('SYNC GAGAL',false);setStatus('SYNC GAGAL',msg,false);return new Error(msg)}
+  async function uploadImage(p){
+    const data=String(p?.imageData||'');
+    const blobSource=(typeof Blob!=="undefined"&&p?.imageBlob instanceof Blob)?p.imageBlob:null;
+    if(!blobSource&&!isDataImagePayload(data))return p?.img||null;
+    const cloud=window.ERSYA_CLOUDINARY||{};
+    if(!cloud.cloudName||!cloud.uploadPreset)throw new Error('Konfigurasi Cloudinary belum diisi');
+    let blob=blobSource;
+    if(!blob){try{blob=await (await fetch(data)).blob()}catch(e){throw new Error('Foto lama tidak dapat dikonversi ke Blob: '+(e?.message||e))}}
+    if(!blob||!blob.size)throw new Error('Foto kosong; upload dibatalkan.');
+    const fd=new FormData();fd.append('file',blob,'ersya-'+String(p.id).replace(/[^a-zA-Z0-9_-]/g,'_')+'.jpg');fd.append('upload_preset',cloud.uploadPreset);fd.append('folder','ersya-mebel/products');fd.append('public_id','product-'+String(p.id).replace(/[^a-zA-Z0-9_-]/g,'_')+'-'+Date.now());
+    let res;try{res=await fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(cloud.cloudName)+'/image/upload',{method:'POST',body:fd});}catch(e){throw new Error('Cloudinary tidak dapat dihubungi: '+(e?.message||e))}
+    let out=null;try{out=await res.json()}catch(_){out=null}
+    if(!res.ok||!out?.secure_url)throw new Error('Cloudinary: '+(out?.error?.message||('HTTP '+res.status)));
+    return out.secure_url;
+  }
+  function productRow(p,imagePath){return {id:String(p.id),name:String(p.name||''),category:String(p.category||'Kursi Cafe'),material:String(p.material||''),description:String(p.desc||''),slug:String(p.slug||''),seo_title:String(p.seoTitle||''),seo_description:String(p.seoDesc||''),seo_keywords:Array.isArray(p.seoKeywords)?p.seoKeywords:[],image_path:imagePath||null,published:p.published!==false,scheduled_at:p.scheduledAt||null,updated_at:new Date().toISOString()}}
+  async function upsertProductRows(rows){
+    let r=await db.from('products').upsert(rows,{onConflict:'id'});
+    const message=r.error?.message||'';
+    if(r.error&&/scheduled_at/i.test(message)&&/(column|schema cache|does not exist|could not find|unknown)/i.test(message)){
+      if(rows.some(row=>row.scheduled_at))throw new Error('Kolom jadwal belum tersedia. Jalankan SQL Auto Pilot di Supabase terlebih dahulu.');
+      const legacyRows=rows.map(({scheduled_at,...row})=>row);
+      r=await db.from('products').upsert(legacyRows,{onConflict:'id'});
+    }
+    if(r.error)throw new Error('Supabase katalog: '+(r.error.message||r.error));
+    return r;
+  }
+  async function syncProductById(id){
+    if(!isAdmin())throw new Error('Sesi Admin tidak aktif');
+    const p=(products||[]).find(x=>String(x.id)===String(id));if(!p)throw new Error('Produk tidak ditemukan');
+    let imagePath=p.img||null;
+    if(!photoStoragePrepared&&isDataImagePayload(p.imageData))throw new Error('Foto Base64 lama belum berhasil dimigrasikan ke IndexedDB; upload ditahan agar data tidak hilang.');if((p.imageBlob instanceof Blob)||isDataImagePayload(p.imageData))imagePath=await uploadImage(p);
+    if(!imagePath)throw new Error('Produk belum memiliki foto online');
+    if(!String(imagePath).startsWith('http'))throw new Error('Foto produk belum online. Pilih foto produk dari HP lalu simpan lagi.');
+    const row=productRow(p,imagePath);
+    await upsertProductRows([row]);
+    // Only mark the local photo as synced after Supabase accepted the row.
+    await verifyRemoteProduct(p.id);
+    p.img=imagePath;p.imageData='';p.imageBlob=null;p.localPhotoPending=false;p.updatedAt=row.updated_at;p.syncState='synced';if(p.previewUrl){URL.revokeObjectURL(p.previewUrl);p.previewUrl=''}await deletePhotoBlob(p.id);saveRaw();
+    clearDirtyIfNoPending();
+    syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Produk dan foto terakhir berhasil disimpan di database online dan Cloudinary.',true);lastError='';
+    return p;
+  }
+  window.ersyaSyncProductById=syncProductById;
+  async function verifyRemoteProduct(id){const r=await db.from('products').select('id,image_path,updated_at').eq('id',String(id)).maybeSingle();if(r.error)throw new Error('Verifikasi Supabase: '+(r.error.message||r.error));if(!r.data)throw new Error('Verifikasi Supabase gagal: produk tidak ditemukan setelah disimpan');if(!r.data.image_path||!String(r.data.image_path).startsWith('http'))throw new Error('Verifikasi foto gagal: database belum berisi URL Cloudinary')}
+  async function syncProducts(){
+    if(!isAdmin())throw new Error('Sesi Admin tidak aktif');
+    if(!photoStoragePrepared&&(products||[]).some(hasInlineImagePayload))throw new Error('Sinkronisasi ditahan: foto Base64 lama belum aman dimigrasikan ke IndexedDB. Jangan hapus data browser; coba lagi setelah penyimpanan foto pulih.');
+    const errors=[];const payload=[];const uploaded=new Map();
+    for(const p of (products||[])){
+      try{let imagePath=p.img||null;if((p.imageBlob instanceof Blob)||isDataImagePayload(p.imageData)){imagePath=await uploadImage(p);uploaded.set(String(p.id),imagePath)}if(!imagePath)throw new Error('Tidak ada foto online');payload.push(productRow(p,imagePath))}catch(e){errors.push((p.name||p.id)+': '+(e?.message||e))}
+    }
+    if(errors.length)throw new Error('Foto belum berhasil online — '+errors.join(' | '));
+    await upsertProductRows(payload);
+    for(const p of products){const imagePath=uploaded.get(String(p.id));if(imagePath){p.img=imagePath;p.imageData='';p.imageBlob=null;p.localPhotoPending=false;if(p.previewUrl){URL.revokeObjectURL(p.previewUrl);p.previewUrl=''}await deletePhotoBlob(p.id)}p.updatedAt=new Date().toISOString();p.syncState='synced'}
+    saveRaw();clearDirtyIfNoPending();return {count:payload.length};
+  }
+  window.ersyaSyncNow=async()=>{if(!isAdmin()){toast('Masuk sebagai Admin untuk sinkronisasi');return}try{syncBadge('MENYIMPAN…',true);setStatus('MENYIMPAN…','Menyimpan seluruh katalog online.',true);const r=await syncProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓',`Seluruh katalog (${r.count} produk) tersimpan online.`,true);toast(`Tersimpan online (${r.count} produk)`)}catch(e){fail('Sinkronisasi katalog',e);toast(lastError)}};
+  async function syncPendingLocalImages(){if(!isAdmin())return [];const pending=(products||[]).filter(p=>(p.imageBlob instanceof Blob)||isDataImagePayload(p.imageData));if(!photoStoragePrepared&&pending.some(p=>isDataImagePayload(p.imageData)))return [{name:'Foto lama',message:'Migrasi foto lama ke IndexedDB belum berhasil. Upload otomatis ditahan agar Base64 tidak hilang atau tertinggal di localStorage.'}];const failures=[];for(const p of pending){try{await syncProductById(p.id)}catch(e){failures.push({name:p.name||p.id,message:e?.message||String(e)})}}saveRaw();return failures}
+  async function pullProducts(){
+    const localBefore=Array.isArray(products)?products:[];
+    const r=await db.from('products').select('*').order('updated_at',{ascending:false});
+    if(r.error)throw new Error('Baca produk dari Supabase: '+(r.error.message||r.error));
+    if(Array.isArray(r.data)){
+      const remote=r.data.map(p=>({id:p.id,name:p.name,category:p.category,material:p.material,desc:p.description||'',slug:p.slug,seoTitle:p.seo_title||'',seoDesc:p.seo_description||'',seoKeywords:Array.isArray(p.seo_keywords)?p.seo_keywords:[],published:p.published!==false,scheduledAt:p.scheduled_at||null,img:/^https?:\/\//i.test(String(p.image_path||'').trim())?String(p.image_path).trim():'',imageData:'',updatedAt:p.updated_at,syncState:'synced'}));
+      const remoteIds=new Set(remote.map(p=>String(p.id)));
+      const hasPendingPhoto=p=>(p.imageBlob instanceof Blob)||isDataImagePayload(p.imageData)||p.localPhotoPending===true;
+      const pending=localBefore.filter(p=>p&&(hasPendingPhoto(p)||p.syncState==='pending'||p.localOnly===true)&&!remoteIds.has(String(p.id)));
+      const merged=remote.map(remoteProduct=>{
+        const local=localBefore.find(p=>p&&String(p.id)===String(remoteProduct.id)&&hasPendingPhoto(p));
+        if(!local)return remoteProduct;
+        return {...remoteProduct,...local,img:local.img||remoteProduct.img||'',imageBlob:local.imageBlob||null,previewUrl:local.previewUrl||'',imageData:local.imageData||'',localPhotoPending:true,syncState:'pending'};
+      });
+      products=[...pending,...merged];
+      saveRaw();
+    }
+    return products||[];
+  }
+  async function syncSiteSettings(){
+    const s=typeof getSettings==='function'?getSettings():{},seo=typeof getSeoSettings==='function'?getSeoSettings():{};
+    // The current ERSYA schema uses `key` as the primary key; `id` is not unique.
+    // Keep id=1 for compatibility with existing reads, but upsert against the real PK.
+    const row={key:'main',id:1,brand:s.brand||'ERSYA MEBEL',whatsapp:s.wa||'0858-0313-3261',meta_title:seo.title||s.title||'',meta_description:seo.desc||s.desc||'',canonical_url:seo.canonical||'',main_city:seo.city||'Jepara',service_areas:seo.areas||'',maps_url:seo.mapsUrl||'https://maps.app.goo.gl/KuBJ56REHXnx7G6b6',business_type:seo.businessType||'FurnitureStore',allow_index:seo.index!==false,updated_at:new Date().toISOString()};
+    let r=await db.from('site_settings').upsert(row,{onConflict:'key'});
+    if(!r.error)return;
+    const msg=r.error.message||String(r.error);
+    if(!/site_settings\.id does not exist|site_settings\.key does not exist|column .*key.*does not exist|no unique or exclusion constraint matching the ON CONFLICT specification/i.test(msg))throw new Error('Supabase pengaturan: '+msg);
+    const existing=await db.from('site_settings').select('*').limit(1).maybeSingle();
+    if(existing.error)throw new Error('Supabase pengaturan (schema lama): '+(existing.error.message||existing.error));
+    const payload={...row};delete payload.id;
+    if(!existing.data){
+      const ins=await db.from('site_settings').insert(payload);
+      if(ins.error)throw new Error('Supabase pengaturan: '+(ins.error.message||ins.error));
+      return;
+    }
+    const key=existing.data.key!=null?'key':(existing.data.updated_at!=null?'updated_at':(existing.data.brand!=null?'brand':null));
+    if(!key)throw new Error('Tabel site_settings lama tidak memiliki kolom penanda untuk diperbarui. Jalankan SQL perbaikan database yang disertakan di paket V24.');
+    const upd=await db.from('site_settings').update(payload).eq(key,String(existing.data[key]));
+    if(upd.error)throw new Error('Supabase pengaturan (schema lama): '+(upd.error.message||upd.error));
+  }
+  window.ersyaSyncSiteSettings=syncSiteSettings;
+  window.ersyaPullSiteSettings=pullSiteSettings;
+  async function pullSiteSettings(){
+    // Current schema primary key is key='main'; keep a legacy fallback for older schemas.
+    let r=await db.from('site_settings').select('*').eq('key','main').maybeSingle();
+    if(r.error && /site_settings\.key does not exist|column .*key.*does not exist/i.test(r.error.message||'')){
+      r=await db.from('site_settings').select('*').eq('id',1).maybeSingle();
+      if(r.error && /site_settings\.id does not exist|column .*id.*does not exist/i.test(r.error.message||'')){
+        r=await db.from('site_settings').select('*').limit(1).maybeSingle();
+      }
+    }
+    if(r.error)throw new Error('Baca pengaturan dari Supabase: '+(r.error.message||r.error));
+    if(!r.data)return;
+    localStorage.setItem('ersya_site_settings_v1',JSON.stringify({brand:r.data.brand,wa:r.data.whatsapp,title:r.data.meta_title,desc:r.data.meta_description,maintenance:false}));
+    localStorage.setItem('ersya_seo_settings_v2',JSON.stringify({title:r.data.meta_title,desc:r.data.meta_description,canonical:r.data.canonical_url||'',city:r.data.main_city||'Jepara',areas:r.data.service_areas||'',mapsUrl:r.data.maps_url||'',businessType:r.data.business_type||'FurnitureStore',index:r.data.allow_index!==false,keywords:(typeof getSeoSettings==='function'?getSeoSettings().keywords:[])||[]}));
+    if(typeof loadSettings==='function')loadSettings();
+    if(typeof loadSeoSettings==='function')loadSeoSettings();
+  }
+  async function syncKeywords(){if(!isAdmin())return;const x=getSeoSettings(),keywords=(x.keywords||[]).map(k=>String(k).trim()).filter(Boolean);const d=await db.from('seo_keywords').delete().neq('id','00000000-0000-0000-0000-000000000000');if(d.error)throw new Error('Supabase hapus kata kunci: '+(d.error.message||d.error));if(keywords.length){const i=await db.from('seo_keywords').insert(keywords.map(keyword=>({keyword,active:true})));if(i.error)throw new Error('Supabase simpan kata kunci: '+(i.error.message||i.error))}}
+  window.ersyaSyncKeywords=syncKeywords;
+  async function pullKeywords(){const r=await db.from('seo_keywords').select('keyword').eq('active',true).order('created_at',{ascending:true});if(r.error)throw new Error('Baca kata kunci SEO: '+(r.error.message||r.error));if(Array.isArray(r.data)){const x=getSeoSettings();x.keywords=r.data.map(v=>v.keyword);localStorage.setItem('ersya_seo_settings_v2',JSON.stringify(x));if(typeof renderKeywords==='function')renderKeywords()}}
+  async function deleteRemoteProduct(id){if(!isAdmin())throw new Error('Sesi Admin tidak aktif');const r=await db.from('products').delete().eq('id',String(id));if(r.error)throw new Error('Supabase hapus produk: '+(r.error.message||r.error))}
+  window.ersyaDeleteRemoteProduct=deleteRemoteProduct;
+  async function loadUsers(){if(!isAdmin())return;const r=await db.from('profiles').select('id,full_name,role,created_at').order('created_at',{ascending:true});if(r.error)throw new Error('Baca pengguna: '+(r.error.message||r.error));const box=document.querySelector('#usersList');if(!box)return;box.innerHTML=(r.data||[]).map(u=>`<div class="form" style="padding:12px;margin-bottom:9px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><b>${esc(u.full_name||'Pengguna')}</b><div class="v7-mini">${esc(u.id)}</div></div><select data-user-role="${esc(u.id)}" style="border:1px solid #d9ddd7;border-radius:11px;padding:9px"><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option><option value="cashier" ${u.role==='cashier'?'selected':''}>Kasir</option></select></div></div>`).join('')||'<div class="notice">Belum ada pengguna.</div>';box.querySelectorAll('[data-user-role]').forEach(el=>el.addEventListener('change',async()=>{try{await updateUserRole(el.dataset.userRole,el.value);toast('Role pengguna diperbarui')}catch(e){fail('Perbarui role',e);toast(lastError)}}))}
+  async function updateUserRole(id,roleValue){if(!isAdmin())throw new Error('Sesi Admin tidak aktif');const r=await db.from('profiles').update({role:roleValue,updated_at:new Date().toISOString()}).eq('id',id);if(r.error)throw new Error('Supabase role: '+(r.error.message||r.error))}
+  window.ersyaLoadUsers=loadUsers;async function pullUsersOnSettings(){try{await loadUsers()}catch(e){console.warn(e)}}
+  function saveRaw(){if(!photoStoragePrepared&&(products||[]).some(hasInlineImagePayload))return false;try{localStorage.setItem('ersya_products_v4',JSON.stringify(persistableProducts(products)));return true}catch(_){return false}}
+  function clearDirtyIfNoPending(){if(!(products||[]).some(p=>(p.imageBlob instanceof Blob)||isDataImagePayload(p.imageData)))localStorage.removeItem('ersya_local_dirty_v1')}
+  window.ersyaCheckConnection=async function(){
+    syncBadge('MEMERIKSA…',true);setStatus('MEMERIKSA…','Menguji koneksi Supabase dan kesiapan Cloudinary.',true);lastError='';
+    try{
+      const cfg2=window.ERSYA_SUPABASE||{},cloud=window.ERSYA_CLOUDINARY||{};
+      if(!cfg2.url||!cfg2.anonKey)throw new Error('Konfigurasi Supabase belum lengkap');
+      if(!cloud.cloudName||!cloud.uploadPreset)throw new Error('Konfigurasi Cloudinary belum lengkap');
+      const publicRead=await db.from('products').select('id').eq('published',true).order('updated_at',{ascending:false});if(publicRead.error)throw new Error('Baca katalog publik: '+(publicRead.error.message||publicRead.error));
+      const sess=await db.auth.getSession();if(!sess.data?.session)throw new Error('Sesi login Supabase tidak aktif. Keluar lalu masuk lagi.');
+      const profile=await db.from('profiles').select('id,role').eq('id',sess.data.session.user.id).maybeSingle();if(profile.error)throw new Error('Baca role Admin: '+(profile.error.message||profile.error));
+      if(profile.data?.role!=='admin')throw new Error('Akun login bukan role Admin');
+      const own=await db.from('products').select('id,image_path').order('updated_at',{ascending:false});if(own.error)throw new Error('Baca katalog Admin: '+(own.error.message||own.error));
+      syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Supabase dapat dibaca dan sesi Admin aktif. Cloudinary siap untuk upload foto.',true);toast('Koneksi online siap');
+      return true;
+    }catch(e){fail('Tes koneksi',e);toast(lastError);return false}
+  };
+  // Login: authenticate, then read products first. Non-critical panels never turn a healthy catalog into SYNC GAGAL.
+  async function onlineLogin(e){e.preventDefault();const email=document.querySelector('#u').value.trim(),password=document.querySelector('#pw').value;if(!email||!email.includes('@')){toast('Masukkan email akun Supabase');return}if(!window.ERSYA_DB?.enabled){toast('Koneksi database belum siap');return}const auth=await db.auth.signInWithPassword({email,password});if(auth.error||!auth.data.user){toast(auth.error?.message||'Email atau password salah');return}const pr=await db.from('profiles').select('role').eq('id',auth.data.user.id).maybeSingle();if(pr.error){await db.auth.signOut();fail('Baca role Admin',pr.error);return}role=pr.data?.role||'cashier';sessionStorage.setItem('ersya_role_demo',role);document.querySelector('#login').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');applyRole();try{if(isAdmin()){const pending=await syncPendingLocalImages();if(pending.length){lastError=pending.map(v=>v.name+': '+v.message).join(' | ');syncBadge('FOTO TERTUNDA',false);setStatus('FOTO TERTUNDA',lastError,true)}await pullProducts();await pullSiteSettings().catch(e=>console.warn('Pengaturan belum terbaca',e));await pullKeywords().catch(e=>console.warn('SEO belum terbaca',e));await pullUsersOnSettings();syncBadge(pending.length?'FOTO TERTUNDA':'ONLINE ✓',!pending.length);setStatus(pending.length?'FOTO TERTUNDA':'ONLINE ✓',pending.length?lastError:'Database katalog online terhubung. Foto yang tersimpan online akan terlihat di perangkat lain.',!pending.length);render();toast('Login online sebagai Admin')}else{await pullProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Mode Kasir: katalog online dapat dibaca.',true);render();toast('Login online sebagai Kasir')}}catch(err){fail('Sinkronisasi awal',err);render();}}
+  window.login=onlineLogin;
+  async function restoreOnlineSession(){if(!window.ERSYA_DB?.enabled)return;try{const ses=await db.auth.getSession(),user=ses.data?.session?.user;if(!user)return;const pr=await db.from('profiles').select('role').eq('id',user.id).maybeSingle();if(pr.error)throw pr.error;role=pr.data?.role||'cashier';sessionStorage.setItem('ersya_role_demo',role);document.querySelector('#login').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');applyRole();if(isAdmin()){
+      const optionalErrors=[];
+      const pending=await syncPendingLocalImages();
+      if(pending.length){lastError=pending.map(v=>v.name+': '+v.message).join(' | ');}
+      try{await pullProducts();}catch(e){fail('Baca katalog dari Supabase',e);render();return;}
+      try{await pullSiteSettings();}catch(e){optionalErrors.push('Pengaturan: '+(e?.message||e));}
+      try{await pullKeywords();}catch(e){optionalErrors.push('SEO: '+(e?.message||e));}
+      try{await pullUsersOnSettings();}catch(e){optionalErrors.push('Pengguna: '+(e?.message||e));}
+      if(pending.length){
+        syncBadge('FOTO TERTUNDA',false);setStatus('FOTO TERTUNDA',lastError,false);
+      }else if(optionalErrors.length){
+        syncBadge('ONLINE ✓',true);
+        setStatus('ONLINE ✓','Database katalog online terhubung. Catatan: '+optionalErrors.join(' | '),true);
+        lastError=optionalErrors.join(' | ');
+      }else{
+        syncBadge('ONLINE ✓',true);
+        setStatus('ONLINE ✓','Database katalog online terhubung. Semua produk memakai data online.',true);
+        lastError='';
+      }
+    }else{await pullProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Mode Kasir: katalog online dapat dibaca.',true)}render()}catch(err){fail('Pemulihan sesi',err);}}
+  window.addEventListener('load',async()=>{try{const prep=await window.ersyaPreparePhotoStorage?.();if(prep&&!prep.ok){setStatus('FOTO LAMA BELUM DIMIGRASIKAN',prep.error||'Foto lama belum aman disimpan sebagai Blob.',false);toast('Perhatian: migrasi foto lama gagal. Jangan hapus data browser; periksa penyimpanan foto lokal.')}}catch(e){console.error(e);toast('Penyimpanan foto lokal perlu diperiksa.')}setTimeout(()=>restoreOnlineSession(),50)});
+})();
+</script>
+<script>
+let __deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();__deferredInstall=e;const b=document.querySelector('#installBtn');if(b)b.style.display='block';});
+document.addEventListener('click',e=>{if(e.target?.id==='installBtn'&&__deferredInstall){__deferredInstall.prompt();__deferredInstall.userChoice.finally(()=>{__deferredInstall=null;e.target.style.display='none';});}});
+// V23 intentionally keeps no data cache worker; the installed app reads the latest Netlify files.
+</script></body></html>

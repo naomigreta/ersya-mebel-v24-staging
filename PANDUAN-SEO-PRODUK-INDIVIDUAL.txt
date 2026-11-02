@@ -1,0 +1,41 @@
+PANDUAN SEO PRODUK INDIVIDUAL — ERSYA MEBEL V24
+
+STATUS SAAT PAKET DIBUAT
+- Project Supabase yang benar sudah dikenali: waartnvrptyzqfufpmcs.
+- Migrasi inti Auto Pilot, kolom jadwal/SEO, pengaturan, helper admin internal, worker, dan Cron sudah diterapkan pada project tersebut.
+- Cron `ersya-publish-due-products` aktif tiap menit. Auto Pilot sengaja masih nonaktif sampai paket frontend diuji.
+- Jangan jalankan SQL pada project Supabase lain. Untuk project live ERSYA, jangan jalankan ulang secara manual kecuali memang diperlukan setelah backup dan pemeriksaan.
+
+TUJUAN
+Mempertahankan homepage https://ersyafurniture.netlify.app/ serta menambahkan URL individual /produk/<slug>/ yang mengirim HTML lengkap dari server untuk produk yang published.
+
+CARA KERJA
+- Homepage tetap di URL lama.
+- Netlify Function product-page membaca data produk yang published dari Supabase melalui publishable key dan tunduk pada RLS.
+- Judul SEO, deskripsi, canonical URL, Open Graph, gambar, Product JSON-LD, dan BreadcrumbList disajikan pada HTML server-rendered.
+- Sitemap dinamis menampilkan homepage dan URL produk yang published, termasuk lastmod bila tersedia.
+- Produk dalam antrean yang belum published tidak masuk sitemap dan tidak dapat dibuka melalui halaman produk individual.
+- Nama produk bisa berubah tanpa mengganti slug otomatis; perubahan slug secara manual mengubah URL produk.
+
+CARA DEPLOY
+1. Simpan salinan ZIP ini dan jangan menghapus deployment Netlify yang sedang online.
+2. Unggah ISI ZIP ke akar repository Git yang akan dihubungkan ke situs Netlify yang sama. Struktur root harus berisi `netlify.toml`, `package.json`, `public/`, dan `netlify/functions/`.
+3. Hubungkan situs `ersyafurniture` ke repository tersebut. Gunakan build command `npm run verify`, publish directory `public`, dan Functions directory `netlify/functions` sesuai netlify.toml.
+4. Tunggu build. Jika gagal, jangan publikasikan perubahan; periksa log build terlebih dahulu.
+5. Setelah deployment baru sukses, uji homepage, `/admin.html`, `/produk/kursi-cafe-besi/`, dan `/sitemap.xml`.
+
+UJI SETELAH DEPLOY
+- Pastikan katalog muncul dari Supabase dan 15 produk lama tetap ada.
+- Login admin dengan akun lama; jangan reset atau membuat akun admin baru untuk tes.
+- Buka Auto Pilot, muat pengaturan. Jangan aktifkan dulu sampai tes login dan baca/tulis admin sukses.
+- Uji satu foto yang memang aman untuk tes dengan jadwal beberapa menit di masa depan. Pastikan foto menjadi URL Cloudinary, baris produk masuk ke Supabase sebagai unpublished/terjadwal, lalu Cron menerbitkan saat jadwal tiba.
+- Pastikan sitemap hanya memuat produk published.
+
+KEAMANAN
+- Jangan menaruh Supabase service_role/secret key di HTML, ZIP, atau GitHub.
+- Publishable key pada kode browser bukan service_role key.
+- Jangan menghapus data produk/foto, mengganti URL utama, menghapus deployment lama, atau mengaktifkan Auto Pilot sebelum uji selesai.
+- Jangan menyalin atau menjalankan SQL pada project Supabase yang bukan milik ERSYA MEBEL.
+
+BATASAN
+Tes statis dan smoke test lokal pada paket ini tidak membuktikan bahwa login admin, unggah Cloudinary dari browser, koneksi browser-to-Supabase, dan publikasi dari Cron benar-benar lulus pada deployment Netlify. Semua itu wajib diuji setelah build Netlify. Sitemap dan metadata membantu mesin pencari memahami halaman, tetapi Google menentukan sendiri apakah halaman diindeks dan peringkatnya.

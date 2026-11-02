@@ -1,0 +1,21 @@
+ERSYA MEBEL V24.1.4 — CATATAN PERBAIKAN AUDIT
+Tanggal: 27 Oktober 2026
+
+TEMUAN
+Kode SEO pada V24.1.3 mengandalkan `process.env.ERSYA_DEPLOY_CONTEXT === 'production'`. Netlify secara standar memberikan konteks melalui variabel `CONTEXT`. Pemeriksaan konfigurasi situs yang tersambung tidak menemukan variabel khusus tersebut pada environment tingkat situs maupun tim. Jika variabel khusus tidak disetel, fungsi produk dan sitemap bisa tetap noindex di produksi.
+
+PERBAIKAN
+- Dokumentasi resmi Netlify menyebut `CONTEXT` sebagai variabel build; daftar variabel bawaan yang tersedia saat Functions runtime tidak mencantumkannya.
+- Build sekarang menjalankan `scripts/inject-deploy-context.cjs` sebelum verifikasi/pembundelan. Skrip menyematkan nilai `CONTEXT` aktual ke `netlify/deploy-context.js` (di luar direktori entrypoint Functions agar tidak terpublikasi sebagai endpoint tambahan).
+- Fungsi produk dan sitemap membaca konteks yang disematkan saat build; `ERSYA_DEPLOY_CONTEXT` tetap tersedia sebagai override eksplisit runtime.
+- Tes baru membuktikan konteks `production`, `deploy-preview`, dan branch khusus disematkan dengan benar.
+
+HASIL
+`npm run verify` lulus seluruh pemeriksaan otomatis setelah perubahan.
+
+BATASAN
+Perubahan dan tes ini belum membuktikan hasil di Netlify live. Deploy Preview, browser nyata, Cloudinary upload, sesi Admin/Supabase, dan alur Cron -> publikasi -> halaman produk -> sitemap masih belum diuji end-to-end. Tidak ada deployment produksi atau perubahan data produksi.
+
+REFERENSI RESMI NETLIFY
+- Variabel Functions runtime dan variabel bawaan yang tersedia: https://docs.netlify.com/build/functions/environment-variables/
+- Variabel konteks build (termasuk CONTEXT): https://docs.netlify.com/build/configure-builds/environment-variables/

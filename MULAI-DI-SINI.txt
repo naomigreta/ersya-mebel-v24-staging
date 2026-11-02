@@ -1,0 +1,29 @@
+ERSYA MEBEL V24.1.4 — PAKET KANDIDAT DEPLOY
+
+TUJUAN
+Paket ini memuat 3 pekerjaan yang diminta:
+1. Anti-Base64: foto diproses sebagai Blob dan disimpan sementara di IndexedDB, bukan ditumpuk sebagai Base64 di localStorage.
+2. Auto Pilot: panel antrean hingga 100 foto, SEO otomatis, jadwal, dan publikasi server melalui Supabase Cron.
+3. SEO: halaman produk individual, metadata sosial, Product/Breadcrumb JSON-LD, dan sitemap dinamis.
+
+HASIL TES LOKAL
+`npm run verify` — LULUS (7 rangkaian tes).
+
+STATUS JUJUR
+- Belum di-deploy ke website produksi.
+- Auto Pilot belum diaktifkan di website live.
+- Integrasi nyata upload Cloudinary, sesi admin/Supabase, Cron, halaman produk, dan sitemap belum diuji end-to-end dari browser.
+- Ini paket untuk GitHub + Netlify Build. JANGAN gunakan Netlify Drop karena Netlify Functions tidak akan berjalan dengan deploy statis.
+
+LANGKAH DEPLOY
+1. Buat repository GitHub khusus ERSYA MEBEL (jangan menimpa repository proyek lain).
+2. Unggah ISI folder ini ke akar repository, sehingga `package.json` dan `netlify.toml` berada langsung di akar.
+3. Hubungkan repository itu ke proyek Netlify ERSYA MEBEL sebagai Deploy Preview terlebih dahulu.
+4. Netlify membaca `netlify.toml`: Build command `npm run build`, Publish directory `public`, Functions directory `netlify/functions`.
+5. Uji halaman `/admin.html`, upload satu foto, jadwalkan satu produk uji, lalu periksa `/produk/<slug>/` dan `/sitemap.xml`.
+6. Aktifkan Auto Pilot produksi hanya setelah seluruh tes integrasi nyata berhasil.
+
+PENTING
+- Jangan mengunggah Supabase service_role/secret key ke GitHub atau HTML.
+- File `public/ersya-supabase-config.js` hanya berisi URL proyek dan publishable key publik.
+- Jangan mengubah database produksi atau mengaktifkan Auto Pilot secara massal sebelum uji satu produk berhasil.
