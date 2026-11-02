@@ -1,0 +1,38 @@
+name: Prepare ERSYA MEBEL source
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract-and-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Extract ZIP
+        run: |
+          ZIP="ERSYA-MEBEL-V24.1.4-GITHUB-DEPLOY-CANDIDATE.zip"
+          mkdir -p .source-package
+          mv "$ZIP" ".source-package/$ZIP"
+          unzip -oq ".source-package/$ZIP" -d .
+          test -f package.json
+          test -f netlify.toml
+
+      - name: Run verification
+        run: npm run verify
+
+      - name: Save extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Extract ERSYA source [skip ci]" || true
+          git push
