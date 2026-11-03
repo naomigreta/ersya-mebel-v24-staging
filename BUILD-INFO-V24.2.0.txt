@@ -1,0 +1,17 @@
+ERSYA MEBEL V24.2.0 — AI VISION + SEO PRODUK + JADWAL FLEKSIBEL
+Dibangun dan diperiksa secara lokal pada 2 November 2026.
+
+Perubahan utama:
+- Gemini 3.5 Flash-Lite vision melalui Netlify Function yang hanya menerima sesi Admin; model menerima input gambar dan dipilih untuk biaya rendah.
+- Analisis foto per produk; nama, kategori, material, deskripsi, slug, SEO title/description/keywords, alt text, dan ringkasan visual dapat diedit sebelum antrean.
+- Batch schedule tetap tersedia; tanggal dan jam khusus dapat ditetapkan per foto.
+- Kolom products.image_alt ditambahkan dengan migrasi SQL aman (ADD COLUMN IF NOT EXISTS).
+- API key hanya dibaca dari ERSYA_GEMINI_API_KEY di environment Netlify. Parameter sampling lama yang deprecated tidak dikirim.
+
+Tes lokal: npm run build lulus. Tes ini menggunakan mock untuk integrasi AI dan Supabase; belum menggantikan deploy/test layanan nyata.
+
+Deployment masih memerlukan:
+1. Jalankan SQL-TAMBAH-IMAGE-ALT-ERSYA-MEBEL.txt pada database aktif.
+2. Pasang ERSYA_GEMINI_API_KEY di Netlify Environment Variables.
+3. Ganti candidate ZIP di GitHub menggunakan nama file lama yang dicari workflow.
+4. Deploy dan uji satu foto + satu jadwal terlebih dahulu.

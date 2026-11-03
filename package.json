@@ -1,10 +1,10 @@
 {
   "name": "ersya-mebel-v24-autopilot-seo",
-  "version": "24.1.4",
+  "version": "24.2.3",
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "verify": "node scripts/verify-build.mjs && node tests/functions-smoke.cjs && node tests/deploy-context-build-smoke.cjs && node tests/autopilot-schedule-smoke.cjs && node tests/supabase-lite-smoke.cjs && node tests/admin-render-security-smoke.cjs && node tests/base64-storage-regression-smoke.cjs",
+    "verify": "node scripts/verify-build.mjs && node tests/functions-smoke.cjs && node tests/analyze-product-image-smoke.cjs && node tests/deploy-context-build-smoke.cjs && node tests/autopilot-schedule-smoke.cjs && node tests/supabase-lite-smoke.cjs && node tests/admin-render-security-smoke.cjs && node tests/base64-storage-regression-smoke.cjs",
     "build": "node scripts/inject-deploy-context.cjs && npm run verify"
   }
 }

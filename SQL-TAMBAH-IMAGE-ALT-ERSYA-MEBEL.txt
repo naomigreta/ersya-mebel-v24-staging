@@ -1,0 +1,6 @@
+-- Migrasi kecil untuk database ERSYA yang SUDAH menjalankan SQL Auto Pilot sebelumnya.
+-- Aman dijalankan ulang; tidak menghapus atau mengubah produk lama.
+alter table public.products
+  add column if not exists image_alt text;
+
+notify pgrst, 'reload schema';

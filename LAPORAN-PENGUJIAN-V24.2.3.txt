@@ -1,0 +1,30 @@
+LAPORAN PENGUJIAN ERSYA MEBEL V24.2.3
+Tanggal: 3 November 2026
+
+HASIL BUILD
+Perintah: npm run build
+Hasil: LULUS
+
+RANGKAIAN VERIFIKASI
+1. ERSYA MEBEL verification — LULUS (struktur, sintaks JavaScript, JSON-LD, ID statis, aset utama, rute Netlify).
+2. Function smoke tests — LULUS (halaman produk, meta, JSON-LD, 404/noindex, sitemap dinamis, konteks indexing, header key).
+3. AI image analysis smoke tests — LULUS (sesi Admin, role, URL Cloudinary, input gambar Gemini, batas SEO, dan penolakan foto >5 MB tanpa Content-Length).
+4. Deploy context build smoke tests — LULUS (production, deploy-preview, branch context).
+5. Auto Pilot schedule smoke tests — LULUS (simulasi jadwal/batch/validasi; bukan publikasi sungguhan).
+6. Supabase-lite regression tests — LULUS.
+7. Admin rendering security smoke test — LULUS.
+8. Base64 storage regression tests — LULUS.
+
+PERBAIKAN KHUSUS V24.2.3
+- Batas ukuran foto ditegakkan saat response body dibaca secara streaming.
+- Timeout 15 detik untuk mengambil foto dari Cloudinary.
+- Tes melebihi ukuran maksimum tanpa header Content-Length menghasilkan HTTP 413.
+
+PENGUJIAN PAKET
+Arsip ZIP dibuat dan diperiksa dengan `unzip -t`; salinan yang diekstrak diuji ulang dengan `npm run build`.
+
+BATASAN
+- Build dan smoke tests adalah pemeriksaan lokal/mock. Bukan bukti panggilan Gemini nyata, upload HP, integrasi Cloudinary/Supabase end-to-end, atau deployment.
+- Website Netlify tidak dapat dijangkau dari lingkungan pemeriksaan ini karena kegagalan resolusi jaringan eksternal; tidak ada klaim situs live berhasil diuji.
+- Netlify belum dideploy dari pekerjaan ini dan repositori GitHub Ersya belum dapat ditulis melalui koneksi yang tersedia.
+- Auto Pilot produksi tetap nonaktif.

@@ -1,0 +1,12 @@
+ERSYA MEBEL V24.2.1 — SEO LOKAL + AI VISION + AUTO PILOT
+
+Perubahan dari V24.2.0:
+- Schema bisnis lokal diperjelas menjadi FurnitureStore dengan nama bisnis, URL, telepon, alamat lokal Ngabul/Tahunan/Jepara, area layanan Jepara, dan tautan peta yang sudah tercantum dalam data bisnis.
+- Entitas bisnis dihubungkan ke Organization melalui @id agar tidak menjadi entitas yatim.
+- Tidak menambahkan aggregateRating atau ulasan buatan pada schema bisnis.
+- Metadata versi aplikasi diperbarui menjadi V24.2.1.
+- Pemeriksaan build kini menguji keberadaan schema FurnitureStore, field kontak/lokasi utama, dan ketiadaan aggregateRating self-serving.
+
+Verifikasi lokal: jalankan `npm run build`. Hasil build lokal tidak membuktikan deploy/indeks Google.
+
+Catatan: database produksi ERSYA telah menerima migrasi aman untuk products.image_alt. Sebelum deploy kode V24.2.1, pastikan Netlify environment variable ERSYA_GEMINI_API_KEY sudah dipasang oleh pemilik akun. Lakukan Deploy Preview dan pengujian end-to-end satu foto/satu jadwal sebelum produksi.

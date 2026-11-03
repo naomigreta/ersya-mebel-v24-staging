@@ -1,29 +1,42 @@
-ERSYA MEBEL V24.1.4 — PAKET KANDIDAT DEPLOY
+ERSYA MEBEL V24.2.3 — PAKET DEPLOY NETLIFY LANGSUNG
 
-TUJUAN
-Paket ini memuat 3 pekerjaan yang diminta:
-1. Anti-Base64: foto diproses sebagai Blob dan disimpan sementara di IndexedDB, bukan ditumpuk sebagai Base64 di localStorage.
-2. Auto Pilot: panel antrean hingga 100 foto, SEO otomatis, jadwal, dan publikasi server melalui Supabase Cron.
-3. SEO: halaman produk individual, metadata sosial, Product/Breadcrumb JSON-LD, dan sitemap dinamis.
+PAKET INI MELANJUTKAN WEBSITE ERSYA MEBEL YANG SUDAH ADA.
+JANGAN membuat situs Netlify baru jika tujuanmu memperbarui alamat website Ersya Mebel yang sekarang.
 
-HASIL TES LOKAL
-`npm run verify` — LULUS (7 rangkaian tes).
+CARA DEPLOY TANPA GITHUB
+1. Simpan ZIP ini sebagai cadangan versi V24.2.3.
+2. Login ke akun Netlify yang memiliki situs Ersya Mebel.
+3. Buka situs Ersya Mebel yang alamatnya sekarang sudah dipakai.
+4. Buka tab Deploys, cari area manual deploy / drag and drop.
+5. Unggah ZIP ini. Jika Netlify meminta folder, ekstrak ZIP lalu unggah folder proyek hasil ekstrak (folder yang berisi package.json, netlify.toml, public, dan netlify).
+6. Pastikan Netlify menjalankan build `npm run build`, publish directory `public`, dan Functions directory `netlify/functions` sesuai netlify.toml.
+7. Jangan menganggap deploy berhasil hanya karena file selesai diunggah. Tunggu status Published/Published to production dan periksa tab Functions.
 
-STATUS JUJUR
-- Belum di-deploy ke website produksi.
-- Auto Pilot belum diaktifkan di website live.
-- Integrasi nyata upload Cloudinary, sesi admin/Supabase, Cron, halaman produk, dan sitemap belum diuji end-to-end dari browser.
-- Ini paket untuk GitHub + Netlify Build. JANGAN gunakan Netlify Drop karena Netlify Functions tidak akan berjalan dengan deploy statis.
+PENTING UNTUK FITUR SERVER
+Website ini bukan hanya HTML statis. Gemini Vision, halaman produk server-rendered, dan sitemap dinamis memakai Netlify Functions. Deploy manual harus menjalankan build dan menyertakan Functions. Jika Netlify hanya menerbitkan isi folder public tanpa Functions, fitur tersebut tidak akan berfungsi. Jangan lanjutkan pengujian Auto Pilot sampai Functions muncul dan berjalan.
 
-LANGKAH DEPLOY
-1. Buat repository GitHub khusus ERSYA MEBEL (jangan menimpa repository proyek lain).
-2. Unggah ISI folder ini ke akar repository, sehingga `package.json` dan `netlify.toml` berada langsung di akar.
-3. Hubungkan repository itu ke proyek Netlify ERSYA MEBEL sebagai Deploy Preview terlebih dahulu.
-4. Netlify membaca `netlify.toml`: Build command `npm run build`, Publish directory `public`, Functions directory `netlify/functions`.
-5. Uji halaman `/admin.html`, upload satu foto, jadwalkan satu produk uji, lalu periksa `/produk/<slug>/` dan `/sitemap.xml`.
-6. Aktifkan Auto Pilot produksi hanya setelah seluruh tes integrasi nyata berhasil.
+KONFIGURASI RAHASIA NETLIFY
+Tambahkan Environment Variable di situs Netlify:
+- Name: ERSYA_GEMINI_API_KEY
+- Value: API key milikmu dari https://aistudio.google.com/app/apikey
+Simpan sebagai secret server-side. Jangan menaruh API key di ZIP, HTML, JavaScript publik, GitHub, atau chat. Setelah menambahkan/mengubah secret, jalankan deploy ulang.
+Model bawaan: gemini-3.5-flash-lite. Kuota gratis dapat berubah dan tidak tanpa batas.
 
-PENTING
-- Jangan mengunggah Supabase service_role/secret key ke GitHub atau HTML.
-- File `public/ersya-supabase-config.js` hanya berisi URL proyek dan publishable key publik.
-- Jangan mengubah database produksi atau mengaktifkan Auto Pilot secara massal sebelum uji satu produk berhasil.
+KONEKSI DATA YANG SUDAH ADA
+Paket ini memakai konfigurasi Supabase/Cloudinary ERSYA yang sudah ada. Jangan membuat database baru, jangan menjalankan ulang skrip database massal, dan jangan mengganti kredensial lama tanpa alasan. Migrasi kolom products.image_alt sudah diterapkan dan diverifikasi pada database aktif tanggal 3 November 2026.
+
+UJI SETELAH DEPLOY
+1. Buka homepage dan pastikan alamat domain tetap sama.
+2. Buka /admin.html dan login dengan akun Admin lama.
+3. Uji satu foto: analisis Gemini, periksa/edit hasil, lalu simpan.
+4. Pastikan foto tersimpan ke Cloudinary dan metadata tersimpan ke Supabase.
+5. Uji satu jadwal beberapa menit ke depan. Pastikan Cron memublikasikan produk, halaman /produk/<slug>/ muncul, dan /sitemap.xml memuat produk itu.
+6. Jangan aktifkan batch besar atau Auto Pilot produksi sebelum seluruh alur satu foto dan satu jadwal lulus.
+
+STATUS TES SEBELUM DEPLOY
+- ZIP asli dapat dibuka tanpa error.
+- `npm run build` lulus di lingkungan lokal, termasuk pemeriksaan struktur, Functions, Gemini (mock), jadwal Auto Pilot (simulasi), Supabase-lite, keamanan admin, dan regresi Base64.
+- Ini bukan bukti bahwa deploy Netlify, panggilan Gemini nyata, upload Android, Cloudinary, atau publikasi Cron end-to-end sudah berhasil. Semua itu harus diuji setelah deploy.
+
+PEMBARUAN SELANJUTNYA
+Untuk pembaruan tanpa GitHub, unggah paket ZIP versi terbaru ke situs Netlify ERSYA yang sama melalui Deploys. Netlify akan membuat deploy baru pada situs yang sama; alamat website tidak perlu berubah. Simpan ZIP versi sebelumnya sebagai cadangan.

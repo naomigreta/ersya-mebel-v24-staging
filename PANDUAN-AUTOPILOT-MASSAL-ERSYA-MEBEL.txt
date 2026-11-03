@@ -1,12 +1,12 @@
 PANDUAN AUTO PILOT MASSAL + SEO PRODUK INDIVIDUAL — ERSYA MEBEL V24
 
 FITUR
-- Pilih hingga 100 foto per batch; nama awal dibentuk dari nama file dan dapat diedit.
-- Pilih kategori/material, hari publikasi (Senin–Minggu atau setiap hari), tanggal mulai, jam, zona waktu, dan jumlah produk tiap slot.
-- Foto dikompres di browser, dikirim ke Cloudinary, dan metadata produk disimpan ke Supabase. HP/browser tetap harus aktif dan internet harus tersedia sampai setiap foto berhasil diunggah.
+- Pilih hingga 100 foto per batch; AI menganalisis isi tiap gambar (bukan nama file) dan menyarankan nama/kategori/material produk.
+- Atur jadwal batch berdasarkan hari publikasi, tanggal mulai, jam, zona waktu, dan jumlah produk tiap slot; masing-masing foto dapat memakai tanggal/jam khusus.
+- Foto dikompres di browser lalu diunggah ke Cloudinary. Fungsi Netlify memverifikasi sesi Admin dan mengirim foto ke Gemini Vision untuk membuat nama/deskripsi/SEO/alt text. Hasil per foto dapat diperiksa dan diedit sebelum metadata disimpan ke Supabase. HP/browser harus aktif sampai proses selesai.
 - Setelah masuk antrean online, Supabase Cron menjalankan publikasi server walaupun browser admin sudah ditutup.
 - Panel Auto Pilot menampilkan antrean dan memberi opsi membatalkan jadwal.
-- SEO produk membuat slug, judul SEO, deskripsi SEO, kata kunci, dan teks alternatif gambar.
+- SEO produk membuat slug, judul SEO, deskripsi SEO, kata kunci, dan teks alternatif gambar dengan bantuan AI visual; AI tidak boleh dianggap selalu benar dan hasilnya perlu diperiksa.
 - Produk terbit tersedia pada URL server-rendered `/produk/<slug>/`, sedangkan `/sitemap.xml` berisi homepage dan produk yang sudah dipublikasikan.
 - Homepage lama tetap di https://ersyafurniture.netlify.app/.
 

@@ -15,9 +15,19 @@ const required = [
   'netlify.toml',
   'netlify/functions/product-page.js',
   'netlify/functions/sitemap.js',
+  'netlify/functions/analyze-product-image.js',
   'SQL-ERSYA-MEBEL-AUTOPILOT-MASSAL.txt'
 ];
 const failures = [];
+const packageMeta = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const expectedAppVersion = `V${packageMeta.version}-`;
+for (const rel of ['public/index.html', 'public/admin.html']) {
+  const html = fs.readFileSync(path.join(root, rel), 'utf8');
+  const match = html.match(/<meta\s+name="application-version"\s+content="([^"]+)"/i);
+  if (!match || !match[1].startsWith(expectedAppVersion)) {
+    failures.push(`${rel}: application-version must match package.json (${packageMeta.version}).`);
+  }
+}
 for (const rel of required) {
   if (!fs.existsSync(path.join(root, rel))) failures.push(`File wajib tidak ada: ${rel}`);
 }
@@ -57,7 +67,7 @@ const productFunction = fs.readFileSync(path.join(root, 'netlify/functions/produ
 if (!productFunction.includes('seo_keywords') || !productFunction.includes('name=\"keywords\"')) {
   failures.push('Halaman SEO produk belum membaca/merender kata kunci produk.');
 }
-for (const rel of ['netlify/functions/product-page.js', 'netlify/functions/sitemap.js']) {
+for (const rel of ['netlify/functions/product-page.js', 'netlify/functions/sitemap.js', 'netlify/functions/analyze-product-image.js']) {
   const r = spawnSync(process.execPath, ['--check', rel], { cwd: root, encoding: 'utf8' });
   if (r.status !== 0) failures.push(`${rel}: syntax error\n${r.stderr || r.stdout}`);
 }
@@ -66,11 +76,21 @@ for (const requiredText of ['publish = "public"', 'directory = "netlify/function
   if (!config.includes(requiredText)) failures.push(`netlify.toml: pengaturan wajib hilang: ${requiredText}`);
 }
 const adminHtml = fs.readFileSync(path.join(root, 'public/admin.html'), 'utf8');
-for (const feature of ['panel-autopilot', 'apPhotos', 'enqueueAutoPilotPhotos', 'scheduled_at']) {
+for (const feature of ['panel-autopilot', 'apPhotos', 'enqueueAutoPilotPhotos', 'analyzeAutoPilotFiles', 'apLocalCustomSchedule', 'data-ap-field', 'image_alt', 'scheduled_at']) {
   if (!adminHtml.includes(feature)) failures.push(`Autopilot: fitur tidak ditemukan: ${feature}`);
 }
+const aiFunction = fs.readFileSync(path.join(root, 'netlify/functions/analyze-product-image.js'), 'utf8');
+if (!aiFunction.includes('requireAdmin') || !aiFunction.includes('ERSYA_GEMINI_API_KEY') || !aiFunction.includes('validateCloudinaryUrl')) failures.push('Analisis gambar AI harus dilindungi role Admin, memakai secret server-side, dan membatasi URL foto Cloudinary.');
+if (!aiFunction.includes('MAX_ANALYSIS_IMAGE_BYTES') || !aiFunction.includes('response.body.getReader') || !aiFunction.includes('15000')) failures.push('Pengambilan foto AI harus membatasi ukuran saat streaming dan memiliki batas waktu jaringan.');
 const publicHtml = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8');
 if (!publicHtml.includes('/produk/')) failures.push('Homepage belum memiliki tautan produk individual.');
+const localBusinessJson = [...publicHtml.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
+  .filter(m => /type\s*=\s*["']application\/ld\+json["']/i.test(m[1] || ''))
+  .map(m => { try { return JSON.parse(m[2]); } catch (_) { return null; } })
+  .find(x => x && x['@type'] === 'FurnitureStore');
+if (!localBusinessJson) failures.push('Schema FurnitureStore untuk pencarian lokal belum tersedia atau tidak valid.');
+if (localBusinessJson && (!localBusinessJson.telephone || !localBusinessJson.address || !localBusinessJson.hasMap || !localBusinessJson.url)) failures.push('Schema FurnitureStore harus memuat kontak, alamat, peta, dan URL situs.');
+if (localBusinessJson && Object.prototype.hasOwnProperty.call(localBusinessJson, 'aggregateRating')) failures.push('Jangan menambahkan aggregateRating self-serving pada schema bisnis milik sendiri.');
 const liteClient = fs.readFileSync(path.join(root, 'public/supabase-lite.js'), 'utf8');
 if (!/limit\(n\)/.test(liteClient)) failures.push('Klien Supabase ringan belum mendukung .limit(n), yang dibutuhkan halaman Admin.');
 if (!/onConflict:'key'/.test(adminHtml) || !/key:'main'/.test(adminHtml) || !/eq\('key','main'\)/.test(adminHtml)) failures.push('Penyimpanan dan pembacaan site_settings harus memakai kunci utama key=main.');

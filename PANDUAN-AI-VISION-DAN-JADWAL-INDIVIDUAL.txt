@@ -1,0 +1,60 @@
+PANDUAN AI VISUAL + SEO INDIVIDUAL + JADWAL FLEKSIBEL — ERSYA MEBEL V24.2
+
+APA YANG DITAMBAHKAN
+1. AI membaca isi foto yang diunggah, bukan mengandalkan nama file.
+2. AI menyarankan nama produk, kategori, material (hanya jika cukup jelas), deskripsi, judul SEO, deskripsi SEO, kata kunci, alt text, dan ringkasan visual.
+3. Hasil AI ditampilkan per foto untuk diperiksa dan diedit sebelum produk disimpan.
+4. Satu batch dapat berisi hingga 100 foto. Foto diproses satu per satu agar beban HP dan permintaan AI lebih terkendali.
+5. Jadwal batch tetap mendukung hari, tanggal mulai, jam, jumlah produk per slot, dan zona waktu perangkat.
+6. Setiap produk juga memiliki kolom tanggal dan jam khusus. Jika keduanya diisi, jadwal khusus dipakai; jika keduanya kosong, jadwal batch dipakai. Tanggal dan jam khusus harus diisi berpasangan dan berada di masa depan.
+7. Alt text disimpan ke kolom products.image_alt dan dipakai pada halaman produk publik.
+
+PENYEDIA AI DAN BIAYA
+- Integrasi awal memakai Gemini Developer API melalui Google AI Studio. Model default: gemini-3.5-flash-lite. Model ini menerima input gambar dan pada dokumentasi tarif Google saat ini memiliki harga Free Tier untuk input/output pada mode Standard.
+- Google menyediakan paket gratis untuk model tertentu dengan batas RPM/TPM/kuota yang dapat berubah; gratis bukan berarti tanpa batas atau selalu tersedia untuk batch besar. Gemini 3.5 Flash-Lite mendukung gambar dan saat ini tercantum sebagai Free Tier untuk input/output Standard.
+- Pada paket gratis, Google menyatakan konten dapat digunakan untuk meningkatkan produk Google. Foto produk dikirim ke Cloudinary dan kemudian dibaca oleh Gemini untuk dianalisis. Jangan unggah gambar yang tidak boleh dibagikan kepada layanan tersebut.
+- Periksa batas penggunaan dan ketentuan terbaru Google sebelum menjalankan batch besar. Jika terkena batas 429, tunggu lalu lanjutkan foto yang belum selesai.
+
+LANGKAH KONFIGURASI GEMINI
+A. Buat API key di Google AI Studio: https://aistudio.google.com/app/apikey
+B. Di Netlify, buka situs ERSYA MEBEL yang terhubung dengan repository.
+C. Masuk ke Site configuration / Environment variables (nama menu dapat berubah).
+D. Tambahkan environment variable:
+   Name: ERSYA_GEMINI_API_KEY
+   Value: tempel API key dari Google AI Studio
+E. Simpan. Pastikan variabel berlaku untuk deploy context yang dipakai (Production dan Deploy Previews bila diperlukan).
+F. Jalankan deploy baru agar Netlify Functions menerima secret tersebut.
+G. Jangan menulis API key di public/admin.html, ersya-supabase-config.js, ZIP, GitHub, atau chat. Jangan gunakan awalan VITE_ / NEXT_PUBLIC_ untuk secret ini.
+
+KONFIGURASI OPSIONAL
+- ERSYA_GEMINI_MODEL = gemini-3.5-flash-lite (default bila tidak diisi).
+- ERSYA_SUPABASE_URL dan ERSYA_SUPABASE_ANON_KEY hanya diperlukan bila proyek memakai alamat/kunci yang berbeda dari konfigurasi default aplikasi. Jangan gunakan service_role key.
+
+ALUR PEMAKAIAN
+1. Login sebagai Admin, buka Auto Pilot.
+2. Aktifkan Auto Pilot dan simpan pengaturan server setelah migrasi SQL dan Cron terverifikasi.
+3. Pilih banyak foto, kategori/material sebagai petunjuk awal batch, dan catatan tambahan bila ada.
+4. Tekan “Analisis AI semua foto”. Tunggu hingga tiap foto selesai; analisis berjalan berurutan.
+5. Periksa nama, kategori, material, deskripsi, slug, judul/deskripsi SEO, kata kunci, dan alt text. Edit yang perlu diluruskan. AI dapat salah membaca objek; manusia tetap perlu memeriksa.
+6. Untuk produk yang punya jadwal khusus, isi tanggal dan jam pada kartu foto produk tersebut. Untuk produk lain, biarkan kosong agar mengikuti jadwal batch.
+7. Tekan “Simpan & Masukkan ke Antrean”. Produk dan URL foto disimpan ke Supabase/Cloudinary.
+8. Periksa daftar antrean. Jadwal terbit diproses oleh Supabase Cron setiap menit setelah waktu jatuh tempo.
+
+DATABASE
+- Untuk database ERSYA yang sudah memakai Auto Pilot, jalankan hanya `SQL-TAMBAH-IMAGE-ALT-ERSYA-MEBEL.txt` pada Supabase SQL Editor sebelum deploy fungsi halaman produk versi baru.
+- Untuk pemasangan database baru dari awal, gunakan `SQL-ERSYA-MEBEL-AUTOPILOT-MASSAL.txt`; skrip utama juga sudah menambahkan `image_alt` secara backward-compatible.
+- Pastikan job `ersya-publish-due-products` aktif dan fungsi `public.ersya_publish_due_products()` bisa dijalankan.
+
+KEAMANAN DAN BATASAN
+- Fungsi AI hanya menerima permintaan dengan sesi Supabase yang valid dan role `admin` yang diverifikasi di server.
+- API key Gemini hanya dibaca dari environment variable Netlify di sisi server.
+- URL gambar yang dianalisis dibatasi ke URL HTTPS Cloudinary.
+- Setiap analisis dapat menggunakan kuota API. Menekan analisis ulang pada foto yang sama dapat menggunakan kuota lagi.
+- SEO tidak menjamin halaman terindeks atau mendapat peringkat tertentu. Google tetap memutuskan crawling, indexing, dan ranking.
+- Browser/HP dan internet harus aktif sampai foto dianalisis dan produk berhasil disimpan ke antrean. Setelah data antrean tersimpan dan Cron berjalan, browser boleh ditutup.
+
+UJI SEBELUM PRODUKSI
+- Jalankan `npm run verify`.
+- Deploy ke Deploy Preview terlebih dahulu.
+- Pasang secret di Netlify Deploy Preview, login Admin, analisis satu foto uji, periksa seluruh hasil, simpan satu produk dengan jadwal beberapa menit ke depan, lalu periksa Supabase, Cloudinary, halaman `/produk/<slug>/`, dan `/sitemap.xml` setelah produk terbit.
+- Jangan aktifkan batch besar sebelum uji foto tunggal dan jadwal tunggal berhasil dari HP.

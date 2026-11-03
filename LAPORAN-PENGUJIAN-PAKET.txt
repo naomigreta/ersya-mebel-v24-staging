@@ -37,3 +37,47 @@ BELUM DIUJI / TIDAK BOLEH DIKLAIM BERHASIL
 
 PRODUKSI
 Tidak ada deployment produksi atau perubahan katalog produksi pada audit ini. Auto Pilot tetap nonaktif dan antrean tetap seperti pemeriksaan sebelumnya. Leaked Password Protection Supabase masih perlu diaktifkan melalui Dashboard.
+
+
+ADDENDUM V24.2 — 2 NOVEMBER 2026
+Perubahan lokal setelah audit paket dasar:
+1. Mengganti pola SEO Auto Pilot dengan alur analisis visual Gemini melalui Netlify Function. Nama file tidak dikirim sebagai petunjuk model; foto Cloudinary dibaca server-side dan role Admin diverifikasi menggunakan sesi Supabase.
+2. Hasil per foto meliputi nama, kategori, material (dengan pilihan “Belum dipastikan”), deskripsi, slug, SEO title, SEO description, keywords, image alt, dan ringkasan visual. Semua hasil dapat diperiksa/diedit sebelum antrean dibuat.
+3. Menambahkan jadwal tanggal dan jam khusus per foto. Bila kosong, jadwal produk memakai pola batch. Tes memeriksa jadwal khusus, warisan jadwal batch, pasangan tanggal/jam, dan tanggal yang sudah lewat.
+4. Menambahkan kolom `products.image_alt` dan menggunakannya pada halaman detail produk.
+5. Menambahkan tes mock keamanan endpoint: JWT/session Admin, role cashier ditolak, URL foto dibatasi ke Cloudinary, dan Gemini menerima data gambar.
+6. Model bawaan diperbarui ke `gemini-3.5-flash-lite` setelah memeriksa dokumentasi Google terbaru: menerima gambar, memiliki Free Tier Standard terbatas, dan tidak lagi mengirim parameter sampling `temperature` yang deprecated.
+7. `npm run verify` lulus setelah perubahan V24.2. Ini adalah tes otomatis/mock lokal, bukan bukti deploy Netlify, API key aktif, upload HP, Supabase live, Cron end-to-end, atau indexing Google.
+
+BELUM DISELESAIKAN / WAJIB SEBELUM DIPAKAI
+- Belum dideploy ke Netlify dan belum dihubungkan/dipush ke repository pengguna.
+- `ERSYA_GEMINI_API_KEY` belum tersedia di environment Netlify; analisis AI baru aktif setelah pemilik menambahkan key dan melakukan deploy ulang.
+- Migrasi `image_alt` perlu dijalankan di Supabase sebelum deploy endpoint halaman produk yang meminta kolom tersebut.
+- Belum dilakukan tes browser nyata dari HP, analisis foto riil dengan Gemini, batch riil, upload Cloudinary riil, penyimpanan DB, Cron publikasi, dan Google Search Console.
+- Free tier Gemini memiliki kuota/batas dan kebijakan pemrosesan konten; baca panduan sebelum mengunggah foto.
+
+
+ADDENDUM AUDIT LIVE + KODE V24.2.1 — 3 NOVEMBER 2026
+
+PERBAIKAN KODE LOKAL
+- Schema bisnis lokal diperbarui menjadi `FurnitureStore`, menyertakan URL, telepon, gambar, alamat lokal Ngabul/Tahunan/Jepara, area Jepara dan Maps; terhubung ke Organization melalui @id.
+- Tidak menambahkan `aggregateRating` atau rating/ulasan buatan.
+- Tes build memeriksa schema FurnitureStore dan menolak aggregateRating self-serving.
+- `npm run build` lulus seluruh rangkaian smoke test lagi setelah perubahan V24.2.1.
+
+PEMERIKSAAN DATABASE AKTIF
+- Project Supabase berstatus ACTIVE_HEALTHY; tabel public yang diperiksa semuanya mengaktifkan RLS.
+- 15 produk ditemukan; 15 published. Seluruhnya memiliki slug, gambar, judul SEO, deskripsi SEO, dan keywords.
+- Migrasi aman `ALTER TABLE public.products ADD COLUMN IF NOT EXISTS image_alt text` berhasil diterapkan pada 3 November 2026 dan diverifikasi dengan information_schema serta struktur tabel. Tidak ada produk lama yang diubah oleh migrasi.
+- Seluruh 15 produk lama masih memiliki image_alt kosong. Isi ALT harus dihasilkan setelah foto aktual dilihat.
+- Job Cron `ersya-publish-due-products` aktif dengan jadwal setiap menit; fungsi `public.ersya_publish_due_products()` ada. Auto Pilot masih `enabled=false`, `auto_seo=true`, timezone `Asia/Jakarta`.
+- `site_settings`: brand ERSYA MEBEL, main_city Jepara, allow_index=true, Maps/WhatsApp/meta title/meta description terisi; canonical_url dan service_areas di database masih NULL. Homepage source mempunyai canonical URL statis `https://ersyafurniture.netlify.app/`.
+- Terdeteksi dua produk memakai SEO title sama: `Kursi Cafe | ERSYA MEBEL`. Beberapa meta description masih berpola template dan ada ketidaksesuaian jenis produk/kategori yang harus dikoreksi setelah foto masing-masing ditinjau.
+
+ADVISOR SUPABASE
+- Security warning: Leaked Password Protection disabled; aktifkan pada Supabase Dashboard > Authentication > Password Security.
+- Performance warning: 9 temuan terkait beberapa permissive RLS policies pada kategori, produk, profil, SEO settings, dan site settings. Ini tidak otomatis berarti tabel tanpa RLS; semua tabel yang diperiksa memiliki RLS enabled. Audit kondisi dan kebijakan perlu dilakukan sebelum menggabungkan policy.
+
+BELUM TERVERIFIKASI
+- Deploy Preview dan produksi Netlify, GitHub Actions, browser nyata Android, kunci Gemini di environment server, analisis foto Gemini sungguhan, upload Cloudinary, antrean -> Cron -> produk published -> halaman -> sitemap, Rich Results Test, Search Console indexing, dan ranking Google.
+- Tidak ada perubahan produk/publikasi atau aktivasi Auto Pilot pada audit ini.

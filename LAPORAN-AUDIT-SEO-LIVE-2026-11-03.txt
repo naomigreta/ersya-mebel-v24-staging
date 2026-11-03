@@ -1,0 +1,50 @@
+LAPORAN AUDIT ERSYA MEBEL — 3 NOVEMBER 2026
+
+RINGKASAN
+Fondasi website dan database sudah berjalan. Database aktif memiliki 15 produk terbit lengkap dengan slug, foto, metadata SEO, dan keyword. Sistem antrean publikasi Cron aktif. Kode V24.2.1 lulus pemeriksaan otomatis lokal. Namun kode baru belum di-deploy ke Netlify dan Auto Pilot tetap nonaktif.
+
+1. STATUS DATABASE / PRODUK
+- Project Supabase: ACTIVE_HEALTHY (region ap-southeast-1).
+- 15 total produk, 15 published, 0 draft/unpublished.
+- 15/15 mempunyai slug, foto, SEO title, SEO description, keywords.
+- Migrasi `products.image_alt` telah berhasil diterapkan dan diverifikasi pada database aktif pada 3 November 2026.
+- 15 produk lama masih memiliki ALT text kosong. Jangan isi massal dari nama produk; tinjau foto aktual dahulu.
+- Job `ersya-publish-due-products` aktif (`* * * * *`); fungsi worker tersedia.
+- Auto Pilot: enabled=false; auto_seo=true; timezone Asia/Jakarta; Senin–Jumat; 09:00; 1 produk per slot. Ini tidak diubah.
+
+2. TEMUAN SEO
+- Homepage source punya title, meta description, canonical, robots, Open Graph, Twitter Card, Organization, WebSite, CollectionPage, FAQPage, sitemap dan robots.txt.
+- Satu pasangan produk memakai SEO title duplikat `Kursi Cafe | ERSYA MEBEL`.
+- Deskripsi beberapa produk masih terlalu generik/templated; ditemukan contoh deskripsi kursi taman menyebut kursi cafe dan deskripsi sofa cafe menyebut kursi cafe. Koreksi sebaiknya berbasis foto serta data produk.
+- canonical_url di site_settings database NULL (homepage source memiliki canonical statis ke domain Netlify).
+- service_areas di site_settings database NULL; jangan menambahkan cakupan kota sebelum pemilik mengonfirmasi jangkauan pengiriman/layanan.
+- 15 produk belum memiliki image_alt.
+
+3. SEO LOKAL
+- Schema lokal homepage pada kode lokal V24.2.1 diperbarui ke tipe FurnitureStore, dihubungkan ke Organization, dengan telepon, alamat Ngabul/Tahunan/Jepara, area Jepara, URL, gambar dan Google Maps.
+- Data bisnis publik yang ditemukan menampilkan rating 4.8/5 dari 12 ulasan dan kategori pembuat/produsen mebel. Jaga NAP (nama, alamat, telepon) konsisten di website dan profil bisnis.
+- Tidak menambahkan aggregateRating atau ulasan palsu di schema situs bisnis sendiri.
+
+4. KEAMANAN / KINERJA SUPABASE
+- Semua tabel public yang diperiksa memiliki RLS enabled.
+- Security advisor: Leaked Password Protection dinonaktifkan. Aktifkan di Dashboard Supabase > Authentication > Password Security.
+- Performance advisor: 9 temuan multiple permissive RLS policies. Audit definisi policy sebelum menggabungkan; jangan mengorbankan akses admin/publik yang memang diperlukan.
+
+5. KODE DAN PENGUJIAN
+- Paket kerja diperbarui menjadi V24.2.1.
+- `npm run build` lulus: struktur/HTML/JS/JSON-LD, halaman produk dan sitemap, Gemini auth/URL Cloudinary, deploy context, Auto Pilot schedule, Supabase-lite, admin escaping, dan anti-Base64.
+- Kandidat ZIP tetap memakai nama V24.1.4 yang diminta workflow lama agar GitHub Actions lama mengenalinya; isi kode adalah V24.2.1.
+
+6. YANG BELUM SELESAI
+- Belum ada deploy Netlify/Deploy Preview yang dapat dikonfirmasi.
+- Secret `ERSYA_GEMINI_API_KEY` belum diverifikasi di Netlify; jangan kirim key melalui chat atau masukkan ke ZIP/GitHub.
+- Belum diuji browser Android nyata, foto Gemini asli, upload Cloudinary, jadwal -> Cron -> publikasi -> halaman produk -> sitemap.
+- Belum ada pemeriksaan Google Rich Results Test, Search Console URL Inspection/indexing, atau peringkat pencarian.
+- Kode website yang baru belum dipublikasikan; jangan menganggap hasil tes lokal sebagai bukti produksi.
+
+7. PRIORITAS BERIKUTNYA
+1) Pasang source V24.2.1 melalui workflow GitHub yang sudah ada dan pastikan Actions selesai tanpa error.
+2) Atur ERSYA_GEMINI_API_KEY secara aman di environment Netlify, lalu deploy Deploy Preview.
+3) Uji satu foto dari Android: analisis visual, tinjau hasil, simpan antrean, verifikasi Cloudinary/Supabase.
+4) Uji satu jadwal hingga produk terbit, halaman produk dan sitemap.
+5) Baru setelah itu rencanakan Auto Pilot produksi dan perbaiki metadata produk lama berdasarkan foto.

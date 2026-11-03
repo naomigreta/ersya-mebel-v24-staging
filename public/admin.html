@@ -8,7 +8,7 @@
 .login{background:radial-gradient(circle at 50% 0%,#e9f1eb 0%,#f4f5f2 48%,#eef0ec 100%)}.login-box{box-shadow:0 20px 55px rgba(33,74,54,.12);backdrop-filter:blur(3px)}.mark{background:linear-gradient(145deg,#285b43,#173a29);box-shadow:0 7px 18px rgba(33,74,54,.22)}.side,.form,.seo-box,.v7-card,.stat,.product-card{box-shadow:0 8px 24px rgba(31,46,37,.045)}.btn.primary{box-shadow:0 7px 16px rgba(33,74,54,.16)}@media(max-width:760px){.top{box-shadow:0 4px 16px rgba(31,46,37,.06)}.side{box-shadow:none}}
 </style><script src="ersya-supabase-config.js"></script>
 <script src="supabase-lite.js"></script>
-<meta name="application-version" content="V24.1.3-ANTI-BASE64"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"></head><body>
+<meta name="application-version" content="V24.2.3-SECURE-IMAGE-INGEST"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"></head><body>
 <div class="login" id="login">
 <form class="login-box" onsubmit="login(event)">
 <div class="brand"><div class="mark">E</div><div>ERSYA MEBEL</div></div>
@@ -74,7 +74,7 @@
 </section>
 <section class="panel" id="panel-autopilot">
 <div class="head"><div><h1>Auto Pilot</h1><p>Antrean foto massal, jadwal mingguan, dan SEO otomatis.</p></div><button class="btn" type="button" onclick="loadAutoPilotSettings(true)">Muat Pengaturan</button></div>
-<div class="notice"><b>Berjalan di server:</b> setelah foto berhasil diunggah ke Cloudinary dan produk masuk antrean Supabase, publikasi mengikuti jadwal walaupun HP kamu mati. Cron Supabase harus sudah aktif. Pilihan hari dan jam diterapkan saat membuat antrean; jadwal yang sudah disimpan tidak berubah kalau pengaturan nanti diedit.</div>
+<div class="notice"><b>Berjalan di server:</b> setelah foto masuk Cloudinary dan data produk tersimpan di Supabase, publikasi mengikuti jadwal meskipun HP ditutup. Cron Supabase harus aktif. Jadwal batch dan jadwal khusus setiap produk disimpan terpisah.</div>
 <div class="form" style="margin-bottom:14px">
 <h3 style="margin-top:0">1. Pengaturan publikasi</h3>
 <label class="checkline"><input id="apEnabled" type="checkbox"/> Aktifkan Auto Pilot (publikasi jadwal di server)</label>
@@ -101,7 +101,7 @@
 </div>
 <div class="form" style="margin-bottom:14px">
 <h3 style="margin-top:0">2. Masukkan banyak foto ke antrean</h3>
-<div class="field"><label for="apPhotos">Pilih foto produk (bisa banyak sekaligus)</label><input id="apPhotos" type="file" accept="image/*" multiple/><div class="v7-mini" style="margin-top:6px">Pilih hingga 100 foto sekaligus. Foto dikompres dan diunggah satu per satu agar penggunaan memori tetap rendah. Nama berkas menjadi nama awal produk; kamu bisa mengeditnya di bawah.</div></div>
+<div class="field"><label for="apPhotos">Pilih foto produk (bisa banyak sekaligus)</label><input id="apPhotos" type="file" accept="image/*" multiple/><div class="v7-mini" style="margin-top:6px">Pilih hingga 100 foto. AI akan membaca isi gambar satu per satu—bukan menebak dari nama berkas—lalu menyusun nama produk, deskripsi, dan SEO. Perlu koneksi internet serta kunci Gemini yang dipasang aman di Netlify.</div></div>
 <div class="grid2">
 <div class="field"><label for="apCategory">Kategori untuk batch ini</label><select id="apCategory"><option>Kursi Cafe</option><option>Meja Cafe</option><option>Kursi Teras</option><option>Kursi Bar</option><option>Set Cafe</option><option>Custom</option></select></div>
 <div class="field"><label for="apMaterial">Material untuk batch ini</label><select id="apMaterial"><option>Besi &amp; Kayu</option><option>Besi</option><option>Kayu</option><option>Custom</option></select></div>
@@ -109,8 +109,8 @@
 <div class="field"><label for="apDescriptionExtra">Catatan deskripsi tambahan (opsional)</label><textarea id="apDescriptionExtra" rows="2" placeholder="Contoh: tersedia ukuran custom dan pilihan warna."></textarea></div>
 <div id="apFileCount" class="v7-mini" style="margin:8px 0">Belum ada foto dipilih.</div>
 <div id="apFileList" class="cards" style="grid-template-columns:1fr;gap:9px"></div>
-<div class="notice" style="margin-top:12px;margin-bottom:12px"><b>SEO otomatis:</b> setiap produk akan dibuatkan slug unik, judul SEO, deskripsi SEO, kata kunci, dan teks alternatif foto berdasarkan nama produk, kategori, material, serta lokasi bisnis. Hasilnya disimpan bersama data produk. SEO tidak menjamin Google langsung mengindeks produk.</div>
-<div class="row"><button id="apQueueBtn" class="btn primary" type="button" onclick="enqueueAutoPilotPhotos()">Unggah Foto &amp; Masukkan ke Antrean</button><button class="btn" type="button" onclick="clearAutoPilotFiles()">Kosongkan Pilihan</button></div>
+<div class="notice" style="margin-top:12px;margin-bottom:12px"><b>AI + SEO:</b> tekan Analisis AI terlebih dahulu. AI melihat foto dan menyarankan nama, deskripsi, slug, judul SEO, deskripsi SEO, kata kunci, serta alt foto. Periksa dan edit hasilnya sebelum antrean dibuat. SEO membantu kelengkapan halaman, tetapi tidak menjamin peringkat Google.</div>
+<div class="row"><button id="apAnalyzeBtn" class="btn" type="button" onclick="analyzeAutoPilotFiles()">Analisis AI semua foto</button><button id="apQueueBtn" class="btn primary" type="button" onclick="enqueueAutoPilotPhotos()">Simpan &amp; Masukkan ke Antrean</button><button class="btn" type="button" onclick="clearAutoPilotFiles()">Kosongkan Pilihan</button></div>
 <div id="apUploadStatus" class="v7-mini" role="status" aria-live="polite" style="margin-top:10px"></div>
 </div>
 <div class="form">
@@ -127,6 +127,7 @@
 <div class="field"><label>Deskripsi singkat</label><textarea id="pdesc" placeholder="Jelaskan model atau penggunaan produk"></textarea></div>
 <div class="grid2"><div class="field"><label>Slug URL (SEO)</label><input id="pslug" oninput="slugTouched=true" placeholder="kursi-cafe-besi-kayu"/></div><div class="field"><label>Judul SEO</label><input id="pseoTitle" maxlength="60" placeholder="Kursi Cafe Besi Kayu | ERSYA MEBEL"/></div></div>
 <div class="field"><label>Deskripsi SEO</label><textarea id="pseoDesc" maxlength="160" placeholder="Deskripsi singkat untuk mesin pencari." style="min-height:78px"></textarea></div>
+<div class="field"><label>Alt text foto (SEO & aksesibilitas)</label><input id="pimageAlt" maxlength="180" placeholder="Contoh: Kursi cafe rangka besi dan dudukan kayu"/></div>
 <div class="field"><label>Foto produk</label><input accept="image/*" id="photoInput" onchange="handleImage(this.files[0])" type="file"/><div style="font-size:11px;color:var(--muted);margin-top:6px">Foto diperkecil otomatis lalu disimpan online ke Cloudinary. Foto baru tidak disimpan sebagai Base64 di penyimpanan browser; koneksi online harus siap.</div></div>
 <img alt="Preview foto produk" class="thumb hidden" id="preview"/><input id="imageData" type="hidden"/>
 <div class="field"><label for="pscheduleAt">Jadwalkan publikasi otomatis (opsional)</label><input id="pscheduleAt" type="datetime-local"/><div style="font-size:12px;color:var(--muted);margin-top:6px">Pilih tanggal dan jam mendatang agar produk tetap tersembunyi sampai waktunya. Kosongkan untuk memakai pilihan publikasi di bawah. Waktu mengikuti zona waktu perangkat. Memerlukan Auto Pilot aktif di Supabase.</div></div>
@@ -280,8 +281,8 @@ function autoSeo(){const n=document.querySelector("#pname").value.trim();if(!slu
 function localDateTimeValue(value){if(!value)return "";const d=new Date(value);if(Number.isNaN(d.getTime()))return "";return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16)}
 function productStatusLabel(p){if(!p.published&&p.scheduledAt){const ts=Date.parse(p.scheduledAt);if(Number.isFinite(ts)){if(ts>Date.now())return "Terjadwal: "+new Date(ts).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"});return "Jadwal lewat—cek Auto Pilot"}}return p.published?"Tampil":"Disembunyikan"}
 function render(){const q=(document.querySelector("#search")?.value||"").trim().toLowerCase();const sort=document.querySelector("#sortSelect")?.value||"updated";let filtered=products.filter(p=>(p.name+" "+p.category+" "+p.material+" "+(p.slug||"")).toLowerCase().includes(q));if(sort==="name")filtered.sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"id"));else if(sort==="status")filtered.sort((a,b)=>Number(b.published!==false)-Number(a.published!==false));else filtered.sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")));document.querySelector("#total").textContent=products.length;document.querySelector("#published").textContent=products.filter(p=>p.published).length;document.querySelector("#hiddenCount").textContent=products.filter(p=>!p.published).length;document.querySelector("#dashTotal").textContent=products.length;document.querySelector("#dashPublished").textContent=products.filter(p=>p.published).length;document.querySelector("#dashHidden").textContent=products.filter(p=>!p.published).length;const recent=[...products].sort((a,b)=>String(b.updatedAt||"").localeCompare(String(a.updatedAt||"")))[0];document.querySelector("#dashRecent").textContent=recent?.updatedAt?new Date(recent.updatedAt).toLocaleDateString("id-ID",{day:"2-digit",month:"short"}):"—";document.querySelector("#dashRecentName").textContent=recent?.name||"Belum ada";const box=document.querySelector("#adminProducts");box.innerHTML=filtered.length?filtered.map(p=>{const idArg=esc(JSON.stringify(String(p.id)));const obj=esc(JSON.stringify(stripTransientImagePayload(p)));return `<article class="product-card"><img src="${src(p)}" alt="${esc(p.name)}" loading="lazy" decoding="async"><div class="product-body"><span class="badge">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p>${esc(p.desc||"")}</p><div class="product-meta"><span class="meta-chip">${esc(p.material||"")}</span><span class="meta-chip ${p.published?"status-live":"status-off"}">${esc(productStatusLabel(p))}</span>${p.slug?`<span class="meta-chip">/${esc(p.slug)}</span>`:""}</div><small style="display:block;color:var(--muted);margin-bottom:9px">${p.updatedAt?"Diperbarui "+new Date(p.updatedAt).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):""}</small><div class="row">${isAdmin()?`<button class="btn" onclick="editProduct(${idArg})">Edit</button><button class="btn" onclick="duplicateProduct(${idArg})">Duplikat</button>`:`<button class="btn" onclick='orderFromAdmin(${obj})'>WhatsApp</button>`}${isAdmin()?`<button class="btn ${p.published?"danger":"primary"}" onclick="togglePublish(${idArg})">${p.published?"Sembunyikan":"Tampilkan"}</button>`:""}</div>${isAdmin()?`<div class="row" style="margin-top:7px"><button class="btn" onclick='copyProductLink(${obj})'>Salin pesan WA</button><button class="btn danger" onclick="removeProduct(${idArg})">Hapus</button></div>`:""}</div></article>`}).join(""):`<div class="empty">Produk tidak ditemukan.</div>`}function clearPendingPhoto(){pendingPhotoBlob=null;if(pendingPhotoPreviewUrl){URL.revokeObjectURL(pendingPhotoPreviewUrl);pendingPhotoPreviewUrl=""}}
-function resetForm(){clearPendingPhoto();editingId=null;slugTouched=false;document.querySelector("#formTitle").textContent="Tambah Produk";document.querySelector("#pname").value="";document.querySelector("#pdesc").value="";document.querySelector("#pslug").value="";document.querySelector("#pseoTitle").value="";document.querySelector("#pseoDesc").value="";document.querySelector("#pcategory").value="Kursi Cafe";document.querySelector("#pmaterial").value="Besi & Kayu";document.querySelector("#ppublished").checked=true;document.querySelector("#pscheduleAt").value="";document.querySelector("#imageData").value="";document.querySelector("#preview").src="";document.querySelector("#preview").classList.add("hidden");const fi=document.querySelector("#photoInput");if(fi)fi.value=""}
-function editProduct(id){if(!isAdmin()){toast("Akun kasir tidak dapat mengedit");return}const p=products.find(x=>x.id===id);if(!p)return;clearPendingPhoto();if(p.imageBlob instanceof Blob){p.previewUrl=URL.createObjectURL(p.imageBlob)}editingId=id;slugTouched=!!p.slug;document.querySelector("#formTitle").textContent="Edit Produk";document.querySelector("#pname").value=p.name||"";document.querySelector("#pdesc").value=p.desc||"";document.querySelector("#pslug").value=p.slug||makeSlug(p.name);document.querySelector("#pseoTitle").value=p.seoTitle||((p.name||"")+" | ERSYA MEBEL").slice(0,60);document.querySelector("#pseoDesc").value=p.seoDesc||(p.desc||"").slice(0,160);document.querySelector("#pcategory").value=p.category||"Kursi Cafe";document.querySelector("#pmaterial").value=p.material||"Besi & Kayu";document.querySelector("#ppublished").checked=p.published!==false;document.querySelector("#pscheduleAt").value=localDateTimeValue(p.scheduledAt);document.querySelector("#imageData").value="";if(p.imageData||p.previewUrl||p.img){document.querySelector("#preview").src=src(p);document.querySelector("#preview").classList.remove("hidden")}else{document.querySelector("#preview").src="";document.querySelector("#preview").classList.add("hidden")}switchPanel("add")}
+function resetForm(){clearPendingPhoto();editingId=null;slugTouched=false;document.querySelector("#formTitle").textContent="Tambah Produk";document.querySelector("#pname").value="";document.querySelector("#pdesc").value="";document.querySelector("#pslug").value="";document.querySelector("#pseoTitle").value="";document.querySelector("#pseoDesc").value="";document.querySelector("#pimageAlt").value="";document.querySelector("#pcategory").value="Kursi Cafe";document.querySelector("#pmaterial").value="Besi & Kayu";document.querySelector("#ppublished").checked=true;document.querySelector("#pscheduleAt").value="";document.querySelector("#imageData").value="";document.querySelector("#preview").src="";document.querySelector("#preview").classList.add("hidden");const fi=document.querySelector("#photoInput");if(fi)fi.value=""}
+function editProduct(id){if(!isAdmin()){toast("Akun kasir tidak dapat mengedit");return}const p=products.find(x=>x.id===id);if(!p)return;clearPendingPhoto();if(p.imageBlob instanceof Blob){p.previewUrl=URL.createObjectURL(p.imageBlob)}editingId=id;slugTouched=!!p.slug;document.querySelector("#formTitle").textContent="Edit Produk";document.querySelector("#pname").value=p.name||"";document.querySelector("#pdesc").value=p.desc||"";document.querySelector("#pslug").value=p.slug||makeSlug(p.name);document.querySelector("#pseoTitle").value=p.seoTitle||((p.name||"")+" | ERSYA MEBEL").slice(0,60);document.querySelector("#pseoDesc").value=p.seoDesc||(p.desc||"").slice(0,160);document.querySelector("#pimageAlt").value=p.imageAlt||p.name||"";document.querySelector("#pcategory").value=p.category||"Kursi Cafe";document.querySelector("#pmaterial").value=p.material||"Besi & Kayu";document.querySelector("#ppublished").checked=p.published!==false;document.querySelector("#pscheduleAt").value=localDateTimeValue(p.scheduledAt);document.querySelector("#imageData").value="";if(p.imageData||p.previewUrl||p.img){document.querySelector("#preview").src=src(p);document.querySelector("#preview").classList.remove("hidden")}else{document.querySelector("#preview").src="";document.querySelector("#preview").classList.add("hidden")}switchPanel("add")}
 async function duplicateProduct(id){if(!isAdmin())return;const p=products.find(x=>x.id===id);if(!p)return;if(p.imageBlob instanceof Blob){toast("Duplikasi ditunda: selesaikan sinkronisasi foto ke Cloudinary terlebih dahulu.");return}if(isDataImagePayload(p.imageData)&&!onlinePhotoStorageReady()){toast("Duplikasi dibatalkan: foto lama masih tertanam di data browser. Sambungkan layanan online dahulu.");return}const copy={...p};if(copy.imageBlob instanceof Blob)copy.previewUrl=URL.createObjectURL(copy.imageBlob);copy.id="p_"+Date.now();copy.name=(p.name||"Produk")+" (Salinan)";copy.slug=makeSlug(copy.name)+"-"+String(Date.now()).slice(-5);copy.seoTitle=((copy.name||"Produk")+" | ERSYA MEBEL").slice(0,60);copy.seoDesc=(copy.desc||"").slice(0,160);copy.updatedAt=new Date().toISOString();copy.scheduledAt=null;copy.syncState="pending";products.unshift(copy);if(!save()){products=products.filter(x=>x.id!==copy.id);toast("Produk tidak dapat disimpan di HP");return}render();try{if(window.ERSYA_DB?.enabled&&window.ersyaSyncProductById)await window.ersyaSyncProductById(copy.id);toast("Produk diduplikat dan tersimpan online ✓")}catch(e){products=products.filter(x=>x.id!==copy.id);save();render();toast("Duplikat gagal tersimpan online: "+(e?.message||"periksa koneksi"))}}
 function copyProductLink(p){if(!p)return;const msg=`Halo ERSYA MEBEL, saya tertarik dengan produk *${p.name}*. Mohon informasi harga, ukuran, bahan, dan ketersediaannya.`;if(navigator.clipboard?.writeText){navigator.clipboard.writeText(msg).then(()=>toast("Pesan WhatsApp disalin"),()=>toast(msg))}else{prompt("Salin pesan WhatsApp ini:",msg)}}
 function adminWaNumber(n){let d=String(n||"0858-0313-3261").replace(/\D/g,"");if(d.startsWith("0"))d="62"+d.slice(1);if(!d.startsWith("62"))d="62"+d;return d}function orderFromAdmin(p){if(!p)return;const msg=`Halo ERSYA MEBEL, saya tertarik dengan produk *${p.name}*. Mohon informasi harga, ukuran, bahan, dan ketersediaannya.`;const n=adminWaNumber(getSettings().wa);location.href=`https://wa.me/${n}?text=${encodeURIComponent(msg)}`}
@@ -314,7 +315,7 @@ async function saveProduct(){
     if(!(window.ERSYA_DB?.enabled&&typeof window.ersyaSyncProductById==='function')){toast("Jadwal otomatis memerlukan koneksi Supabase online. Jadwal tidak disimpan lokal.");return}
     scheduledAt=scheduleDate.toISOString();shouldPublish=false;
   }
-  const p={id:editingId||("p_"+Date.now()),name,category:document.querySelector("#pcategory").value,material:document.querySelector("#pmaterial").value,desc:document.querySelector("#pdesc").value.trim(),slug,seoTitle:document.querySelector("#pseoTitle").value.trim(),seoDesc:document.querySelector("#pseoDesc").value.trim(),published:shouldPublish,scheduledAt,img:old?.img||"",imageBlob:selectedBlob||old?.imageBlob||null,previewUrl:selectedBlob?pendingPhotoPreviewUrl:(old?.previewUrl||""),imageData:keepLegacyData,updatedAt:new Date().toISOString(),syncState:"pending"};
+  const p={id:editingId||("p_"+Date.now()),name,category:document.querySelector("#pcategory").value,material:document.querySelector("#pmaterial").value,desc:document.querySelector("#pdesc").value.trim(),slug,seoTitle:document.querySelector("#pseoTitle").value.trim(),seoDesc:document.querySelector("#pseoDesc").value.trim(),imageAlt:document.querySelector("#pimageAlt").value.trim(),published:shouldPublish,scheduledAt,img:old?.img||"",imageBlob:selectedBlob||old?.imageBlob||null,previewUrl:selectedBlob?pendingPhotoPreviewUrl:(old?.previewUrl||""),imageData:keepLegacyData,updatedAt:new Date().toISOString(),syncState:"pending"};
   const snapshot=cloneProducts(products);
   if(editingId){if(old)Object.assign(old,p)}else products.unshift(p);
   if(window.ERSYA_DB?.enabled&&typeof window.ersyaSyncProductById==='function'){
@@ -415,7 +416,6 @@ async function saveAutoPilotSettings(silent=false){
   if(!isAdmin()){toast('Fitur ini hanya untuk Admin.');return false}
   try{
     const c=apConfigFromForm();
-    if(!c.weekdays.length)throw new Error('Pilih minimal satu hari publikasi.');
     if(!/^\d{2}:\d{2}:00$/.test(c.publish_time))throw new Error('Jam publikasi tidak valid.');
     if(!Number.isInteger(c.products_per_slot)||c.products_per_slot<1||c.products_per_slot>5)throw new Error('Jumlah produk per slot harus 1–5.');
     await apRequireAdmin();
@@ -462,25 +462,77 @@ function apSeoFor(name,category,material,description,slugOverride){
   return {slug,seoTitle:seoTitle.slice(0,60),seoDesc:seoDesc.slice(0,160),seoKeywords:keywords,description:desc};
 }
 function apDescription(name,category,material,extra){const base=`${name} dari ERSYA MEBEL, pilihan ${category.toLowerCase()} berbahan ${material.toLowerCase()} untuk cafe, resto, rumah, atau ruang usaha.`;const follow=String(extra||'').trim();return (base+(follow?' '+follow:'' )+' Konsultasikan ukuran, warna, dan ketersediaan melalui WhatsApp.').replace(/\s+/g,' ').trim()}
-function apPreviewSeo(name,index,category,material){
-  const used=new Set((products||[]).map(p=>String(p.slug||'').toLowerCase()).filter(Boolean));
-  for(let i=0;i<index;i++){
-    const base=apSlug(autoPilotFiles[i]?.name||'produk-furniture');let prior=base,n=1;
-    while(used.has(prior.toLowerCase())){n++;prior=(base+'-'+n).slice(0,70)}
-    used.add(prior.toLowerCase());
-  }
-  const base=apSlug(name);let slug=base,n=1;
-  while(used.has(slug.toLowerCase())){n++;slug=(base+'-'+n).slice(0,70)}
-  return apSeoFor(name,category,material,'',slug);
-}
+function apCategoryOptions(selected){return ['Kursi Cafe','Meja Cafe','Kursi Teras','Kursi Bar','Set Cafe','Custom'].map(v=>`<option ${v===selected?'selected':''}>${esc(v)}</option>`).join('')}
+function apMaterialOptions(selected){return ['Besi & Kayu','Besi','Kayu','Custom','Belum dipastikan'].map(v=>`<option ${v===selected?'selected':''}>${esc(v)}</option>`).join('')}
 function apRenderFiles(){
   const list=document.querySelector('#apFileList'),counter=document.querySelector('#apFileCount');if(!list||!counter)return;
-  counter.textContent=autoPilotFiles.length?`${autoPilotFiles.length} foto dipilih · total ${apBytes(autoPilotFiles.reduce((s,x)=>s+x.file.size,0))}`:'Belum ada foto dipilih.';
-  list.innerHTML=autoPilotFiles.map((x,i)=>{const seo=apPreviewSeo(x.name,i,document.querySelector('#apCategory')?.value||'Kursi Cafe',document.querySelector('#apMaterial')?.value||'Besi & Kayu');return `<div class="form" data-ap-row="${i}" style="padding:12px;box-shadow:none"><div style="display:flex;gap:9px;justify-content:space-between;align-items:start"><div style="min-width:0"><b style="font-size:13px;overflow-wrap:anywhere">${esc(x.file.name)}</b><div class="v7-mini">${apBytes(x.file.size)}</div></div><button class="btn danger" type="button" data-ap-remove="${i}" style="padding:6px 9px;flex:0 0 auto">Hapus</button></div><div class="field" style="margin:10px 0 6px"><label for="apName${i}">Nama produk (boleh diedit)</label><input id="apName${i}" data-ap-name="${i}" value="${esc(x.name)}" maxlength="100"/></div><div data-ap-seo class="v7-mini" style="overflow-wrap:anywhere">Slug: ${esc(seo.slug)} · Judul SEO: ${esc(seo.seoTitle)}</div></div>`}).join('');
+  counter.textContent=autoPilotFiles.length?`${autoPilotFiles.length} foto dipilih · total ${apBytes(autoPilotFiles.reduce((sum,x)=>sum+x.file.size,0))}`:'Belum ada foto dipilih.';
+  list.innerHTML=autoPilotFiles.map((x,i)=>{
+    const status=x.ai?'AI selesai — hasil dapat diedit':'Belum dianalisis AI';
+    const img=x.imageUrl||x.previewUrl||'';
+    return `<div class="form" data-ap-row="${i}" style="padding:12px;box-shadow:none">
+      <div style="display:flex;gap:10px;align-items:start">
+        ${img?`<img src="${esc(img)}" alt="Pratinjau ${esc(x.file.name)}" loading="lazy" decoding="async" style="width:92px;height:78px;object-fit:cover;border-radius:10px;background:#eee;flex:0 0 auto"/>`:''}
+        <div style="min-width:0;flex:1"><b style="font-size:13px;overflow-wrap:anywhere">${esc(x.file.name)}</b><div class="v7-mini">${apBytes(x.file.size)}</div><div class="v7-mini" style="margin-top:4px;color:${x.ai?'#237044':'#8a6722'}">${status}</div></div>
+        <button class="btn danger" type="button" data-ap-remove="${i}" style="padding:6px 9px;flex:0 0 auto">Hapus</button>
+      </div>
+      <div class="field" style="margin:10px 0 6px"><label>Nama produk</label><input data-ap-field="name" value="${esc(x.name||'')}" maxlength="100"/></div>
+      <div class="grid2"><div class="field"><label>Kategori produk</label><select data-ap-field="category">${apCategoryOptions(x.category||'Kursi Cafe')}</select></div><div class="field"><label>Material</label><select data-ap-field="material">${apMaterialOptions(x.material||'Besi & Kayu')}</select></div></div>
+      <div class="field"><label>Deskripsi produk</label><textarea data-ap-field="description" rows="2">${esc(x.description||'')}</textarea></div>
+      <div class="grid2"><div class="field"><label>Judul SEO (maks. 60 karakter)</label><input data-ap-field="seoTitle" maxlength="60" value="${esc(x.seoTitle||'')}"/></div><div class="field"><label>Slug URL</label><input data-ap-field="slug" maxlength="70" value="${esc(x.slug||'')}"/></div></div>
+      <div class="field"><label>Deskripsi SEO (maks. 160 karakter)</label><textarea data-ap-field="seoDesc" maxlength="160" rows="2">${esc(x.seoDesc||'')}</textarea></div>
+      <div class="field"><label>Kata kunci (pisahkan dengan koma)</label><textarea data-ap-field="seoKeywords" rows="2">${esc((x.seoKeywords||[]).join(', '))}</textarea></div>
+      <div class="field"><label>Alt text foto</label><input data-ap-field="imageAlt" maxlength="180" value="${esc(x.imageAlt||'')}"/></div>
+      <div class="grid2"><div class="field"><label>Jadwal khusus tanggal (opsional)</label><input type="date" data-ap-field="date" value="${esc(x.date||'')}"/></div><div class="field"><label>Jam khusus (opsional)</label><input type="time" data-ap-field="time" value="${esc(x.time||'')}"/></div></div>
+      <div class="v7-mini">${x.ai?`Ringkasan visual: ${esc(x.visualSummary||'—')}`:'Tanggal dan jam khusus boleh dikosongkan agar memakai jadwal batch di atas.'}</div>
+    </div>`;
+  }).join('');
 }
-function clearAutoPilotFiles(){if(autoPilotBusy)return;autoPilotFiles=[];const input=document.querySelector('#apPhotos');if(input)input.value='';apRenderFiles();const st=document.querySelector('#apUploadStatus');if(st)st.textContent='Pilihan foto dikosongkan.'}
-function handleAutoPilotFileSelection(input){if(!isAdmin()){toast('Masuk sebagai Admin untuk menggunakan Auto Pilot.');input.value='';return}const files=[...Array.from(input.files||[])];if(files.length>100){toast('Maksimal 100 foto dalam satu batch.');input.value='';return}const invalid=files.find(f=>!String(f.type||'').startsWith('image/'));if(invalid){toast('Pilih file gambar saja.');input.value='';return}autoPilotFiles=files.map((file,i)=>({key:`${file.name}|${file.size}|${file.lastModified}|${i}`,file,name:apTitleFromFilename(file)}));apRenderFiles()}
+function clearAutoPilotFiles(){if(autoPilotBusy)return;for(const x of autoPilotFiles){if(x.previewUrl)URL.revokeObjectURL(x.previewUrl)}autoPilotFiles=[];const input=document.querySelector('#apPhotos');if(input)input.value='';apRenderFiles();const st=document.querySelector('#apUploadStatus');if(st)st.textContent='Pilihan foto dikosongkan.'}
+function handleAutoPilotFileSelection(input){if(!isAdmin()){toast('Masuk sebagai Admin untuk menggunakan Auto Pilot.');input.value='';return}const files=[...Array.from(input.files||[])];if(files.length>100){toast('Maksimal 100 foto dalam satu batch.');input.value='';return}const invalid=files.find(f=>!String(f.type||'').startsWith('image/'));if(invalid){toast('Pilih file gambar saja.');input.value='';return}for(const x of autoPilotFiles){if(x.previewUrl)URL.revokeObjectURL(x.previewUrl)}const category=document.querySelector('#apCategory')?.value||'Kursi Cafe',material=document.querySelector('#apMaterial')?.value||'Besi & Kayu';autoPilotFiles=files.map((file,i)=>({key:`${file.name}|${file.size}|${file.lastModified}|${i}`,file,name:apTitleFromFilename(file),category,material,description:'',seoTitle:'',slug:'',seoDesc:'',seoKeywords:[],imageAlt:'',date:'',time:'',imageUrl:'',previewUrl:URL.createObjectURL(file),ai:null,productId:null,slugManual:false}));apRenderFiles()}
 async function apCompressedBlob(file){return await compressImageToBlob(file)}
+async function apUploadImageForAI(blob,id){
+  const cloud=window.ERSYA_CLOUDINARY||{};if(!cloud.cloudName||!cloud.uploadPreset)throw new Error('Konfigurasi Cloudinary belum siap.');
+  const fd=new FormData();fd.append('file',blob,'ersya-ai-'+String(id).replace(/[^a-zA-Z0-9_-]/g,'_')+'.jpg');fd.append('upload_preset',cloud.uploadPreset);fd.append('folder','ersya-mebel/products');fd.append('public_id','product-'+String(id).replace(/[^a-zA-Z0-9_-]/g,'_')+'-'+Date.now());
+  let response;try{response=await fetch('https://api.cloudinary.com/v1_1/'+encodeURIComponent(cloud.cloudName)+'/image/upload',{method:'POST',body:fd})}catch(e){throw new Error('Cloudinary tidak dapat dihubungi: '+(e?.message||e))}
+  let out=null;try{out=await response.json()}catch(_){}
+  if(!response.ok||!out?.secure_url)throw new Error('Upload Cloudinary gagal: '+(out?.error?.message||('HTTP '+response.status)));
+  return out.secure_url;
+}
+async function apGetAdminToken(){
+  const db=window.ERSYA_DB?.client;if(!db)throw new Error('Supabase belum terhubung.');
+  const sessionResult=await db.auth.getSession();if(sessionResult.error)throw new Error('Sesi Admin tidak dapat dibaca: '+sessionResult.error.message);
+  const token=sessionResult.data?.session?.access_token;if(!token)throw new Error('Sesi login habis. Keluar lalu masuk kembali sebagai Admin.');return token;
+}
+async function apCheckAIReady(token){
+  const response=await fetch('/.netlify/functions/analyze-product-image',{method:'GET',headers:{'Authorization':'Bearer '+token}});let out=null;try{out=await response.json()}catch(_){};
+  if(!response.ok||!out?.configured)throw new Error(out?.error||'Layanan AI belum siap di Netlify.');return true;
+}
+async function apRequestImageSEO(item,token){
+  const response=await fetch('/.netlify/functions/analyze-product-image',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({imageUrl:item.imageUrl,category:item.category,material:item.material,extraDescription:document.querySelector('#apDescriptionExtra')?.value||'',city:(typeof getSeoSettings==='function'?getSeoSettings().city:'Jepara')||'Jepara'})});
+  let out=null;try{out=await response.json()}catch(_){}
+  if(!response.ok||!out?.ok)throw new Error(out?.error||('AI gagal menganalisis foto (HTTP '+response.status+').'));
+  return out.data;
+}
+async function analyzeAutoPilotFiles(){
+  if(autoPilotBusy)return;if(!isAdmin()){toast('Fitur ini hanya untuk Admin.');return}if(!autoPilotFiles.length){toast('Pilih foto produk terlebih dahulu.');return}
+  const btn=document.querySelector('#apAnalyzeBtn'),status=document.querySelector('#apUploadStatus');autoPilotBusy=true;if(btn){btn.disabled=true;btn.textContent='AI sedang menganalisis…'}
+  try{
+    await apRequireAdmin();
+    const token=await apGetAdminToken();await apCheckAIReady(token);
+    for(let i=0;i<autoPilotFiles.length;i++){
+      const item=autoPilotFiles[i];if(item.ai)continue;
+      if(status)status.textContent=`AI membaca foto ${i+1} dari ${autoPilotFiles.length}: ${item.file.name}`;
+      const blob=await apCompressedBlob(item.file);item.imageUrl= item.imageUrl || await apUploadImageForAI(blob,'analysis-'+Date.now()+'-'+i);
+      const result=await apRequestImageSEO(item,token);
+      item.ai=result;if(item.previewUrl){URL.revokeObjectURL(item.previewUrl);item.previewUrl=''}item.name=result.name||item.name;item.category=result.category||item.category;item.material=result.material||item.material;item.description=result.description||'';item.seoTitle=result.seo_title||'';item.slug=apSlug(item.name);item.seoDesc=result.seo_description||'';item.seoKeywords=Array.isArray(result.seo_keywords)?result.seo_keywords:[];item.imageAlt=result.image_alt||'';item.visualSummary=result.visual_summary||'';
+      apRenderFiles();
+    }
+    if(status)status.textContent=`Analisis selesai. ${autoPilotFiles.filter(x=>x.ai).length} dari ${autoPilotFiles.length} foto memiliki hasil AI. Periksa dan edit sebelum menyimpan ke antrean.`;
+    toast('Analisis AI selesai. Periksa hasil setiap foto.');
+  }catch(e){if(status)status.textContent=e?.message||String(e);toast('Analisis AI: '+(e?.message||e))}
+  finally{autoPilotBusy=false;if(btn){btn.disabled=false;btn.textContent='Analisis AI semua foto'}}
+}
 function apGenerateSchedule(count,weekdays,timeValue,perSlot,startDateValue,afterTimestamp=null){
   const days=new Set(weekdays.map(Number));if(!days.size)throw new Error('Pilih minimal satu hari publikasi.');
   const m=/^(\d{2}):(\d{2})$/.exec(timeValue||'');if(!m||Number(m[1])>23||Number(m[2])>59)throw new Error('Jam publikasi tidak valid.');
@@ -493,69 +545,77 @@ function apGenerateSchedule(count,weekdays,timeValue,perSlot,startDateValue,afte
   }
   if(out.length!==count)throw new Error('Jadwal tidak dapat dibuat. Periksa hari, tanggal mulai, dan jumlah foto.');return out;
 }
+function apLocalCustomSchedule(item){
+  const date=String(item.date||'').trim(),time=String(item.time||'').trim();
+  if(!date&&!time)return null;
+  if(!date||!time)throw new Error(`Tanggal dan jam khusus harus diisi berpasangan untuk ${item.file.name}.`);
+  const value=new Date(`${date}T${time}:00`);if(Number.isNaN(value.getTime()))throw new Error(`Jadwal khusus tidak valid untuk ${item.file.name}.`);
+  if(value.getTime()<=Date.now()+30000)throw new Error(`Jadwal ${item.file.name} harus berada di masa depan.`);
+  return value.toISOString();
+}
+function apUniqueSlug(value,used){const base=apSlug(value);let slug=base,n=1;while(used.has(slug.toLowerCase())){n++;slug=(base+'-'+n).slice(0,70);if(n>200)throw new Error('Tidak dapat membuat slug unik.')}used.add(slug.toLowerCase());return slug}
 async function enqueueAutoPilotPhotos(){
   if(autoPilotBusy)return;if(!isAdmin()){toast('Fitur ini hanya untuk Admin.');return}
   if(!autoPilotFiles.length){toast('Pilih foto produk terlebih dahulu.');return}
-  const btn=document.querySelector('#apQueueBtn'),status=document.querySelector('#apUploadStatus');
-  autoPilotBusy=true;if(btn){btn.disabled=true;btn.textContent='Sedang memproses…'}
+  const btn=document.querySelector('#apQueueBtn'),status=document.querySelector('#apUploadStatus');autoPilotBusy=true;if(btn){btn.disabled=true;btn.textContent='Menyimpan antrean…'}
   let success=0;const failures=[];
   try{
     await apRequireAdmin();
+    const unanalyzed=autoPilotFiles.find(x=>!x.ai||!x.imageUrl);if(unanalyzed)throw new Error(`Foto “${unanalyzed.file.name}” belum dianalisis AI. Tekan Analisis AI semua foto terlebih dahulu.`);
     const cfg=apConfigFromForm();if(!cfg.enabled)throw new Error('Aktifkan Auto Pilot terlebih dahulu. Jadwal server masih dijeda.');
-    if(!cfg.weekdays.length)throw new Error('Pilih minimal satu hari publikasi.');
     if(!(await saveAutoPilotSettings(true)))throw new Error('Pengaturan Auto Pilot tidak berhasil disimpan. Periksa SQL, tabel, dan hak akses Supabase.');
     const existingQueue=(products||[]).filter(p=>p&&p.published===false&&p.scheduledAt).sort((a,b)=>String(a.scheduledAt).localeCompare(String(b.scheduledAt)));
-    const nowMs=Date.now(),hasStaleQueue=existingQueue.some(p=>Number.isFinite(Date.parse(p.scheduledAt))&&Date.parse(p.scheduledAt)<=nowMs-120000),hasFutureQueue=existingQueue.some(p=>Number.isFinite(Date.parse(p.scheduledAt))&&Date.parse(p.scheduledAt)>nowMs);
-    let schedule;
-    if(hasStaleQueue&&!hasFutureQueue){const combined=apGenerateSchedule(existingQueue.length+autoPilotFiles.length,cfg.weekdays,document.querySelector('#apTime').value,Number(document.querySelector('#apPerSlot').value),document.querySelector('#apStartDate').value);schedule=combined.slice(existingQueue.length)}
-    else {const lastScheduled=existingQueue.reduce((max,p)=>{const v=Date.parse(p.scheduledAt);return Number.isFinite(v)?Math.max(max,v):max},0);schedule=apGenerateSchedule(autoPilotFiles.length,cfg.weekdays,document.querySelector('#apTime').value,Number(document.querySelector('#apPerSlot').value),document.querySelector('#apStartDate').value,lastScheduled?new Date(lastScheduled).toISOString():null)}
-    const startLength=autoPilotFiles.length;
-    for(let i=0;i<startLength;i++){
+    const lastScheduled=existingQueue.reduce((max,p)=>{const v=Date.parse(p.scheduledAt);return Number.isFinite(v)?Math.max(max,v):max},0);
+    const individualSchedules=autoPilotFiles.map(item=>apLocalCustomSchedule(item));
+    const batchCount=individualSchedules.filter(value=>!value).length;
+    if(batchCount&&!cfg.weekdays.length)throw new Error('Pilih minimal satu hari publikasi untuk foto yang mengikuti jadwal batch.');
+    const batchSchedule=batchCount?apGenerateSchedule(batchCount,cfg.weekdays,document.querySelector('#apTime').value,Number(document.querySelector('#apPerSlot').value),document.querySelector('#apStartDate').value,lastScheduled?new Date(lastScheduled).toISOString():null):[];
+    let batchIndex=0;
+    const usedSlugs=new Set((products||[]).map(p=>String(p.slug||'').toLowerCase()).filter(Boolean));
+    const total=autoPilotFiles.length;
+    for(let i=0;i<total;i++){
       const item=autoPilotFiles[0];if(!item)break;
-      if(status)status.textContent=`Memproses ${i+1} dari ${startLength}: ${item.file.name}`;
+      if(status)status.textContent=`Menyimpan ${i+1} dari ${total}: ${item.name}`;
       try{
-        const name=String(item.name||'').trim();if(!name)throw new Error('Nama produk tidak boleh kosong.');
-        const category=document.querySelector('#apCategory').value,material=document.querySelector('#apMaterial').value;
-        const desc=apDescription(name,category,material,document.querySelector('#apDescriptionExtra').value);
-        const id='ap_'+Date.now().toString(36)+'_'+String(i+1).padStart(3,'0')+'_'+Math.random().toString(36).slice(2,7);
-        const seo=apSeoFor(name,category,material,desc);
-        const duplicate=products.some(p=>String(p.slug||'').toLowerCase()===seo.slug.toLowerCase());if(duplicate){seo.slug=(seo.slug+'-'+String(id).slice(-5)).slice(0,70)}
-        const imageBlob=await apCompressedBlob(item.file);
-        const previewUrl=URL.createObjectURL(imageBlob);
-        const p={id,name,category,material,desc:seo.description,slug:seo.slug,seoTitle:seo.seoTitle,seoDesc:seo.seoDesc,seoKeywords:seo.seoKeywords,published:false,scheduledAt:schedule[i],img:'',imageBlob,previewUrl,imageData:'',updatedAt:new Date().toISOString(),syncState:'pending',autoSeo:true};
-        products.unshift(p);let photoStaged=false,productCheckpointSaved=false;
-        try{
-          await putPhotoBlob(p.id,imageBlob);photoStaged=true;
-          if(!save())throw new Error('Data produk belum dapat dicatat di penyimpanan browser. Foto belum diunggah; periksa ruang penyimpanan lalu coba lagi.');
-          productCheckpointSaved=true;
-          await window.ersyaSyncProductById(p.id);
-        }catch(e){
-          if(photoStaged&&productCheckpointSaved){p.syncState='pending';save();autoPilotFiles.shift();apRenderFiles();render();}
-          else{products=products.filter(v=>String(v.id)!==String(p.id));if(p.previewUrl)URL.revokeObjectURL(p.previewUrl);if(photoStaged)await deletePhotoBlob(p.id);save();}
-          throw e;
+        let p=item.productId?products.find(v=>String(v.id)===String(item.productId)):null;
+        if(!p){
+          const name=String(item.name||'').trim();if(!name)throw new Error('Nama produk tidak boleh kosong.');
+          const category=item.category||document.querySelector('#apCategory').value,material=item.material||document.querySelector('#apMaterial').value;
+          const description=String(item.description||'').trim();if(!description)throw new Error(`Deskripsi AI kosong untuk ${item.file.name}.`);
+          const id='ap_'+Date.now().toString(36)+'_'+String(i+1).padStart(3,'0')+'_'+Math.random().toString(36).slice(2,7);
+          const slug=apUniqueSlug(item.slug||name,usedSlugs);
+          const seoTitle=String(item.seoTitle||`${name} | ERSYA MEBEL`).trim().slice(0,60);
+          const seoDesc=String(item.seoDesc||description).trim().slice(0,160);
+          const seoKeywords=Array.isArray(item.seoKeywords)?item.seoKeywords.map(v=>String(v).trim()).filter(Boolean).slice(0,12):[];
+          const scheduledAt=individualSchedules[i]||batchSchedule[batchIndex++];
+          p={id,name,category,material,desc:description,slug,seoTitle,seoDesc,seoKeywords,imageAlt:String(item.imageAlt||name).trim().slice(0,180),published:false,scheduledAt,img:item.imageUrl,imageBlob:null,previewUrl:'',imageData:'',updatedAt:new Date().toISOString(),syncState:'pending',autoSeo:true};
+          products.unshift(p);item.productId=id;
+          if(!save()){products=products.filter(v=>String(v.id)!==String(id));item.productId=null;throw new Error('Data produk tidak dapat disimpan di HP. Periksa ruang penyimpanan browser.');}
         }
-        autoPilotFiles.shift();success++;apRenderFiles();renderAutoPilotQueue();render();
+        await window.ersyaSyncProductById(p.id);
+        if(item.previewUrl){URL.revokeObjectURL(item.previewUrl);item.previewUrl=''}autoPilotFiles.shift();success++;apRenderFiles();renderAutoPilotQueue();render();
       }catch(e){failures.push({file:item.file.name,message:e?.message||String(e)});break}
     }
-    if(status){status.textContent=`Selesai: ${success} foto masuk antrean.${failures.length?' Foto berikutnya gagal: '+failures[0].file+' — '+failures[0].message:''} ${autoPilotFiles.length?'Sisa '+autoPilotFiles.length+' foto tetap dipilih untuk dicoba lagi.':''}`}
-    if(success)toast(`${success} foto berhasil masuk antrean online ✓`);
-    if(failures.length)toast('Batch berhenti pada foto gagal. Foto yang sudah berhasil tetap tersimpan.');
+    if(status)status.textContent=`Selesai: ${success} foto tersimpan online dan masuk antrean.${failures.length?' Gagal pada '+failures[0].file+' — '+failures[0].message:''} ${autoPilotFiles.length?' Sisa '+autoPilotFiles.length+' foto tetap dipilih untuk dilanjutkan.':''}`;
+    if(success)toast(`${success} produk berhasil masuk antrean online ✓`);
+    if(failures.length)toast('Batch berhenti pada foto yang gagal. Produk yang sudah tersimpan tetap aman.');
     renderAutoPilotQueue();render();
   }catch(e){if(status)status.textContent=e?.message||String(e);toast('Auto Pilot: '+(e?.message||e))}
-  finally{autoPilotBusy=false;if(btn){btn.disabled=false;btn.textContent='Unggah Foto & Masukkan ke Antrean'}}
+  finally{autoPilotBusy=false;if(btn){btn.disabled=false;btn.textContent='Simpan & Masukkan ke Antrean'}}
 }
 function renderAutoPilotQueue(){
   const box=document.querySelector('#apQueueList');if(!box)return;
   if(!isAdmin()){box.innerHTML='<div class="notice">Login sebagai Admin untuk melihat antrean.</div>';return}
   const queued=(products||[]).filter(p=>p&&p.published===false&&p.scheduledAt).sort((a,b)=>String(a.scheduledAt).localeCompare(String(b.scheduledAt)));
   if(!queued.length){box.innerHTML='<div class="notice">Belum ada produk terjadwal. Pilih foto pada bagian atas untuk membuat antrean.</div>';return}
-  box.innerHTML=queued.map(p=>`<div class="form" style="padding:12px;margin-bottom:8px;box-shadow:none"><div style="display:flex;gap:10px;align-items:start"><img src="${esc(src(p)||'')}" alt="${esc(p.name)}" loading="lazy" style="width:76px;height:64px;object-fit:cover;border-radius:10px;background:#eee;flex:0 0 auto"><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="v7-mini">${esc(p.category||'')} · ${esc(p.material||'')}</div><div class="v7-mini">${esc(new Date(p.scheduledAt).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}))}</div><div class="v7-mini">SEO: ${p.seoTitle?esc(p.seoTitle):'belum ada judul SEO'}</div></div><button class="btn danger" type="button" onclick="cancelAutoPilotSchedule('${String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')}')">Batalkan</button></div></div>`).join('');
+  box.innerHTML=queued.map(p=>`<div class="form" style="padding:12px;margin-bottom:8px;box-shadow:none"><div style="display:flex;gap:10px;align-items:start"><img src="${esc(src(p)||'')}" alt="${esc(p.imageAlt||p.name)}" loading="lazy" style="width:76px;height:64px;object-fit:cover;border-radius:10px;background:#eee;flex:0 0 auto"><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="v7-mini">${esc(p.category||'')} · ${esc(p.material||'')}</div><div class="v7-mini">${esc(new Date(p.scheduledAt).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}))}</div><div class="v7-mini">SEO: ${p.seoTitle?esc(p.seoTitle):'belum ada judul SEO'}</div></div><button class="btn danger" type="button" onclick="cancelAutoPilotSchedule('${String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')}')">Batalkan</button></div></div>`).join('');
 }
 async function cancelAutoPilotSchedule(id){if(!isAdmin())return;const p=products.find(x=>String(x.id)===String(id));if(!p||!p.scheduledAt)return;if(!confirm(`Batalkan jadwal publikasi untuk “${p.name}”? Produk tetap tersimpan tetapi tetap tersembunyi.`))return;const old=p.scheduledAt;p.scheduledAt=null;p.published=false;p.updatedAt=new Date().toISOString();try{await window.ersyaSyncProductById(id);renderAutoPilotQueue();render();toast('Jadwal dibatalkan; produk tetap tersembunyi.')}catch(e){p.scheduledAt=old;renderAutoPilotQueue();toast('Gagal membatalkan jadwal: '+(e?.message||e))}}
 document.querySelector('#apPhotos')?.addEventListener('change',function(){handleAutoPilotFileSelection(this)});
-document.querySelector('#apFileList')?.addEventListener('input',e=>{if(!e.target.matches('[data-ap-name]'))return;const i=Number(e.target.dataset.apName);if(!autoPilotFiles[i])return;autoPilotFiles[i].name=e.target.value;const row=e.target.closest('[data-ap-row]'),seo=apPreviewSeo(e.target.value,i,document.querySelector('#apCategory').value,document.querySelector('#apMaterial').value),out=row?.querySelector('[data-ap-seo]');if(out)out.textContent=`Slug: ${seo.slug} · Judul SEO: ${seo.seoTitle}`});
-document.querySelector('#apFileList')?.addEventListener('click',e=>{const b=e.target.closest('[data-ap-remove]');if(!b||autoPilotBusy)return;autoPilotFiles.splice(Number(b.dataset.apRemove),1);apRenderFiles()});
-document.querySelector('#apCategory')?.addEventListener('change',apRenderFiles);document.querySelector('#apMaterial')?.addEventListener('change',apRenderFiles);
+document.querySelector('#apFileList')?.addEventListener('input',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),i=Number(row?.dataset.apRow);const item=autoPilotFiles[i];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='name'&&!item.slugManual)item.slug=apSlug(item.name);if(field==='slug')item.slugManual=true});
+document.querySelector('#apFileList')?.addEventListener('change',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),item=autoPilotFiles[Number(row?.dataset.apRow)];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='slug')item.slugManual=true});
+document.querySelector('#apFileList')?.addEventListener('click',e=>{const b=e.target.closest('[data-ap-remove]');if(!b||autoPilotBusy)return;const i=Number(b.dataset.apRemove);const item=autoPilotFiles[i];if(item?.previewUrl)URL.revokeObjectURL(item.previewUrl);autoPilotFiles.splice(i,1);apRenderFiles()});
+
 document.querySelectorAll('[data-ap-day]').forEach(el=>el.addEventListener('change',updateAutoPilotEveryDay));
 document.querySelector('[data-panel="autopilot"]')?.addEventListener('click',()=>{document.querySelector('#apTimezone').value=apTimezone();if(!document.querySelector('#apStartDate').value)document.querySelector('#apStartDate').value=apNowDateValue();loadAutoPilotSettings(true);renderAutoPilotQueue()});
 const __ersyaRenderBeforeAutoPilot=render;render=function(){const result=__ersyaRenderBeforeAutoPilot.apply(this,arguments);try{renderAutoPilotQueue()}catch(_){}return result};
@@ -606,7 +666,7 @@ window.addEventListener('DOMContentLoaded',()=>{const tz=document.querySelector(
     if(!res.ok||!out?.secure_url)throw new Error('Cloudinary: '+(out?.error?.message||('HTTP '+res.status)));
     return out.secure_url;
   }
-  function productRow(p,imagePath){return {id:String(p.id),name:String(p.name||''),category:String(p.category||'Kursi Cafe'),material:String(p.material||''),description:String(p.desc||''),slug:String(p.slug||''),seo_title:String(p.seoTitle||''),seo_description:String(p.seoDesc||''),seo_keywords:Array.isArray(p.seoKeywords)?p.seoKeywords:[],image_path:imagePath||null,published:p.published!==false,scheduled_at:p.scheduledAt||null,updated_at:new Date().toISOString()}}
+  function productRow(p,imagePath){return {id:String(p.id),name:String(p.name||''),category:String(p.category||'Kursi Cafe'),material:String(p.material||''),description:String(p.desc||''),slug:String(p.slug||''),seo_title:String(p.seoTitle||''),seo_description:String(p.seoDesc||''),seo_keywords:Array.isArray(p.seoKeywords)?p.seoKeywords:[],image_alt:String(p.imageAlt||p.name||'').trim().slice(0,180),image_path:imagePath||null,published:p.published!==false,scheduled_at:p.scheduledAt||null,updated_at:new Date().toISOString()}}
   async function upsertProductRows(rows){
     let r=await db.from('products').upsert(rows,{onConflict:'id'});
     const message=r.error?.message||'';
@@ -655,7 +715,7 @@ window.addEventListener('DOMContentLoaded',()=>{const tz=document.querySelector(
     const r=await db.from('products').select('*').order('updated_at',{ascending:false});
     if(r.error)throw new Error('Baca produk dari Supabase: '+(r.error.message||r.error));
     if(Array.isArray(r.data)){
-      const remote=r.data.map(p=>({id:p.id,name:p.name,category:p.category,material:p.material,desc:p.description||'',slug:p.slug,seoTitle:p.seo_title||'',seoDesc:p.seo_description||'',seoKeywords:Array.isArray(p.seo_keywords)?p.seo_keywords:[],published:p.published!==false,scheduledAt:p.scheduled_at||null,img:/^https?:\/\//i.test(String(p.image_path||'').trim())?String(p.image_path).trim():'',imageData:'',updatedAt:p.updated_at,syncState:'synced'}));
+      const remote=r.data.map(p=>({id:p.id,name:p.name,category:p.category,material:p.material,desc:p.description||'',slug:p.slug,seoTitle:p.seo_title||'',seoDesc:p.seo_description||'',seoKeywords:Array.isArray(p.seo_keywords)?p.seo_keywords:[],imageAlt:p.image_alt||p.name||'',published:p.published!==false,scheduledAt:p.scheduled_at||null,img:/^https?:\/\//i.test(String(p.image_path||'').trim())?String(p.image_path).trim():'',imageData:'',updatedAt:p.updated_at,syncState:'synced'}));
       const remoteIds=new Set(remote.map(p=>String(p.id)));
       const hasPendingPhoto=p=>(p.imageBlob instanceof Blob)||isDataImagePayload(p.imageData)||p.localPhotoPending===true;
       const pending=localBefore.filter(p=>p&&(hasPendingPhoto(p)||p.syncState==='pending'||p.localOnly===true)&&!remoteIds.has(String(p.id)));

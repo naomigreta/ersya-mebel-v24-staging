@@ -1,4 +1,4 @@
-ERSYA MEBEL V24.1.4 — ANTI-BASE64 + AUTOPILOT MASSAL + SEO PRODUK INDIVIDUAL
+ERSYA MEBEL V24.2.3 — AI VISION + AUTO PILOT SEO + SEO LOKAL
 
 PERBAIKAN V24.1.4
 - Build Netlify menyematkan konteks `CONTEXT` ke modul Functions sehingga produk/sitemap dapat mengizinkan indexing hanya di production.
@@ -37,4 +37,24 @@ PENTING SEBELUM DEPLOY
 - Uji login Admin, upload Cloudinary, penyimpanan Supabase, jadwal/Cron, halaman detail dan sitemap pada Deploy Preview sebelum deployment produksi.
 
 STATUS
-Pemeriksaan otomatis lokal lulus. Browser headless timeout dan integrasi online end-to-end belum selesai. Paket belum dideploy dan belum dinyatakan siap produksi; Auto Pilot produksi tetap nonaktif. Baca `BACA-SEBELUM-DEPLOY.txt`, `LAPORAN-PENGUJIAN.txt`, `LAPORAN-FINALISASI-PREDEPLOY.txt`, dan `CATATAN-PERBAIKAN-AUDIT-V24.1.4.txt`.
+Pemeriksaan otomatis lokal V24.2.3 lulus. Pengambilan foto untuk Gemini kini dibatasi maksimal 5 MB saat streaming dan memiliki timeout 15 detik, termasuk bila server gambar tidak mengirim Content-Length. Browser nyata dan integrasi online end-to-end belum selesai. Paket belum dideploy dan belum dinyatakan siap produksi; Auto Pilot produksi tetap nonaktif. Baca `BACA-SEBELUM-DEPLOY.txt`, `LAPORAN-PENGUJIAN.txt`, `LAPORAN-FINALISASI-PREDEPLOY.txt`, dan `CATATAN-PERBAIKAN-AUDIT-V24.1.4.txt`.
+
+FITUR TAMBAHAN V24.2
+- Auto Pilot kini memakai analisis visual Gemini untuk nama produk dan SEO per foto; perlu `ERSYA_GEMINI_API_KEY` sebagai secret di Netlify.
+- Setiap foto dapat diberi jadwal tanggal/jam khusus atau mengikuti pola batch.
+- Jalankan ulang SQL untuk kolom `image_alt` dan baca PANDUAN-AI-VISION-DAN-JADWAL-INDIVIDUAL.txt sebelum memakai AI.
+
+UNTUK REPOSITORY GITHUB YANG MASIH MEMAKAI WORKFLOW EKSTRAKSI LAMA
+Nama arsip kandidat tetap `ERSYA-MEBEL-V24.1.4-GITHUB-DEPLOY-CANDIDATE.zip` agar cocok dengan nama yang dicari oleh workflow lama. Nama arsip dipertahankan agar cocok dengan workflow ekstraksi lama. Isi arsip kandidat sekarang adalah source V24.2.3. Ganti ZIP lama dengan file ini tanpa mengubah namanya, lalu periksa hasil GitHub Actions sebelum deployment.
+
+
+FITUR TAMBAHAN V24.2.2 + PATCH KEAMANAN V24.2.3
+- Schema bisnis lokal `FurnitureStore` dengan data kontak, lokasi, area layanan Jepara, URL, dan peta.
+- Organization dan FurnitureStore dihubungkan menggunakan `@id`.
+- Tidak menggunakan aggregateRating self-serving/ulasan buatan.
+- Tes build mengunci validitas schema bisnis lokal.
+
+PATCH V24.2.3 — PENGAMAN UNDUHAN FOTO AI
+- Endpoint AI sekarang membaca body foto Cloudinary secara streaming dengan batas 5 MB; batas tetap berlaku walau header Content-Length tidak tersedia atau tidak akurat.
+- Permintaan pengambilan foto memiliki timeout 15 detik dan pesan kegagalan jaringan yang lebih jelas.
+- Tes regresi baru mengirim body >5 MB tanpa Content-Length dan memastikan endpoint menolaknya dengan HTTP 413.

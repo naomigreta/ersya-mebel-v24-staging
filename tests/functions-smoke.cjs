@@ -14,6 +14,7 @@ const product = {
   seo_title: 'Kursi Cafe Besi | ERSYA MEBEL',
   seo_description: 'Kursi cafe besi dan kayu untuk ruang usaha.',
   seo_keywords: ['kursi cafe besi', 'mebel jepara', 'ersya mebel'],
+  image_alt: 'Kursi Cafe Besi dengan dudukan kayu',
   image_path: 'https://res.cloudinary.com/ngj31ef6/image/upload/example.jpg',
   published: true,
   updated_at: '2026-10-27T10:00:00Z'
@@ -46,6 +47,7 @@ global.fetch = async (input, init = {}) => {
   assert.match(page.body, /https:\/\/ersyafurniture\.netlify\.app\/produk\/kursi-cafe-besi\//);
   assert.match(page.body, /<script type="application\/ld\+json">[\s\S]*"@type":"Product"/);
   assert.match(page.body, /res\.cloudinary\.com\/ngj31ef6/);
+  assert.match(page.body, /alt=\"Kursi Cafe Besi dengan dudukan kayu\"/, 'product detail images should use saved AI alt text');
   assert.match(page.body, /<meta name="keywords" content="kursi cafe besi, mebel jepara, ersya mebel">/);
   assert.match(page.body, /"keywords":\["kursi cafe besi","mebel jepara","ersya mebel"\]/);
   const goodImage = product.image_path;

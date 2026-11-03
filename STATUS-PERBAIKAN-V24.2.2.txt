@@ -1,0 +1,21 @@
+ERSYA MEBEL V24.2.2 — SEO REFINED PREDEPLOY
+Tanggal: 3 November 2026
+
+Perubahan dari paket V24.2.1:
+- Judul halaman utama dan meta description dirapikan agar lebih jelas dan tidak terlalu padat kata kunci.
+- Twitter title diselaraskan dengan identitas dan fokus bisnis.
+- Schema Organization ganda di homepage disatukan menjadi satu entitas dengan @id yang konsisten; schema FurnitureStore tetap terhubung ke Organization.
+- Data produksi Supabase: canonical_url diisi https://ersyafurniture.netlify.app/ dan service_areas diisi Jepara karena itu main_city yang tersimpan.
+- Metadata produk diperbaiki untuk menghilangkan judul SEO duplikat pada kursi cafe besi dan memperbaiki deskripsi yang jelas tidak cocok untuk kursi taman, meja lipat, dan sofa cafe.
+- Kolom products.image_alt tersedia dari migrasi yang sudah berhasil; ALT untuk foto lama tetap perlu dibuat setelah foto setiap produk benar-benar dilihat.
+
+Pengujian: npm run build lulus, termasuk semua smoke test functions, Gemini image analysis, deploy context, Auto Pilot schedule, Supabase-lite, admin render security, dan Base64 storage regression.
+
+PENTING: Paket ini belum dideploy ke Netlify. Tes lokal bukan bukti integrasi online atau peringkat Google. Sebelum produksi, pasang ERSYA_GEMINI_API_KEY sebagai secret di Netlify, lakukan Deploy Preview, dan uji browser Android, analisis foto nyata, upload Cloudinary, serta jadwal publikasi end-to-end. Auto Pilot produksi harus tetap nonaktif sampai pengujian itu lulus.
+
+
+KOREKSI KONSISTENSI RILIS
+- Metadata package.json diselaraskan menjadi 24.2.2.
+- application-version homepage diselaraskan menjadi V24.2.2-SEO-REFINED.
+- Dokumen panduan utama diselaraskan dengan versi paket V24.2.2.
+- Ini hanya koreksi metadata paket; tidak mengaktifkan Auto Pilot dan tidak melakukan deploy.

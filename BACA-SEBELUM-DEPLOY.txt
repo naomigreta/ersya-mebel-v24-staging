@@ -1,38 +1,16 @@
-ERSYA MEBEL V24.1.4 — KANDIDAT ANTI-BASE64 + AUTOPILOT MASSAL + SEO PRODUK INDIVIDUAL
+ERSYA MEBEL V24.2.3 — CATATAN PRA-DEPLOY
 
-STATUS
-Paket ini BELUM dideploy. Ini kandidat pra-deploy yang perlu uji browser dan integrasi nyata lebih dahulu. Jangan unggah sebagai deploy statis/Netlify Drop karena aplikasi menggunakan Netlify Functions.
+Paket ini adalah source project untuk Netlify, bukan arsip HTML statis. Konfigurasi netlify.toml mengatur:
+- Build command: npm run build
+- Publish directory: public
+- Functions directory: netlify/functions
+- Node.js: 22
 
-FITUR PAKET
-- Auto Pilot batch: memilih sampai 100 foto, metadata/SEO otomatis dan jadwal publikasi.
-- Antrean dan jadwal publikasi disimpan di Supabase; worker Cron server memproses jadwal, jika konfigurasi dan kebijakan akses benar.
-- Foto dikompresi ke Blob, dikirim ke Cloudinary; Supabase menyimpan URL dan metadata produk.
-- Halaman produk `/produk/<slug>/` dengan metadata SEO, Open Graph/Twitter, Product JSON-LD dan breadcrumb.
-- Sitemap dinamis berisi produk yang telah published.
+Gunakan deploy manual pada situs Netlify ERSYA yang sudah ada. Login terlebih dahulu, buka situs tersebut, lalu gunakan area manual deploy di tab Deploys. Netlify Drop menerima ZIP/folder; bila antarmuka meminta folder, ekstrak ZIP dan unggah folder proyek. Pastikan Netlify menjalankan build dan menyertakan Functions. Jangan unggah folder public saja karena endpoint server akan hilang.
 
-ANTI-BASE64 — PENGAMAN SAAT INI
-1. Kompresi foto menggunakan `canvas.toBlob()`, bukan `canvas.toDataURL()`.
-2. Foto baru untuk form produk dan Auto Pilot ditulis ke IndexedDB sebagai Blob dan metadata produk dicatat lokal sebelum upload online dimulai.
-3. Jika upload/sinkronisasi gagal sesudah checkpoint lokal berhasil, produk dan foto pending dipertahankan agar dapat dipulihkan pada sesi berikutnya; tidak langsung dibuang.
-4. Foto Base64 lama dimigrasikan ke IndexedDB sebelum localStorage dibersihkan. Jika migrasi gagal, operasi yang berisiko menghilangkan satu-satunya salinan ditahan.
-5. Semua serialisasi katalog localStorage membersihkan `data:image`, Blob, object URL dan field sementara. Foto online disimpan sebagai URL HTTP(S).
-6. Backup ekspor ditahan ketika ada foto pending; impor backup dengan `data:image` ditolak.
-7. Regresi ini diuji oleh `tests/base64-storage-regression-smoke.cjs` dan menjadi bagian `npm run verify`.
+Jangan membuat situs baru jika ingin mempertahankan URL lama. Jangan menghapus database, mengganti akun Supabase/Cloudinary, atau menjalankan SQL instalasi massal.
 
-DATA LIVE YANG PERNAH DIPERIKSA
-- Supabase project: `waartnvrptyzqfufpmcs`.
-- Pemeriksaan sebelumnya menemukan 15 produk published dengan slug unik, SEO, dan URL gambar Cloudinary.
-- Auto Pilot produksi tetap NONAKTIF, dan antrean sebelumnya kosong. Job Cron aktif bukan bukti publikasi end-to-end.
+Environment variable wajib untuk analisis visual:
+ERSYA_GEMINI_API_KEY = API key Gemini milik pemilik situs, disimpan sebagai secret di Netlify.
 
-SEBELUM PRODUKSI
-- Aktifkan Leaked Password Protection di Dashboard Supabase, bagian Authentication / Password Security.
-- Buat dan gunakan Deploy Preview terpisah; jangan menimpa repo/proyek lain.
-- Uji login Admin, unggah foto dari browser/HP, URL Cloudinary, metadata Supabase, kegagalan jaringan dan pemulihan setelah browser ditutup/dibuka.
-- Uji rangkaian jadwal -> Cron -> published -> halaman detail -> sitemap secara end-to-end.
-- Pastikan tak ada payload foto `data:image` pada localStorage atau backup.
-- Jangan aktifkan Auto Pilot produksi sampai tes integrasi nyata lulus.
-
-HASIL DAN BATASAN
-`npm run verify` lulus seluruh 7 rangkaian tes otomatis lokal. Chromium headless dicoba ulang, tetapi timeout dan tidak mengeluarkan DOM. Uji browser nyata, upload Cloudinary, Supabase live, Cron end-to-end dan Deploy Preview belum lulus/dikonfirmasi. Karena itu paket ini BELUM dinyatakan siap produksi.
-
-Baca `LAPORAN-PENGUJIAN.txt`, `LAPORAN-FINALISASI-PREDEPLOY.txt`, dan `CATATAN-PERBAIKAN-AUDIT-V24.1.4.txt` sebelum melakukan langkah berikutnya.
+Auto Pilot produksi tetap nonaktif sampai login Admin, analisis foto Gemini nyata, upload Cloudinary, penyimpanan Supabase, dan alur Cron -> publish -> halaman produk -> sitemap diuji end-to-end.

@@ -1,0 +1,23 @@
+ERSYA MEBEL V24.2.3 — PANDUAN PEMBARUAN SATU FILE
+
+Isi arsip ini adalah source ERSYA MEBEL V24.2.3 yang sudah lulus npm run build.
+Nama arsip sengaja dipertahankan sebagai ERSYA-MEBEL-V24.1.4-GITHUB-DEPLOY-CANDIDATE.zip agar cocok dengan workflow lama yang saat ini masih ada di repository.
+
+LANGKAH PEMBARUAN REPOSITORY
+1. Buka https://github.com/naomigreta/ersya-mebel-v24-staging
+2. Pilih Add file > Upload files.
+3. Unggah arsip ZIP ini langsung ke folder utama repository (jangan diekstrak di HP).
+4. Commit ke branch main.
+5. GitHub Actions akan mengekstrak source V24.2.3, menjalankan npm run verify, lalu memperbarui workflow agar dapat dipakai berulang.
+
+JANGAN menghapus file database, mengubah project Supabase, mengaktifkan Auto Pilot, atau menempelkan API key Gemini ke ZIP/GitHub.
+
+SETELAH source diperbarui
+- Build Netlify harus memakai build command: npm run build
+- Publish directory: public
+- Functions directory: netlify/functions
+- Tambahkan secret di Netlify: ERSYA_GEMINI_API_KEY
+- Deploy Preview dan uji dari Android sebelum deployment produksi.
+
+CATATAN
+Nama ZIP V24.1.4 hanya dipertahankan untuk memicu workflow lama. Versi source di dalam arsip adalah V24.2.3.

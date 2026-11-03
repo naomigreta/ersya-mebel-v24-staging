@@ -1,0 +1,40 @@
+ERSYA MEBEL V24.2.3 — SECURE IMAGE INGEST
+Tanggal: 3 November 2026
+
+PERBAIKAN KODE
+- Endpoint analisis foto Gemini mengambil gambar Cloudinary secara streaming.
+- Batas ukuran 5 MB kini ditegakkan selama pembacaan body, sehingga tetap efektif saat Content-Length tidak ada atau tidak akurat.
+- Pengambilan gambar diberi timeout 15 detik agar permintaan lambat tidak menggantung tanpa batas.
+- Kegagalan timeout dan jaringan diberi respons yang lebih jelas.
+- Smoke test baru memeriksa penolakan payload di atas 5 MB tanpa Content-Length (HTTP 413).
+- Metadata versi package.json dan application-version diperbarui menjadi V24.2.3.
+
+HASIL PENGUJIAN LOKAL
+- npm run build: LULUS.
+- ERSYA MEBEL verification: LULUS.
+- Function smoke tests: LULUS.
+- AI image analysis smoke tests: LULUS, termasuk batas streaming 5 MB.
+- Deploy context build smoke tests: LULUS.
+- Auto Pilot schedule smoke tests: LULUS (simulasi).
+- Supabase-lite regression tests: LULUS.
+- Admin rendering security smoke test: LULUS.
+- Base64 storage regression tests: LULUS.
+
+STATUS DATABASE LIVE YANG DIPERIKSA READ-ONLY
+- Project Supabase waartnvrptyzqfufpmcs: ACTIVE_HEALTHY.
+- 15 produk; 15 published; 15 mempunyai slug, URL foto, SEO title dan SEO description.
+- 0 dari 15 produk memiliki image_alt. ALT harus ditulis setelah masing-masing foto benar-benar diperiksa; tidak diisi dengan tebakan.
+- RLS aktif pada seluruh tabel public yang diperiksa.
+- Auto Pilot enabled=false; tetap nonaktif.
+- Advisor keamanan memperingatkan Leaked Password Protection masih nonaktif.
+- Advisor performa melaporkan 9 grup multiple permissive policies; perlu audit kebijakan sebelum mengubahnya.
+- Tidak ada perubahan data produk, konfigurasi Auto Pilot, kebijakan RLS, atau deploy yang dilakukan dalam tahap ini.
+
+BELUM DIKONFIRMASI
+- Website Netlify, Deploy Preview, dan fungsi produksi tidak dapat diuji dari lingkungan ini karena resolusi jaringan eksternal gagal.
+- Kunci ERSYA_GEMINI_API_KEY di Netlify belum diverifikasi.
+- Belum ada panggilan Gemini nyata, upload Android, upload Cloudinary melalui Admin, atau alur Cron -> published -> detail -> sitemap end-to-end.
+- Ranking Google, indexing, dan review pelanggan tidak dapat dijamin oleh build.
+
+KESIMPULAN
+Kandidat V24.2.3 lulus tes otomatis lokal dan memiliki pengaman unduhan foto lebih kuat. Ini belum berarti versi tersebut telah diterapkan ke GitHub/Netlify atau siap produksi. Auto Pilot produksi tetap NONAKTIF sampai pengujian integrasi nyata selesai.

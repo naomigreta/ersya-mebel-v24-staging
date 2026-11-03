@@ -36,4 +36,16 @@ assert.ok(Date.parse(appended[0]) > Date.parse(after), 'appended schedule must n
 assert.throws(() => apGenerateSchedule(1, [], '09:00', 1, '2030-01-01'), /Pilih minimal satu hari/);
 assert.throws(() => apGenerateSchedule(1, [1], 'bad', 1, '2030-01-01'), /Jam publikasi tidak valid/);
 
-console.log('Auto Pilot schedule smoke tests passed: 100-photo batch, per-slot grouping, selected weekdays, queue continuation and invalid inputs.');
+const customStart = source.indexOf('function apLocalCustomSchedule(');
+assert.notEqual(customStart, -1, 'apLocalCustomSchedule must exist');
+const customEnd = source.indexOf('\n}', customStart);
+assert.notEqual(customEnd, -1, 'apLocalCustomSchedule closing brace must exist');
+const customSource = source.slice(customStart, customEnd + 2);
+const apLocalCustomSchedule = vm.runInNewContext(`${customSource}; apLocalCustomSchedule`, { Date, String, Error, Number });
+assert.equal(apLocalCustomSchedule({ date: '', time: '' }), null, 'empty per-product schedule must inherit the batch schedule');
+const customItem = { file: { name: 'foto-khusus.jpg' }, date: '2030-02-14', time: '13:45' };
+assert.equal(apLocalCustomSchedule(customItem), new Date('2030-02-14T13:45:00').toISOString(), 'individual date/time should be stored as UTC from device local time');
+assert.throws(() => apLocalCustomSchedule({ file: { name: 'foto.jpg' }, date: '2030-02-14', time: '' }), /harus diisi berpasangan/);
+assert.throws(() => apLocalCustomSchedule({ file: { name: 'foto.jpg' }, date: '2020-01-01', time: '09:00' }), /masa depan/);
+
+console.log('Auto Pilot schedule smoke tests passed: 100-photo batch, per-slot grouping, selected weekdays, queue continuation, individual date/time overrides, and invalid inputs.');

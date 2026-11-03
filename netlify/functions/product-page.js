@@ -81,7 +81,7 @@ exports.handler = async function(event) {
   }
   try {
     const u = new URL(`${SUPABASE_URL}/rest/v1/products`);
-    u.searchParams.set('select', 'id,name,category,material,description,slug,seo_title,seo_description,seo_keywords,image_path,published,updated_at');
+    u.searchParams.set('select', 'id,name,category,material,description,slug,seo_title,seo_description,seo_keywords,image_alt,image_path,published,updated_at');
     u.searchParams.set('slug', `eq.${rawSlug}`);
     u.searchParams.set('published', 'eq.true');
     u.searchParams.set('limit', '1');
@@ -131,7 +131,7 @@ exports.handler = async function(event) {
         {'@type':'ListItem','position':3,'name':name,'item':canonical}
       ]
     };
-    const body = `<main><article class="product"><div><img class="product-image" src="${esc(image)}" alt="${esc(name)} — ${esc(category)} ${esc(material)}" width="900" height="675" fetchpriority="high"></div><div><div class="eyebrow">ERSYA MEBEL · ${esc(category)}</div><h1>${esc(name)}</h1><p class="description">${esc(fullDescription || description)}</p><div class="chips"><span class="chip">${esc(category)}</span><span class="chip">${esc(material)}</span><span class="chip">Bisa konsultasi custom</span></div><p>Untuk informasi harga, ukuran, pilihan bahan, dan ketersediaan produk, hubungi ERSYA MEBEL secara langsung.</p><div class="actions"><a class="btn primary" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer">Tanya via WhatsApp</a><a class="btn secondary" href="/#produk">Lihat katalog</a></div><div class="notes">SKU/ID produk: ${esc(p.id || slug)} · Informasi dapat dikonfirmasi kembali melalui WhatsApp.</div></div></article></main><script type="application/ld+json">${safeJson(breadcrumb)}</script>`;
+    const body = `<main><article class="product"><div><img class="product-image" src="${esc(image)}" alt="${esc(p.image_alt || `${name} — ${category} ${material}`)}" width="900" height="675" fetchpriority="high"></div><div><div class="eyebrow">ERSYA MEBEL · ${esc(category)}</div><h1>${esc(name)}</h1><p class="description">${esc(fullDescription || description)}</p><div class="chips"><span class="chip">${esc(category)}</span><span class="chip">${esc(material)}</span><span class="chip">Bisa konsultasi custom</span></div><p>Untuk informasi harga, ukuran, pilihan bahan, dan ketersediaan produk, hubungi ERSYA MEBEL secara langsung.</p><div class="actions"><a class="btn primary" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent(waText)}" target="_blank" rel="noopener noreferrer">Tanya via WhatsApp</a><a class="btn secondary" href="/#produk">Lihat katalog</a></div><div class="notes">SKU/ID produk: ${esc(p.id || slug)} · Informasi dapat dikonfirmasi kembali melalui WhatsApp.</div></div></article></main><script type="application/ld+json">${safeJson(breadcrumb)}</script>`;
     return response(200, pageShell({title,description,canonical,robots,image,body,schema,keywords}));
   } catch (error) {
     console.error('ERSYA product-page error:', error && error.message || error);

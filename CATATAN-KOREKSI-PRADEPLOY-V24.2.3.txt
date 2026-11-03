@@ -1,0 +1,8 @@
+ERSYA MEBEL V24.2.3 — KOREKSI PRA-DEPLOY
+
+1. application-version pada halaman Admin diselaraskan ke V24.2.3.
+2. Pemeriksaan build kini memastikan versi halaman publik dan Admin sesuai package.json.
+3. Workflow GitHub diperbaiki agar arsip yang sudah tersimpan di .source-package dapat dipakai berulang; tidak lagi gagal karena mencoba memindahkan ZIP yang tidak ada di root.
+4. Workflow menjalankan npm run build (seluruh rangkaian verifikasi), lalu menyimpan source hasil ekstraksi.
+
+Tidak ada perubahan data Supabase, tidak mengaktifkan Auto Pilot, dan tidak melakukan deployment produksi.
