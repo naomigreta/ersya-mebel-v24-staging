@@ -8,7 +8,7 @@
 .login{background:radial-gradient(circle at 50% 0%,#e9f1eb 0%,#f4f5f2 48%,#eef0ec 100%)}.login-box{box-shadow:0 20px 55px rgba(33,74,54,.12);backdrop-filter:blur(3px)}.mark{background:linear-gradient(145deg,#285b43,#173a29);box-shadow:0 7px 18px rgba(33,74,54,.22)}.side,.form,.seo-box,.v7-card,.stat,.product-card{box-shadow:0 8px 24px rgba(31,46,37,.045)}.btn.primary{box-shadow:0 7px 16px rgba(33,74,54,.16)}@media(max-width:760px){.top{box-shadow:0 4px 16px rgba(31,46,37,.06)}.side{box-shadow:none}}
 </style><script src="ersya-supabase-config.js"></script>
 <script src="supabase-lite.js"></script>
-<meta name="application-version" content="V24.2.3-SECURE-IMAGE-INGEST"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"></head><body>
+<meta name="application-version" content="V24.2.4-AUTOPILOT-DRAFT-RESTORE"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"></head><body>
 <div class="login" id="login">
 <form class="login-box" onsubmit="login(event)">
 <div class="brand"><div class="mark">E</div><div>ERSYA MEBEL</div></div>
@@ -272,7 +272,8 @@ function toast(s){const t=document.querySelector("#toast");t.textContent=s;t.cla
 function isAdmin(){return String(role||"").toLowerCase()==="admin"}
 window.isAdmin=isAdmin;
 function applyRole(){document.querySelector("#roleBadge").textContent=role.toUpperCase();const admin=isAdmin();document.querySelectorAll('[data-panel="add"],[data-panel="autopilot"],[data-panel="settings"],[data-panel="tools"],[data-panel="seo"]').forEach(b=>b.style.display=admin?"":"none");document.querySelector("#addTop").style.display=admin?"":"none"}
-function switchPanel(id){const panel=document.querySelector("#panel-"+id);if(!panel){if(typeof toast==="function")toast("Menu belum tersedia");return false}if((id!=="products"&&id!=="dashboard")&&!isAdmin()){if(typeof toast==="function")toast("Akun kasir hanya dapat melihat katalog");return false}document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));panel.classList.add("active");document.querySelectorAll(".side button").forEach(x=>x.classList.toggle("active",x.dataset.panel===id));return true}
+function adminPanelStorageKey(){return "ersya_admin_last_panel_v1_"+String(window.ERSYA_ADMIN_USER_ID||"session")}
+function switchPanel(id){const panel=document.querySelector("#panel-"+id);if(!panel){if(typeof toast==="function")toast("Menu belum tersedia");return false}if((id!=="products"&&id!=="dashboard")&&!isAdmin()){if(typeof toast==="function")toast("Akun kasir hanya dapat melihat katalog");return false}document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));panel.classList.add("active");document.querySelectorAll(".side button").forEach(x=>x.classList.toggle("active",x.dataset.panel===id));try{localStorage.setItem(adminPanelStorageKey(),id)}catch(_){}return true}
 window.switchPanel=switchPanel
 function goAdd(){if(!isAdmin()){toast("Akses hanya untuk admin");return}editingId=null;slugTouched=false;resetForm();switchPanel("add");document.querySelector("#pname").focus()}
 window.goAdd=goAdd;
@@ -352,7 +353,7 @@ function togglePassword(){const input=document.querySelector("#pw"),btn=document
 function login(e){e.preventDefault();toast("Koneksi login online sedang disiapkan")}
 async function logout(){
   try{if(window.ERSYA_DB?.client?.auth?.signOut) await window.ERSYA_DB.client.auth.signOut();}catch(e){console.warn(e)}
-  sessionStorage.removeItem("ersya_admin_demo");sessionStorage.removeItem("ersya_role_demo");
+  sessionStorage.removeItem("ersya_admin_demo");sessionStorage.removeItem("ersya_role_demo");window.ERSYA_ADMIN_USER_ID='';
   location.reload();
 }
 window.logout=logout;
@@ -404,6 +405,106 @@ window.addEventListener("DOMContentLoaded",()=>{try{loadSeoSettings()}catch(e){c
 /* ERSYA MEBEL — Auto Pilot batch queue V24.2 */
 let autoPilotFiles=[];
 let autoPilotBusy=false;
+
+const AP_DRAFT_DB_NAME="ersya-autopilot-drafts-v1";
+let apDraftSaveTimer=null;
+function apOpenDraftDb(){
+ return new Promise((resolve,reject)=>{
+  if(!window.indexedDB){reject(new Error("Penyimpanan sementara foto tidak didukung browser ini."));return}
+  const request=window.indexedDB.open(AP_DRAFT_DB_NAME,1);
+  request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains("files"))db.createObjectStore("files",{keyPath:"id"});if(!db.objectStoreNames.contains("meta"))db.createObjectStore("meta",{keyPath:"id"})};
+  request.onsuccess=()=>resolve(request.result);
+  request.onerror=()=>reject(request.error||new Error("Penyimpanan sementara Auto Pilot tidak dapat dibuka."));
+  request.onblocked=()=>reject(new Error("Penyimpanan sementara Auto Pilot sedang dipakai tab lain. Tutup tab admin lain lalu coba lagi."));
+ });
+}
+async function apCurrentUserId(){
+ if(window.ERSYA_ADMIN_USER_ID)return String(window.ERSYA_ADMIN_USER_ID);
+ const client=window.ERSYA_DB?.client;if(!client)return "";
+ try{const result=await client.auth.getSession();return String(result.data?.session?.user?.id||"")}catch(_){return ""}
+}
+async function apSaveDraft(syncFiles=false,removeKeys=[]){
+ const ownerId=await apCurrentUserId();
+ if(autoPilotFiles.length&&!ownerId)throw new Error("Sesi Admin belum siap untuk menyimpan foto sementara.");
+ const db=await apOpenDraftDb();
+ try{
+  await new Promise((resolve,reject)=>{
+   const tx=db.transaction(["files","meta"],"readwrite"),files=tx.objectStore("files"),meta=tx.objectStore("meta");
+   if(!autoPilotFiles.length){files.clear();meta.delete("current")}
+   else{
+    if(syncFiles){
+     files.clear();
+     autoPilotFiles.forEach((item,index)=>{
+      if(!(item.file instanceof Blob)||!item.file.size)throw new Error("File foto tidak valid: "+(item.file?.name||("foto "+(index+1))));
+      files.put({id:String(item.key),blob:item.file.slice(0,item.file.size,item.file.type||"image/jpeg"),name:String(item.file.name||("foto-"+(index+1))),type:String(item.file.type||"image/jpeg"),lastModified:Number(item.file.lastModified)||Date.now()});
+     });
+    }
+    (removeKeys||[]).forEach(key=>files.delete(String(key)));
+    const items=autoPilotFiles.map(item=>({
+     key:String(item.key),name:String(item.name||""),category:String(item.category||"Kursi Cafe"),material:String(item.material||"Besi & Kayu"),
+     description:String(item.description||""),seoTitle:String(item.seoTitle||""),slug:String(item.slug||""),seoDesc:String(item.seoDesc||""),
+     seoKeywords:Array.isArray(item.seoKeywords)?item.seoKeywords:[],imageAlt:String(item.imageAlt||""),date:String(item.date||""),time:String(item.time||""),
+     imageUrl:String(item.imageUrl||""),ai:item.ai||null,productId:item.productId||null,slugManual:!!item.slugManual,visualSummary:String(item.visualSummary||"")
+    }));
+    meta.put({id:"current",ownerId,updatedAt:new Date().toISOString(),items});
+   }
+   tx.oncomplete=resolve;
+   tx.onerror=()=>reject(tx.error||new Error("Foto sementara Auto Pilot gagal disimpan."));
+   tx.onabort=()=>reject(tx.error||new Error("Penyimpanan foto sementara dibatalkan."));
+  });
+ }finally{db.close()}
+ return true;
+}
+async function apRestoreDraft(){
+ if(autoPilotFiles.length)return false;
+ const ownerId=await apCurrentUserId();if(!ownerId)return false;
+ const db=await apOpenDraftDb();let record=null,storedFiles=[];
+ try{
+  await new Promise((resolve,reject)=>{
+   const tx=db.transaction(["files","meta"],"readonly");
+   const metaRequest=tx.objectStore("meta").get("current"),filesRequest=tx.objectStore("files").getAll();
+   metaRequest.onsuccess=()=>{record=metaRequest.result||null};
+   filesRequest.onsuccess=()=>{storedFiles=filesRequest.result||[]};
+   tx.oncomplete=resolve;
+   tx.onerror=()=>reject(tx.error||new Error("Draft Auto Pilot tidak dapat dibaca."));
+   tx.onabort=()=>reject(tx.error||new Error("Pembacaan draft Auto Pilot dibatalkan."));
+  });
+ }finally{db.close()}
+ if(!record||record.ownerId!==ownerId||!Array.isArray(record.items))return false;
+ const fileMap=new Map(storedFiles.map(row=>[String(row.id),row])),restored=[];
+ for(const item of record.items){
+  const row=fileMap.get(String(item.key)),blob=row?.blob;
+  if(!(blob instanceof Blob)||!blob.size)continue;
+  let file;
+  try{file=new File([blob],row.name||"foto-produk.jpg",{type:row.type||blob.type||"image/jpeg",lastModified:Number(row.lastModified)||Date.now()})}catch(_){continue}
+  restored.push({...item,file,previewUrl:URL.createObjectURL(file),imageUrl:String(item.imageUrl||""),ai:item.ai||null});
+ }
+ if(!restored.length)return false;
+ autoPilotFiles=restored;apRenderFiles();
+ const status=document.querySelector("#apUploadStatus");
+ if(status)status.textContent=restored.length+" foto dan hasil kerja terakhir dipulihkan dari penyimpanan HP. Lanjutkan analisis atau simpan ke antrean.";
+ return true;
+}
+function apScheduleDraftSave(){
+ if(apDraftSaveTimer)clearTimeout(apDraftSaveTimer);
+ apDraftSaveTimer=setTimeout(()=>{apDraftSaveTimer=null;apSaveDraft(false).catch(error=>console.warn("Draft Auto Pilot belum tersimpan",error))},350);
+}
+async function apRestoreAdminState(){
+ if(!isAdmin())return;
+ let draftRestored=false;
+ try{draftRestored=await apRestoreDraft()}catch(error){console.warn("Pemulihan draft Auto Pilot gagal",error)}
+ let lastPanel="dashboard";
+ try{lastPanel=localStorage.getItem(adminPanelStorageKey())||"dashboard"}catch(_){}
+ if(draftRestored)lastPanel="autopilot";
+ if(!["dashboard","products","autopilot","settings","seo","users","tools","go-live"].includes(lastPanel))lastPanel="dashboard";
+ switchPanel(lastPanel);
+ if(lastPanel==="autopilot"){
+  const timezone=document.querySelector("#apTimezone");if(timezone)timezone.value=apTimezone();
+  const start=document.querySelector("#apStartDate");if(start&&!start.value)start.value=apNowDateValue();
+  loadAutoPilotSettings(true);renderAutoPilotQueue();
+ }
+}
+
 const AP_DEFAULTS={id:1,enabled:false,weekdays:[1,2,3,4,5],publish_time:'09:00:00',products_per_slot:1,timezone:'Asia/Jakarta',auto_seo:true};
 function apNowDateValue(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function apTimezone(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Jakarta'}catch(_){return 'Asia/Jakarta'}}
@@ -488,8 +589,8 @@ function apRenderFiles(){
     </div>`;
   }).join('');
 }
-function clearAutoPilotFiles(){if(autoPilotBusy)return;for(const x of autoPilotFiles){if(x.previewUrl)URL.revokeObjectURL(x.previewUrl)}autoPilotFiles=[];const input=document.querySelector('#apPhotos');if(input)input.value='';apRenderFiles();const st=document.querySelector('#apUploadStatus');if(st)st.textContent='Pilihan foto dikosongkan.'}
-function handleAutoPilotFileSelection(input){if(!isAdmin()){toast('Masuk sebagai Admin untuk menggunakan Auto Pilot.');input.value='';return}const files=[...Array.from(input.files||[])];if(files.length>100){toast('Maksimal 100 foto dalam satu batch.');input.value='';return}const invalid=files.find(f=>!String(f.type||'').startsWith('image/'));if(invalid){toast('Pilih file gambar saja.');input.value='';return}for(const x of autoPilotFiles){if(x.previewUrl)URL.revokeObjectURL(x.previewUrl)}const category=document.querySelector('#apCategory')?.value||'Kursi Cafe',material=document.querySelector('#apMaterial')?.value||'Besi & Kayu';autoPilotFiles=files.map((file,i)=>({key:`${file.name}|${file.size}|${file.lastModified}|${i}`,file,name:apTitleFromFilename(file),category,material,description:'',seoTitle:'',slug:'',seoDesc:'',seoKeywords:[],imageAlt:'',date:'',time:'',imageUrl:'',previewUrl:URL.createObjectURL(file),ai:null,productId:null,slugManual:false}));apRenderFiles()}
+async function clearAutoPilotFiles(){if(autoPilotBusy)return;for(const x of autoPilotFiles){if(x.previewUrl)URL.revokeObjectURL(x.previewUrl)}autoPilotFiles=[];const input=document.querySelector('#apPhotos');if(input)input.value='';apRenderFiles();const st=document.querySelector('#apUploadStatus');if(st)st.textContent='Pilihan foto dikosongkan.';try{await apSaveDraft()}catch(e){console.warn('Draft Auto Pilot tidak dapat dibersihkan',e)}}
+async function handleAutoPilotFileSelection(input){if(!isAdmin()){toast('Masuk sebagai Admin untuk menggunakan Auto Pilot.');input.value='';return}const files=[...Array.from(input.files||[])];if(files.length>100){toast('Maksimal 100 foto dalam satu batch.');input.value='';return}const invalid=files.find(f=>!String(f.type||'').startsWith('image/'));if(invalid){toast('Pilih file gambar saja.');input.value='';return}for(const x of autoPilotFiles){if(x.previewUrl)URL.revokeObjectURL(x.previewUrl)}const category=document.querySelector('#apCategory')?.value||'Kursi Cafe',material=document.querySelector('#apMaterial')?.value||'Besi & Kayu';autoPilotFiles=files.map((file,i)=>({key:`${file.name}|${file.size}|${file.lastModified}|${i}`,file,name:apTitleFromFilename(file),category,material,description:'',seoTitle:'',slug:'',seoDesc:'',seoKeywords:[],imageAlt:'',date:'',time:'',imageUrl:'',previewUrl:URL.createObjectURL(file),ai:null,productId:null,slugManual:false}));apRenderFiles();const status=document.querySelector('#apUploadStatus');if(status)status.textContent=files.length?'Menyimpan '+files.length+' foto sementara di HP…':'';try{await apSaveDraft(true);if(status)status.textContent=files.length?files.length+' foto sudah tersimpan sementara. Pilihan tetap dapat dipulihkan bila PWA dimuat ulang.':'Pilihan foto dikosongkan.'}catch(error){if(status)status.textContent='Foto terpilih tampil, tetapi penyimpanan sementara gagal: '+(error?.message||error);toast('Peringatan: foto sementara belum aman tersimpan. '+(error?.message||error))}}
 async function apCompressedBlob(file){return await compressImageToBlob(file)}
 async function apUploadImageForAI(blob,id){
   const cloud=window.ERSYA_CLOUDINARY||{};if(!cloud.cloudName||!cloud.uploadPreset)throw new Error('Konfigurasi Cloudinary belum siap.');
@@ -523,9 +624,10 @@ async function analyzeAutoPilotFiles(){
     for(let i=0;i<autoPilotFiles.length;i++){
       const item=autoPilotFiles[i];if(item.ai)continue;
       if(status)status.textContent=`AI membaca foto ${i+1} dari ${autoPilotFiles.length}: ${item.file.name}`;
-      const blob=await apCompressedBlob(item.file);item.imageUrl= item.imageUrl || await apUploadImageForAI(blob,'analysis-'+Date.now()+'-'+i);
+      const blob=await apCompressedBlob(item.file);item.imageUrl= item.imageUrl || await apUploadImageForAI(blob,'analysis-'+Date.now()+'-'+i);if(item.imageUrl)await apSaveDraft(false).catch(e=>console.warn('URL foto belum tersimpan di draft lokal',e));
       const result=await apRequestImageSEO(item,token);
       item.ai=result;if(item.previewUrl){URL.revokeObjectURL(item.previewUrl);item.previewUrl=''}item.name=result.name||item.name;item.category=result.category||item.category;item.material=result.material||item.material;item.description=result.description||'';item.seoTitle=result.seo_title||'';item.slug=apSlug(item.name);item.seoDesc=result.seo_description||'';item.seoKeywords=Array.isArray(result.seo_keywords)?result.seo_keywords:[];item.imageAlt=result.image_alt||'';item.visualSummary=result.visual_summary||'';
+      await apSaveDraft(false).catch(e=>console.warn('Hasil analisis belum tersimpan di draft lokal',e));
       apRenderFiles();
     }
     if(status)status.textContent=`Analisis selesai. ${autoPilotFiles.filter(x=>x.ai).length} dari ${autoPilotFiles.length} foto memiliki hasil AI. Periksa dan edit sebelum menyimpan ke antrean.`;
@@ -593,7 +695,7 @@ async function enqueueAutoPilotPhotos(){
           if(!save()){products=products.filter(v=>String(v.id)!==String(id));item.productId=null;throw new Error('Data produk tidak dapat disimpan di HP. Periksa ruang penyimpanan browser.');}
         }
         await window.ersyaSyncProductById(p.id);
-        if(item.previewUrl){URL.revokeObjectURL(item.previewUrl);item.previewUrl=''}autoPilotFiles.shift();success++;apRenderFiles();renderAutoPilotQueue();render();
+        const completedDraftKey=item.key;if(item.previewUrl){URL.revokeObjectURL(item.previewUrl);item.previewUrl=''}autoPilotFiles.shift();success++;apRenderFiles();apSaveDraft(false,[completedDraftKey]).catch(e=>console.warn('Draft antrean belum dibersihkan',e));renderAutoPilotQueue();render();
       }catch(e){failures.push({file:item.file.name,message:e?.message||String(e)});break}
     }
     if(status)status.textContent=`Selesai: ${success} foto tersimpan online dan masuk antrean.${failures.length?' Gagal pada '+failures[0].file+' — '+failures[0].message:''} ${autoPilotFiles.length?' Sisa '+autoPilotFiles.length+' foto tetap dipilih untuk dilanjutkan.':''}`;
@@ -612,9 +714,9 @@ function renderAutoPilotQueue(){
 }
 async function cancelAutoPilotSchedule(id){if(!isAdmin())return;const p=products.find(x=>String(x.id)===String(id));if(!p||!p.scheduledAt)return;if(!confirm(`Batalkan jadwal publikasi untuk “${p.name}”? Produk tetap tersimpan tetapi tetap tersembunyi.`))return;const old=p.scheduledAt;p.scheduledAt=null;p.published=false;p.updatedAt=new Date().toISOString();try{await window.ersyaSyncProductById(id);renderAutoPilotQueue();render();toast('Jadwal dibatalkan; produk tetap tersembunyi.')}catch(e){p.scheduledAt=old;renderAutoPilotQueue();toast('Gagal membatalkan jadwal: '+(e?.message||e))}}
 document.querySelector('#apPhotos')?.addEventListener('change',function(){handleAutoPilotFileSelection(this)});
-document.querySelector('#apFileList')?.addEventListener('input',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),i=Number(row?.dataset.apRow);const item=autoPilotFiles[i];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='name'&&!item.slugManual)item.slug=apSlug(item.name);if(field==='slug')item.slugManual=true});
-document.querySelector('#apFileList')?.addEventListener('change',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),item=autoPilotFiles[Number(row?.dataset.apRow)];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='slug')item.slugManual=true});
-document.querySelector('#apFileList')?.addEventListener('click',e=>{const b=e.target.closest('[data-ap-remove]');if(!b||autoPilotBusy)return;const i=Number(b.dataset.apRemove);const item=autoPilotFiles[i];if(item?.previewUrl)URL.revokeObjectURL(item.previewUrl);autoPilotFiles.splice(i,1);apRenderFiles()});
+document.querySelector('#apFileList')?.addEventListener('input',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),i=Number(row?.dataset.apRow);const item=autoPilotFiles[i];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='name'&&!item.slugManual)item.slug=apSlug(item.name);if(field==='slug')item.slugManual=true;apScheduleDraftSave()});
+document.querySelector('#apFileList')?.addEventListener('change',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),item=autoPilotFiles[Number(row?.dataset.apRow)];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='slug')item.slugManual=true;apScheduleDraftSave()});
+document.querySelector('#apFileList')?.addEventListener('click',e=>{const b=e.target.closest('[data-ap-remove]');if(!b||autoPilotBusy)return;const i=Number(b.dataset.apRemove);const item=autoPilotFiles[i];if(item?.previewUrl)URL.revokeObjectURL(item.previewUrl);autoPilotFiles.splice(i,1);apRenderFiles();apSaveDraft(false,[item?.key]).catch(e=>console.warn('Draft foto yang dihapus belum diperbarui',e))});
 
 document.querySelectorAll('[data-ap-day]').forEach(el=>el.addEventListener('change',updateAutoPilotEveryDay));
 document.querySelector('[data-panel="autopilot"]')?.addEventListener('click',()=>{document.querySelector('#apTimezone').value=apTimezone();if(!document.querySelector('#apStartDate').value)document.querySelector('#apStartDate').value=apNowDateValue();loadAutoPilotSettings(true);renderAutoPilotQueue()});
@@ -795,9 +897,9 @@ window.addEventListener('DOMContentLoaded',()=>{const tz=document.querySelector(
     }catch(e){fail('Tes koneksi',e);toast(lastError);return false}
   };
   // Login: authenticate, then read products first. Non-critical panels never turn a healthy catalog into SYNC GAGAL.
-  async function onlineLogin(e){e.preventDefault();const email=document.querySelector('#u').value.trim(),password=document.querySelector('#pw').value;if(!email||!email.includes('@')){toast('Masukkan email akun Supabase');return}if(!window.ERSYA_DB?.enabled){toast('Koneksi database belum siap');return}const auth=await db.auth.signInWithPassword({email,password});if(auth.error||!auth.data.user){toast(auth.error?.message||'Email atau password salah');return}const pr=await db.from('profiles').select('role').eq('id',auth.data.user.id).maybeSingle();if(pr.error){await db.auth.signOut();fail('Baca role Admin',pr.error);return}role=pr.data?.role||'cashier';sessionStorage.setItem('ersya_role_demo',role);document.querySelector('#login').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');applyRole();try{if(isAdmin()){const pending=await syncPendingLocalImages();if(pending.length){lastError=pending.map(v=>v.name+': '+v.message).join(' | ');syncBadge('FOTO TERTUNDA',false);setStatus('FOTO TERTUNDA',lastError,true)}await pullProducts();await pullSiteSettings().catch(e=>console.warn('Pengaturan belum terbaca',e));await pullKeywords().catch(e=>console.warn('SEO belum terbaca',e));await pullUsersOnSettings();syncBadge(pending.length?'FOTO TERTUNDA':'ONLINE ✓',!pending.length);setStatus(pending.length?'FOTO TERTUNDA':'ONLINE ✓',pending.length?lastError:'Database katalog online terhubung. Foto yang tersimpan online akan terlihat di perangkat lain.',!pending.length);render();toast('Login online sebagai Admin')}else{await pullProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Mode Kasir: katalog online dapat dibaca.',true);render();toast('Login online sebagai Kasir')}}catch(err){fail('Sinkronisasi awal',err);render();}}
+  async function onlineLogin(e){e.preventDefault();const email=document.querySelector('#u').value.trim(),password=document.querySelector('#pw').value;if(!email||!email.includes('@')){toast('Masukkan email akun Supabase');return}if(!window.ERSYA_DB?.enabled){toast('Koneksi database belum siap');return}const auth=await db.auth.signInWithPassword({email,password});if(auth.error||!auth.data.user){toast(auth.error?.message||'Email atau password salah');return}const pr=await db.from('profiles').select('role').eq('id',auth.data.user.id).maybeSingle();if(pr.error){await db.auth.signOut();fail('Baca role Admin',pr.error);return}role=pr.data?.role||'cashier';window.ERSYA_ADMIN_USER_ID=auth.data.user.id;sessionStorage.setItem('ersya_role_demo',role);document.querySelector('#login').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');applyRole();try{if(isAdmin()){const pending=await syncPendingLocalImages();if(pending.length){lastError=pending.map(v=>v.name+': '+v.message).join(' | ');syncBadge('FOTO TERTUNDA',false);setStatus('FOTO TERTUNDA',lastError,true)}await pullProducts();await pullSiteSettings().catch(e=>console.warn('Pengaturan belum terbaca',e));await pullKeywords().catch(e=>console.warn('SEO belum terbaca',e));await pullUsersOnSettings();syncBadge(pending.length?'FOTO TERTUNDA':'ONLINE ✓',!pending.length);setStatus(pending.length?'FOTO TERTUNDA':'ONLINE ✓',pending.length?lastError:'Database katalog online terhubung. Foto yang tersimpan online akan terlihat di perangkat lain.',!pending.length);render();await apRestoreAdminState();toast('Login online sebagai Admin')}else{await pullProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Mode Kasir: katalog online dapat dibaca.',true);render();toast('Login online sebagai Kasir')}}catch(err){fail('Sinkronisasi awal',err);render();}}
   window.login=onlineLogin;
-  async function restoreOnlineSession(){if(!window.ERSYA_DB?.enabled)return;try{const ses=await db.auth.getSession(),user=ses.data?.session?.user;if(!user)return;const pr=await db.from('profiles').select('role').eq('id',user.id).maybeSingle();if(pr.error)throw pr.error;role=pr.data?.role||'cashier';sessionStorage.setItem('ersya_role_demo',role);document.querySelector('#login').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');applyRole();if(isAdmin()){
+  async function restoreOnlineSession(){if(!window.ERSYA_DB?.enabled)return;try{const ses=await db.auth.getSession(),user=ses.data?.session?.user;if(!user)return;window.ERSYA_ADMIN_USER_ID=user.id;const pr=await db.from('profiles').select('role').eq('id',user.id).maybeSingle();if(pr.error)throw pr.error;role=pr.data?.role||'cashier';sessionStorage.setItem('ersya_role_demo',role);document.querySelector('#login').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');applyRole();if(isAdmin()){
       const optionalErrors=[];
       const pending=await syncPendingLocalImages();
       if(pending.length){lastError=pending.map(v=>v.name+': '+v.message).join(' | ');}
@@ -816,7 +918,7 @@ window.addEventListener('DOMContentLoaded',()=>{const tz=document.querySelector(
         setStatus('ONLINE ✓','Database katalog online terhubung. Semua produk memakai data online.',true);
         lastError='';
       }
-    }else{await pullProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Mode Kasir: katalog online dapat dibaca.',true)}render()}catch(err){fail('Pemulihan sesi',err);}}
+    }else{await pullProducts();syncBadge('ONLINE ✓',true);setStatus('ONLINE ✓','Mode Kasir: katalog online dapat dibaca.',true)}render();if(isAdmin())await apRestoreAdminState()}catch(err){fail('Pemulihan sesi',err);}}
   window.addEventListener('load',async()=>{try{const prep=await window.ersyaPreparePhotoStorage?.();if(prep&&!prep.ok){setStatus('FOTO LAMA BELUM DIMIGRASIKAN',prep.error||'Foto lama belum aman disimpan sebagai Blob.',false);toast('Perhatian: migrasi foto lama gagal. Jangan hapus data browser; periksa penyimpanan foto lokal.')}}catch(e){console.error(e);toast('Penyimpanan foto lokal perlu diperiksa.')}setTimeout(()=>restoreOnlineSession(),50)});
 })();
 </script>
