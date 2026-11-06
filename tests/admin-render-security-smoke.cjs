@@ -6,6 +6,10 @@ const html = fs.readFileSync('public/admin.html', 'utf8');
 assert.match(html, /const idArg=esc\(JSON\.stringify\(String\(p\.id\)\)\);const obj=esc\(JSON\.stringify\(stripTransientImagePayload\(p\)\)\)/, 'product IDs and objects inserted into inline HTML attributes must be escaped');
 assert.doesNotMatch(html, /const obj=JSON\.stringify\(p\)\.replace\(/, 'legacy ineffective JSON escaping must not return');
 assert.doesNotMatch(html, /onclick="(?:editProduct|duplicateProduct|togglePublish|removeProduct)\('\$\{p\.id\}'\)"/, 'raw product IDs must not be interpolated into inline JavaScript strings');
+assert.match(html, /\["dashboard","products","add","autopilot","settings","seo","users","tools","go-live"\]/, 'Admin form panel must be eligible for restoration after Android gallery switching');
+assert.match(html, /function saveAdminProductFormDraft\(\)/, 'Product form draft must be saved locally while entering data');
+assert.match(html, /function restoreAdminProductFormDraft\(\)/, 'Product form draft must be restored after a PWA reload');
+assert.match(html, /addEventListener\("pagehide",saveAdminProductFormDraft\)/, 'Product form draft must be saved when the PWA page is hidden or unloaded');
 
 const start = html.indexOf('function esc(s){');
 const end = html.indexOf('\n', start);
