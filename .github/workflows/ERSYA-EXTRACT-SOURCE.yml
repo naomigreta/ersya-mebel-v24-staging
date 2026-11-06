@@ -2,6 +2,8 @@ name: Prepare ERSYA MEBEL source
 
 on:
   push:
+    paths:
+      - 'ERSYA-MEBEL-V24.2.4-FINAL-READY-DEPLOY.zip'
   workflow_dispatch:
 
 permissions:
@@ -9,6 +11,7 @@ permissions:
 
 jobs:
   extract-and-check:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,23 +20,40 @@ jobs:
         with:
           node-version: 20
 
-      - name: Extract ZIP
+      - name: Extract final source ZIP
+        shell: bash
         run: |
-          ZIP="ERSYA-MEBEL-V24.1.4-GITHUB-DEPLOY-CANDIDATE.zip"
+          set -euo pipefail
+          ZIP_NAME="ERSYA-MEBEL-V24.2.4-FINAL-READY-DEPLOY.zip"
+          ZIP_PATH=".source-package/$ZIP_NAME"
           mkdir -p .source-package
-          mv "$ZIP" ".source-package/$ZIP"
-          unzip -oq ".source-package/$ZIP" -d .
+
+          if [ -f "$ZIP_NAME" ]; then
+            mv "$ZIP_NAME" "$ZIP_PATH"
+          fi
+
+          if [ ! -s "$ZIP_PATH" ]; then
+            echo "ZIP final tidak ditemukan. Unggah ZIP ke folder utama repository."
+            exit 0
+          fi
+
+          unzip -oq "$ZIP_PATH" -d .
           test -f package.json
           test -f netlify.toml
+          test -f public/index.html
+          test -f public/admin.html
+          test -f public/manifest.webmanifest
+          test -f netlify/functions/analyze-product-image.js
 
-      - name: Run verification
-        run: npm run verify
+      - name: Run full verification
+        run: npm run build
 
-      - name: Save extracted files
+      - name: Save extracted source
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git restore --staged -- .github/workflows/ERSYA-EXTRACT-SOURCE.yml
-          git commit -m "Extract ERSYA source [skip ci]" || true
+          git commit -m "Extract ERSYA MEBEL V24.2.4 source [skip ci]" || echo "No source changes to save."
           git push
