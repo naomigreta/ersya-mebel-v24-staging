@@ -524,22 +524,22 @@ function apScheduleDraftSave(){
 }
 async function apRestoreAdminState(){
  if(!isAdmin())return;
- let draftRestored=false;
- try{draftRestored=await apRestoreDraft()}catch(error){console.warn("Pemulihan draft Auto Pilot gagal",error)}
  let lastPanel="dashboard";
  try{lastPanel=localStorage.getItem(adminPanelStorageKey())||"dashboard"}catch(_){}
- if(draftRestored)lastPanel="autopilot";
  if(!["dashboard","products","add","autopilot","settings","seo","users","tools","go-live"].includes(lastPanel))lastPanel="dashboard";
- const productFormRestored=lastPanel==="add"&&restoreAdminProductFormDraft();
+ // Restore the panel before waiting for IndexedDB so returning from Android gallery does not flash/reset to dashboard.
  switchPanel(lastPanel);
+ let draftRestored=false;
+ try{draftRestored=await apRestoreDraft()}catch(error){console.warn("Pemulihan draft Auto Pilot gagal",error)}
+ if(draftRestored&&lastPanel!=="autopilot")switchPanel("autopilot");
+ const productFormRestored=lastPanel==="add"&&restoreAdminProductFormDraft();
  if(productFormRestored)toast("Form produk dipulihkan. Pilih ulang foto bila foto belum tampil.");
- if(lastPanel==="autopilot"){
+ if(lastPanel==="autopilot"||draftRestored){
   const timezone=document.querySelector("#apTimezone");if(timezone)timezone.value=apTimezone();
   const start=document.querySelector("#apStartDate");if(start&&!start.value)start.value=apNowDateValue();
   loadAutoPilotSettings(true);renderAutoPilotQueue();
  }
 }
-
 const AP_DEFAULTS={id:1,enabled:false,weekdays:[1,2,3,4,5],publish_time:'09:00:00',products_per_slot:1,timezone:'Asia/Jakarta',auto_seo:true};
 function apNowDateValue(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
 function apTimezone(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Jakarta'}catch(_){return 'Asia/Jakarta'}}
@@ -748,7 +748,9 @@ function renderAutoPilotQueue(){
   box.innerHTML=queued.map(p=>`<div class="form" style="padding:12px;margin-bottom:8px;box-shadow:none"><div style="display:flex;gap:10px;align-items:start"><img src="${esc(src(p)||'')}" alt="${esc(p.imageAlt||p.name)}" loading="lazy" style="width:76px;height:64px;object-fit:cover;border-radius:10px;background:#eee;flex:0 0 auto"><div style="flex:1;min-width:0"><b>${esc(p.name)}</b><div class="v7-mini">${esc(p.category||'')} · ${esc(p.material||'')}</div><div class="v7-mini">${esc(new Date(p.scheduledAt).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}))}</div><div class="v7-mini">SEO: ${p.seoTitle?esc(p.seoTitle):'belum ada judul SEO'}</div></div><button class="btn danger" type="button" onclick="cancelAutoPilotSchedule('${String(p.id).replace(/[^a-zA-Z0-9_-]/g,'')}')">Batalkan</button></div></div>`).join('');
 }
 async function cancelAutoPilotSchedule(id){if(!isAdmin())return;const p=products.find(x=>String(x.id)===String(id));if(!p||!p.scheduledAt)return;if(!confirm(`Batalkan jadwal publikasi untuk “${p.name}”? Produk tetap tersimpan tetapi tetap tersembunyi.`))return;const old=p.scheduledAt;p.scheduledAt=null;p.published=false;p.updatedAt=new Date().toISOString();try{await window.ersyaSyncProductById(id);renderAutoPilotQueue();render();toast('Jadwal dibatalkan; produk tetap tersembunyi.')}catch(e){p.scheduledAt=old;renderAutoPilotQueue();toast('Gagal membatalkan jadwal: '+(e?.message||e))}}
-document.querySelector('#apPhotos')?.addEventListener('change',function(){handleAutoPilotFileSelection(this)});
+const apPhotoPicker=document.querySelector('#apPhotos');
+apPhotoPicker?.addEventListener('click',()=>{try{localStorage.setItem(adminPanelStorageKey(),'autopilot')}catch(_){};switchPanel('autopilot')});
+apPhotoPicker?.addEventListener('change',function(){try{localStorage.setItem(adminPanelStorageKey(),'autopilot')}catch(_){};handleAutoPilotFileSelection(this)});
 document.querySelector('#apFileList')?.addEventListener('input',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),i=Number(row?.dataset.apRow);const item=autoPilotFiles[i];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='name'&&!item.slugManual)item.slug=apSlug(item.name);if(field==='slug')item.slugManual=true;apScheduleDraftSave()});
 document.querySelector('#apFileList')?.addEventListener('change',e=>{const field=e.target.dataset.apField;if(!field)return;const row=e.target.closest('[data-ap-row]'),item=autoPilotFiles[Number(row?.dataset.apRow)];if(!item)return;if(field==='seoKeywords')item.seoKeywords=e.target.value.split(',').map(v=>v.trim()).filter(Boolean);else item[field]=e.target.value;if(field==='slug')item.slugManual=true;apScheduleDraftSave()});
 document.querySelector('#apFileList')?.addEventListener('click',e=>{const b=e.target.closest('[data-ap-remove]');if(!b||autoPilotBusy)return;const i=Number(b.dataset.apRemove);const item=autoPilotFiles[i];if(item?.previewUrl)URL.revokeObjectURL(item.previewUrl);autoPilotFiles.splice(i,1);apRenderFiles();apSaveDraft(false,[item?.key]).catch(e=>console.warn('Draft foto yang dihapus belum diperbarui',e))});
