@@ -274,7 +274,7 @@ window.isAdmin=isAdmin;
 function applyRole(){document.querySelector("#roleBadge").textContent=role.toUpperCase();const admin=isAdmin();document.querySelectorAll('[data-panel="add"],[data-panel="autopilot"],[data-panel="settings"],[data-panel="tools"],[data-panel="seo"]').forEach(b=>b.style.display=admin?"":"none");document.querySelector("#addTop").style.display=admin?"":"none"}
 function adminPanelStorageKey(){return "ersya_admin_last_panel_v1_"+String(window.ERSYA_ADMIN_USER_ID||"session")}
 const ADMIN_LAST_PANEL_GLOBAL_KEY="ersya_admin_last_panel_v1_global";
-function saveAdminPanelPreference(id){try{localStorage.setItem(adminPanelStorageKey(),id);localStorage.setItem(ADMIN_LAST_PANEL_GLOBAL_KEY,id)}catch(_){}}
+function saveAdminPanelPreference(id){try{localStorage.setItem(adminPanelStorageKey(),id);if(isAdmin())localStorage.setItem(ADMIN_LAST_PANEL_GLOBAL_KEY,id)}catch(_){}}
 function adminProductFormDraftKey(){return "ersya_admin_product_form_draft_v1_"+String(window.ERSYA_ADMIN_USER_ID||"session")}
 function clearAdminProductFormDraft(){try{localStorage.removeItem(adminProductFormDraftKey())}catch(_){}}
 function saveAdminProductFormDraft(){
